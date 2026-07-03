@@ -1,0 +1,126 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Bloomerang
+providerId: bloomerang
+created: '2026-07-03'
+modified: '2026-07-03'
+reconciled: false
+tags:
+- Nonprofit
+- Donor Management
+- CRM
+- Fundraising
+- Plans
+description: >-
+  Bloomerang sells its Giving Platform as a subscription priced primarily by
+  the number of constituent records (contacts) an organization tracks, not by
+  API usage. Bloomerang CRM, Bloomerang Fundraising, and Bloomerang Volunteer
+  can be purchased individually or bundled; every tier includes unlimited
+  users. The REST API v2, private API keys, and webhook subscriptions are
+  included with a paid subscription at no additional per-call or per-key fee -
+  there is no metered "API plan" separate from the CRM subscription, and
+  Bloomerang does not offer a sandbox environment for testing API integrations.
+notes: >-
+  Published starting prices are list/entry-level figures for the smallest
+  record tier, billed annually; actual price scales with database size
+  (contact count) and which products (CRM, Fundraising, Volunteer,
+  Membership) are bundled. Verify current tier boundaries and rates on the
+  Bloomerang pricing page during reconciliation.
+sources:
+- https://bloomerang.com/pricing
+- https://bloomerang.com/api/rest-api
+- https://bloomerang.com/api
+plans:
+- id: bloomerang-crm
+  name: Bloomerang CRM
+  type: paid
+  description: >-
+    Core donor management CRM - constituent records, communications,
+    reporting, and REST API / webhook access - priced by constituent record
+    count, starting near $125/month billed annually. Includes unlimited
+    users, training, and onboarding.
+  entries:
+  - label: Constituent Records
+    name: crm_records
+    type: usage
+    metric: records
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: starting around $125/month (annual billing), scales with record count
+    userMultiplied: false
+  elements:
+  - name: Unlimited Users
+  - name: REST API v2 Access
+  - name: Webhook Subscriptions
+  - name: Training and Onboarding
+  - name: Standard Support
+- id: bloomerang-fundraising
+  name: Bloomerang Fundraising
+  type: paid
+  description: >-
+    Online giving forms, peer-to-peer, and event fundraising tools, sold as
+    an add-on to the CRM subscription, starting around $40/month.
+  entries:
+  - label: Fundraising Add-On
+    name: fundraising_addon
+    type: flat
+    metric: subscription
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: starting around $40/month (requires Bloomerang CRM)
+    userMultiplied: false
+  elements:
+  - name: Online Donation Forms
+  - name: Peer-to-Peer Campaigns
+  - name: Event Registration
+- id: bloomerang-volunteer
+  name: Bloomerang Volunteer
+  type: paid
+  description: >-
+    Volunteer scheduling and management module, sold standalone or bundled
+    with CRM, starting around $119/month.
+  entries:
+  - label: Volunteer Add-On
+    name: volunteer_addon
+    type: flat
+    metric: subscription
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: starting around $119/month
+    userMultiplied: false
+  elements:
+  - name: Volunteer Scheduling
+  - name: Hour Tracking
+- id: bloomerang-giving-platform
+  name: Giving Platform Bundle
+  type: paid
+  description: >-
+    CRM, Fundraising, and Volunteer bundled together with Prospect AI and
+    predictive donor insights, starting around $524/month.
+  entries:
+  - label: Bundle Subscription
+    name: bundle_subscription
+    type: flat
+    metric: subscription
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: starting around $524/month (annual billing)
+    userMultiplied: false
+  elements:
+  - name: Bloomerang CRM
+  - name: Bloomerang Fundraising
+  - name: Bloomerang Volunteer
+  - name: Prospect AI
+  - name: Predictive Donor Insights
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

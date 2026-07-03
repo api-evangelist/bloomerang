@@ -1,0 +1,210 @@
+aid: bloomerang
+url: https://raw.githubusercontent.com/api-evangelist/bloomerang/refs/heads/main/apis.yml
+name: Bloomerang
+kind: company
+description: Bloomerang is a cloud-based donor management and fundraising CRM built
+  for small and mid-size nonprofits, covering constituent records, donations and
+  pledges, communications, and reporting. Bloomerang acquired fellow nonprofit
+  platform Kindful in January 2021, but Kindful continues to run its own separate
+  API and product line; this entry documents Bloomerang's own REST API v2 (base
+  https://api.bloomerang.co/v2), authenticated with a private API key or OAuth 2.0,
+  for managing constituents, transactions, interactions, and related donor data.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Nonprofit
+- Donor Management
+- CRM
+- Fundraising
+- Fundraising Software
+created: '2026-07-03'
+modified: '2026-07-03'
+specificationVersion: '0.19'
+apis:
+- aid: bloomerang:bloomerang-constituents-api
+  name: Bloomerang Constituents API
+  tags:
+  - Constituents
+  - Donors
+  - Contacts
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://bloomerang.com/api/rest-api
+  baseURL: https://api.bloomerang.co/v2
+  properties:
+  - url: https://bloomerang.com/api/rest-api
+    type: Documentation
+  - url: openapi/bloomerang-openapi.yml
+    type: OpenAPI
+  description: Create, retrieve, search, and update constituent records - the
+    individuals, households, and organizations tracked in a Bloomerang donor
+    database - including addresses, emails, phone numbers, and communication
+    preferences.
+- aid: bloomerang:bloomerang-households-api
+  name: Bloomerang Households API
+  tags:
+  - Households
+  - Constituents
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://bloomerang.com/api/rest-api
+  baseURL: https://api.bloomerang.co/v2
+  properties:
+  - url: https://bloomerang.com/api/rest-api
+    type: Documentation
+  - url: openapi/bloomerang-openapi.yml
+    type: OpenAPI
+  description: Manage households - the family-unit grouping of individual
+    constituents used throughout Bloomerang for giving history rollups and
+    household-level mailings and reporting.
+- aid: bloomerang:bloomerang-transactions-api
+  name: Bloomerang Transactions API
+  tags:
+  - Transactions
+  - Donations
+  - Pledges
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://bloomerang.com/api/rest-api
+  baseURL: https://api.bloomerang.co/v2
+  properties:
+  - url: https://bloomerang.com/api/rest-api
+    type: Documentation
+  - url: openapi/bloomerang-openapi.yml
+    type: OpenAPI
+  description: Record and retrieve transactions - the total amount of a payment,
+    split into one or more designations such as donations, pledges, pledge
+    payments, recurring donations, or recurring donation payments - against a
+    fund and constituent.
+- aid: bloomerang:bloomerang-interactions-api
+  name: Bloomerang Interactions API
+  tags:
+  - Interactions
+  - Engagement
+  - Communications
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://bloomerang.com/api/rest-api
+  baseURL: https://api.bloomerang.co/v2
+  properties:
+  - url: https://bloomerang.com/api/rest-api
+    type: Documentation
+  - url: openapi/bloomerang-openapi.yml
+    type: OpenAPI
+  description: Log and retrieve interactions - a "touch" between the
+    organization and a constituent such as a call, meeting, letter, or email -
+    used to build the constituent engagement timeline.
+- aid: bloomerang:bloomerang-notes-api
+  name: Bloomerang Notes API
+  tags:
+  - Notes
+  - Constituents
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://bloomerang.com/api/rest-api
+  baseURL: https://api.bloomerang.co/v2
+  properties:
+  - url: https://bloomerang.com/api/rest-api
+    type: Documentation
+  - url: openapi/bloomerang-openapi.yml
+    type: OpenAPI
+  description: Create and retrieve freeform notes attached to a constituent
+    record, including optional file attachments, surfaced on the constituent
+    timeline alongside interactions and transactions.
+- aid: bloomerang:bloomerang-relationships-api
+  name: Bloomerang Relationships API
+  tags:
+  - Relationships
+  - Constituents
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://bloomerang.com/api/rest-api
+  baseURL: https://api.bloomerang.co/v2
+  properties:
+  - url: https://bloomerang.com/api/rest-api
+    type: Documentation
+  - url: openapi/bloomerang-openapi.yml
+    type: OpenAPI
+  description: Manage relationships between two constituents - such as spouse,
+    employer, or board member - each carrying a role on both sides of the
+    relationship and an optional note.
+- aid: bloomerang:bloomerang-custom-fields-api
+  name: Bloomerang Custom Fields API
+  tags:
+  - Custom Fields
+  - Configuration
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://bloomerang.com/api/rest-api
+  baseURL: https://api.bloomerang.co/v2
+  properties:
+  - url: https://bloomerang.com/api/rest-api
+    type: Documentation
+  - url: openapi/bloomerang-openapi.yml
+    type: OpenAPI
+  description: Retrieve the custom field definitions configured for a given
+    object type (Constituent, Transaction, Interaction, Note) so integrations
+    can read and write an organization's account-specific custom data.
+- aid: bloomerang:bloomerang-lists-api
+  name: Bloomerang Lists API
+  tags:
+  - Lists
+  - Segmentation
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://bloomerang.com/api/rest-api
+  baseURL: https://api.bloomerang.co/v2
+  properties:
+  - url: https://bloomerang.com/api/rest-api
+    type: Documentation
+  - url: openapi/bloomerang-openapi.yml
+    type: OpenAPI
+  description: Read saved constituent lists (segments) built in the Bloomerang
+    CRM UI, and page through the constituents they contain, for use in exports,
+    mailings, and downstream reporting. Modeled from Bloomerang's list/segment
+    feature set; a public REST path for this feature was not independently
+    confirmed during review - see review.yml.
+- aid: bloomerang:bloomerang-webhooks-api
+  name: Bloomerang Webhooks API
+  tags:
+  - Webhooks
+  - Events
+  - Notifications
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://bloomerang.com/api/rest-api
+  baseURL: https://api.bloomerang.co/v2
+  properties:
+  - url: https://bloomerang.com/api/rest-api
+    type: Documentation
+  - url: openapi/bloomerang-openapi.yml
+    type: OpenAPI
+  description: Register, list, and remove webhook subscriptions so a third-party
+    system receives an HTTP callback when events occur in Bloomerang, such as a
+    new constituent or transaction being created.
+- aid: bloomerang:bloomerang-accounts-users-api
+  name: Bloomerang Accounts and Users API
+  tags:
+  - Accounts
+  - Users
+  - Funds
+  - Campaigns
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://bloomerang.com/api/rest-api
+  baseURL: https://api.bloomerang.co/v2
+  properties:
+  - url: https://bloomerang.com/api/rest-api
+    type: Documentation
+  - url: openapi/bloomerang-openapi.yml
+    type: OpenAPI
+  description: Read account-level reference data - CRM users, funds, campaigns,
+    and appeals - used to populate designations on transactions and to attribute
+    activity to a specific staff user.
+common:
+- type: GitHubOrganization
+  url: https://github.com/Bloomerang
+- type: LinkedIn
+  url: https://www.linkedin.com/company/bloomerang-donor-management-software
+- type: Website
+  url: https://bloomerang.com
+- type: Documentation
+  url: https://bloomerang.com/api
+- type: Plans
+  url: plans/bloomerang-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/bloomerang-rate-limits.yml
+- type: FinOps
+  url: finops/bloomerang-finops.yml
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

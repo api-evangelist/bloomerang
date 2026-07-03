@@ -1,0 +1,92 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: Bloomerang
+providerId: bloomerang
+created: '2026-07-03'
+modified: '2026-07-03'
+reconciled: false
+tags:
+- Nonprofit
+- Donor Management
+- CRM
+- Fundraising
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps view of Bloomerang spend. Bloomerang is sold as a nonprofit CRM
+  subscription (Bloomerang CRM, Fundraising, Volunteer, and Membership
+  modules, individually or bundled), billed primarily on constituent record
+  (contact) count rather than API call volume or seat count - every tier
+  includes unlimited users. The REST API v2, private API keys, and webhook
+  subscriptions ship as part of the CRM subscription with no separate API
+  invoice line. The dominant cost driver for a nonprofit is therefore
+  database size and which product modules are bundled, not integration
+  traffic.
+notes: >-
+  Per-tier record-count boundaries and exact rates are not reconciled here;
+  verify current pricing on the Bloomerang pricing page. Bloomerang does not
+  meter or bill for API requests, so there is no throughput-based FinOps
+  meter analogous to a usage-billed API platform.
+sources:
+- https://bloomerang.com/pricing
+- https://bloomerang.com/api/rest-api
+- https://focus.finops.org/focus-specification/v1-3/
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: Bloomerang
+serviceCategory: Nonprofit CRM and Fundraising Software
+billingModel:
+  pricingCategory: Subscription (Record-Tiered)
+  billingFrequency: Monthly (Annual Commitment)
+  billingCurrency: USD
+  chargeCategories:
+  - Purchase
+  - Adjustment
+focusColumns:
+  ServiceName: Bloomerang CRM
+  ServiceCategory: Nonprofit CRM and Fundraising Software
+  ProviderName: Bloomerang
+  PublisherName: Bloomerang
+  InvoiceIssuerName: Bloomerang
+  BillingCurrency: USD
+  ChargeCategory: Purchase
+  PricingCategory: Subscription
+meters:
+- name: constituent_records
+  description: Number of constituent (contact) records tracked in the account, the primary driver of subscription tier.
+  unit: records
+  aggregation: max
+  dimensions:
+  - account
+- name: module_subscriptions
+  description: Which product modules (CRM, Fundraising, Volunteer, Membership) are active on the account.
+  unit: subscriptions
+  aggregation: count
+  dimensions:
+  - account
+  - module
+- name: api_requests
+  description: REST API v2 request volume; not metered or billed by Bloomerang, tracked here for internal integration cost/observability only.
+  unit: requests
+  aggregation: sum
+  dimensions:
+  - account
+  - endpoint
+principles:
+- name: Visibility
+  description: Track constituent record growth against subscription tier boundaries before it triggers an unplanned upgrade at renewal.
+- name: Allocation
+  description: Attribute the CRM subscription cost to development/fundraising operations; there is no per-integration or per-key cost to allocate since API access is bundled.
+- name: Optimization
+  description: Periodically deduplicate and archive inactive constituent records to stay within a lower record tier, and consolidate onto the bundled Giving Platform if running separate point tools.
+- name: Accountability
+  description: Assign an owner for the Bloomerang contract renewal and record-count review, since pricing changes are tied to database growth rather than a usage dashboard.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

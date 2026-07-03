@@ -1,0 +1,318 @@
+{
+  "info": {
+    "name": "Bloomerang REST API v2",
+    "description": "Private-key, server-to-server API for reading and writing constituents, transactions, interactions, notes, relationships, custom fields, and webhook subscriptions in a Bloomerang donor management CRM account. Base URL: https://api.bloomerang.co/v2. Requests are authenticated with an X-Api-Key header (private API key) or an OAuth 2.0 Bearer token. Bloomerang offers no sandbox environment - all requests run against production data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      { "key": "key", "value": "X-Api-Key", "type": "string" },
+      { "key": "value", "value": "{{apiKey}}", "type": "string" },
+      { "key": "in", "value": "header", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://api.bloomerang.co/v2", "type": "string" },
+    { "key": "apiKey", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Constituents",
+      "item": [
+        {
+          "name": "List constituents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/constituents?skip=0&take=50", "host": ["{{baseUrl}}"], "path": ["constituents"], "query": [ { "key": "skip", "value": "0" }, { "key": "take", "value": "50" } ] },
+            "description": "Lists constituents, paginated with skip/take parameters."
+          }
+        },
+        {
+          "name": "Create a constituent",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"Type\": \"Individual\",\n  \"FirstName\": \"Ada\",\n  \"LastName\": \"Lovelace\",\n  \"EmailAddress\": { \"Value\": \"ada@example.org\", \"Type\": \"Home\" }\n}" },
+            "url": { "raw": "{{baseUrl}}/constituents", "host": ["{{baseUrl}}"], "path": ["constituents"] },
+            "description": "Creates a new constituent record."
+          }
+        },
+        {
+          "name": "Search constituents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/constituents/search?search=Lovelace", "host": ["{{baseUrl}}"], "path": ["constituents", "search"], "query": [ { "key": "search", "value": "Lovelace" } ] },
+            "description": "Full-text search across constituent names and identifying fields."
+          }
+        },
+        {
+          "name": "Retrieve a constituent",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/constituents/:id", "host": ["{{baseUrl}}"], "path": ["constituents", ":id"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Retrieves a constituent by ID."
+          }
+        },
+        {
+          "name": "Update a constituent",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": { "raw": "{{baseUrl}}/constituents/:id", "host": ["{{baseUrl}}"], "path": ["constituents", ":id"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Updates fields on an existing constituent."
+          }
+        },
+        {
+          "name": "Get a constituent's timeline",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/constituents/:id/timeline", "host": ["{{baseUrl}}"], "path": ["constituents", ":id", "timeline"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Retrieves the combined notes/interactions/donations/tasks timeline for a constituent."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Households",
+      "item": [
+        {
+          "name": "Create a household",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"Name\": \"The Lovelace Household\",\n  \"MemberIds\": []\n}" },
+            "url": { "raw": "{{baseUrl}}/households", "host": ["{{baseUrl}}"], "path": ["households"] },
+            "description": "Creates a household constituent grouping one or more individual constituent members. Modeled endpoint - see review.yml."
+          }
+        },
+        {
+          "name": "Retrieve a household",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/households/:id", "host": ["{{baseUrl}}"], "path": ["households", ":id"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Retrieves a household by ID. Modeled endpoint - see review.yml."
+          }
+        },
+        {
+          "name": "Update a household",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": { "raw": "{{baseUrl}}/households/:id", "host": ["{{baseUrl}}"], "path": ["households", ":id"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Updates household membership or details. Modeled endpoint - see review.yml."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "List transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/transactions?skip=0&take=50", "host": ["{{baseUrl}}"], "path": ["transactions"], "query": [ { "key": "skip", "value": "0" }, { "key": "take", "value": "50" } ] },
+            "description": "Lists transactions, paginated with skip/take parameters."
+          }
+        },
+        {
+          "name": "Create a transaction",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"AccountId\": 1,\n  \"Date\": \"2026-07-03\",\n  \"Method\": \"CreditCard\",\n  \"Designations\": [\n    { \"Type\": \"Donation\", \"FundId\": 1, \"Amount\": 100.00 }\n  ]\n}" },
+            "url": { "raw": "{{baseUrl}}/transactions", "host": ["{{baseUrl}}"], "path": ["transactions"] },
+            "description": "Creates a transaction split into one or more designations against a fund and constituent."
+          }
+        },
+        {
+          "name": "Retrieve a transaction",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/transactions/:id", "host": ["{{baseUrl}}"], "path": ["transactions", ":id"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Retrieves a transaction by ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Interactions",
+      "item": [
+        {
+          "name": "List interactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/interactions?skip=0&take=50", "host": ["{{baseUrl}}"], "path": ["interactions"], "query": [ { "key": "skip", "value": "0" }, { "key": "take", "value": "50" } ] },
+            "description": "Lists interactions, paginated with skip/take parameters."
+          }
+        },
+        {
+          "name": "Create an interaction",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"AccountId\": 1,\n  \"Date\": \"2026-07-03\",\n  \"Channel\": \"Email\",\n  \"Purpose\": \"Thank you\",\n  \"Note\": \"Sent a thank-you email for the recent gift.\"\n}" },
+            "url": { "raw": "{{baseUrl}}/interactions", "host": ["{{baseUrl}}"], "path": ["interactions"] },
+            "description": "Creates an interaction - a logged touch between the organization and a constituent."
+          }
+        },
+        {
+          "name": "Retrieve an interaction",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/interactions/:id", "host": ["{{baseUrl}}"], "path": ["interactions", ":id"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Retrieves an interaction by ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notes",
+      "item": [
+        {
+          "name": "Create a note",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"AccountId\": 1,\n  \"Note\": \"Met at the annual gala.\",\n  \"Date\": \"2026-07-03\"\n}" },
+            "url": { "raw": "{{baseUrl}}/notes", "host": ["{{baseUrl}}"], "path": ["notes"] },
+            "description": "Creates a freeform note attached to a constituent. Modeled endpoint - see review.yml."
+          }
+        },
+        {
+          "name": "Retrieve a note",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/notes/:id", "host": ["{{baseUrl}}"], "path": ["notes", ":id"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Retrieves a note by ID. Modeled endpoint - see review.yml."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Relationships",
+      "item": [
+        {
+          "name": "List a constituent's relationships",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/constituents/:id/relationships", "host": ["{{baseUrl}}"], "path": ["constituents", ":id", "relationships"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Lists the relationships a constituent has to other constituents."
+          }
+        },
+        {
+          "name": "Create a relationship",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"AccountId2\": 2,\n  \"RelationshipRole1\": \"Spouse\",\n  \"RelationshipRole2\": \"Spouse\"\n}" },
+            "url": { "raw": "{{baseUrl}}/constituents/:id/relationships", "host": ["{{baseUrl}}"], "path": ["constituents", ":id", "relationships"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Creates a relationship between the given constituent and another constituent."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Custom Fields",
+      "item": [
+        {
+          "name": "List custom field definitions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/customFields/:type", "host": ["{{baseUrl}}"], "path": ["customFields", ":type"], "variable": [{ "key": "type", "value": "Constituent" }] },
+            "description": "Lists the custom field definitions configured for a given object type (Constituent, Transaction, Interaction, Note)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "List webhook subscriptions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/webhooks", "host": ["{{baseUrl}}"], "path": ["webhooks"] },
+            "description": "Lists the webhook subscriptions registered for the account."
+          }
+        },
+        {
+          "name": "Register a webhook subscription",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"url\": \"https://your-server.example.com/webhook\",\n  \"event\": \"constituent.created\",\n  \"active\": true\n}" },
+            "url": { "raw": "{{baseUrl}}/webhooks", "host": ["{{baseUrl}}"], "path": ["webhooks"] },
+            "description": "Registers a webhook subscription that receives an HTTP callback when the given event occurs."
+          }
+        },
+        {
+          "name": "Delete a webhook subscription",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/webhooks/:id", "host": ["{{baseUrl}}"], "path": ["webhooks", ":id"], "variable": [{ "key": "id", "value": "" }] },
+            "description": "Removes a webhook subscription."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reference Data",
+      "item": [
+        {
+          "name": "List CRM users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/users", "host": ["{{baseUrl}}"], "path": ["users"] },
+            "description": "Lists the CRM users on the account. Modeled endpoint - see review.yml."
+          }
+        },
+        {
+          "name": "List funds",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/funds", "host": ["{{baseUrl}}"], "path": ["funds"] },
+            "description": "Lists the funds available as transaction designations. Modeled endpoint - see review.yml."
+          }
+        },
+        {
+          "name": "List campaigns",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/campaigns", "host": ["{{baseUrl}}"], "path": ["campaigns"] },
+            "description": "Lists fundraising campaigns. Modeled endpoint - see review.yml."
+          }
+        },
+        {
+          "name": "List appeals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/appeals", "host": ["{{baseUrl}}"], "path": ["appeals"] },
+            "description": "Lists fundraising appeals. Modeled endpoint - see review.yml."
+          }
+        }
+      ]
+    }
+  ]
+}

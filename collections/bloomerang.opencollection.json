@@ -1,0 +1,279 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bloomerang REST API v2",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-Api-Key",
+      "value": "{{apiKey}}",
+      "in": "header"
+    }
+  },
+  "items": [
+    {
+      "info": { "name": "Constituents", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "List constituents.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.bloomerang.co/v2/constituents?skip=0&take=50" },
+          "docs": "Lists constituents, paginated with skip/take parameters."
+        },
+        {
+          "info": { "name": "Create a constituent.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/constituents",
+            "body": { "type": "json", "data": "{\n  \"Type\": \"Individual\",\n  \"FirstName\": \"Ada\",\n  \"LastName\": \"Lovelace\"\n}" }
+          },
+          "docs": "Creates a new constituent record."
+        },
+        {
+          "info": { "name": "Search constituents.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/constituents/search?search=Lovelace",
+            "params": [
+              { "name": "search", "value": "Lovelace", "type": "query", "description": "Search term, e.g. a constituent's name." }
+            ]
+          },
+          "docs": "Full-text search across constituent names and identifying fields."
+        },
+        {
+          "info": { "name": "Retrieve a constituent.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/constituents/:id",
+            "params": [ { "name": "id", "value": "", "type": "path", "description": "The ID of the constituent." } ]
+          },
+          "docs": "Retrieves a constituent by ID."
+        },
+        {
+          "info": { "name": "Update a constituent.", "type": "http" },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.bloomerang.co/v2/constituents/:id",
+            "params": [ { "name": "id", "value": "", "type": "path", "description": "The ID of the constituent." } ],
+            "body": { "type": "json", "data": "{}" }
+          },
+          "docs": "Updates fields on an existing constituent."
+        },
+        {
+          "info": { "name": "Get a constituent's timeline.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/constituents/:id/timeline",
+            "params": [ { "name": "id", "value": "", "type": "path", "description": "The ID of the constituent." } ]
+          },
+          "docs": "Retrieves the combined notes/interactions/donations/tasks timeline for a constituent."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Households", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "Create a household.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/households",
+            "body": { "type": "json", "data": "{\n  \"Name\": \"The Lovelace Household\",\n  \"MemberIds\": []\n}" }
+          },
+          "docs": "Creates a household constituent grouping one or more individual constituent members. Modeled endpoint - see review.yml."
+        },
+        {
+          "info": { "name": "Retrieve a household.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/households/:id",
+            "params": [ { "name": "id", "value": "", "type": "path", "description": "The ID of the household." } ]
+          },
+          "docs": "Retrieves a household by ID. Modeled endpoint - see review.yml."
+        },
+        {
+          "info": { "name": "Update a household.", "type": "http" },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.bloomerang.co/v2/households/:id",
+            "params": [ { "name": "id", "value": "", "type": "path", "description": "The ID of the household." } ],
+            "body": { "type": "json", "data": "{}" }
+          },
+          "docs": "Updates household membership or details. Modeled endpoint - see review.yml."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Transactions", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "List transactions.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.bloomerang.co/v2/transactions?skip=0&take=50" },
+          "docs": "Lists transactions, paginated with skip/take parameters."
+        },
+        {
+          "info": { "name": "Create a transaction.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/transactions",
+            "body": { "type": "json", "data": "{\n  \"AccountId\": 1,\n  \"Date\": \"2026-07-03\",\n  \"Method\": \"CreditCard\",\n  \"Designations\": [ { \"Type\": \"Donation\", \"FundId\": 1, \"Amount\": 100.00 } ]\n}" }
+          },
+          "docs": "Creates a transaction split into one or more designations against a fund and constituent."
+        },
+        {
+          "info": { "name": "Retrieve a transaction.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/transactions/:id",
+            "params": [ { "name": "id", "value": "", "type": "path", "description": "The ID of the transaction." } ]
+          },
+          "docs": "Retrieves a transaction by ID."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Interactions", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "List interactions.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.bloomerang.co/v2/interactions?skip=0&take=50" },
+          "docs": "Lists interactions, paginated with skip/take parameters."
+        },
+        {
+          "info": { "name": "Create an interaction.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/interactions",
+            "body": { "type": "json", "data": "{\n  \"AccountId\": 1,\n  \"Date\": \"2026-07-03\",\n  \"Channel\": \"Email\",\n  \"Purpose\": \"Thank you\"\n}" }
+          },
+          "docs": "Creates an interaction - a logged touch between the organization and a constituent."
+        },
+        {
+          "info": { "name": "Retrieve an interaction.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/interactions/:id",
+            "params": [ { "name": "id", "value": "", "type": "path", "description": "The ID of the interaction." } ]
+          },
+          "docs": "Retrieves an interaction by ID."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Notes", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "Create a note.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/notes",
+            "body": { "type": "json", "data": "{\n  \"AccountId\": 1,\n  \"Note\": \"Met at the annual gala.\",\n  \"Date\": \"2026-07-03\"\n}" }
+          },
+          "docs": "Creates a freeform note attached to a constituent. Modeled endpoint - see review.yml."
+        },
+        {
+          "info": { "name": "Retrieve a note.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/notes/:id",
+            "params": [ { "name": "id", "value": "", "type": "path", "description": "The ID of the note." } ]
+          },
+          "docs": "Retrieves a note by ID. Modeled endpoint - see review.yml."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Relationships", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "List a constituent's relationships.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/constituents/:id/relationships",
+            "params": [ { "name": "id", "value": "", "type": "path", "description": "The ID of the constituent." } ]
+          },
+          "docs": "Lists the relationships a constituent has to other constituents."
+        },
+        {
+          "info": { "name": "Create a relationship.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/constituents/:id/relationships",
+            "params": [ { "name": "id", "value": "", "type": "path", "description": "The ID of the constituent." } ],
+            "body": { "type": "json", "data": "{\n  \"AccountId2\": 2,\n  \"RelationshipRole1\": \"Spouse\",\n  \"RelationshipRole2\": \"Spouse\"\n}" }
+          },
+          "docs": "Creates a relationship between the given constituent and another constituent."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Custom Fields", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "List custom field definitions.", "type": "http" },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/customFields/:type",
+            "params": [ { "name": "type", "value": "Constituent", "type": "path", "description": "The object type: Constituent, Transaction, Interaction, or Note." } ]
+          },
+          "docs": "Lists the custom field definitions configured for a given object type."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Webhooks", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "List webhook subscriptions.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.bloomerang.co/v2/webhooks" },
+          "docs": "Lists the webhook subscriptions registered for the account."
+        },
+        {
+          "info": { "name": "Register a webhook subscription.", "type": "http" },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/webhooks",
+            "body": { "type": "json", "data": "{\n  \"url\": \"https://your-server.example.com/webhook\",\n  \"event\": \"constituent.created\",\n  \"active\": true\n}" }
+          },
+          "docs": "Registers a webhook subscription that receives an HTTP callback when the given event occurs."
+        },
+        {
+          "info": { "name": "Delete a webhook subscription.", "type": "http" },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.bloomerang.co/v2/webhooks/:id",
+            "params": [ { "name": "id", "value": "", "type": "path", "description": "The ID of the webhook subscription." } ]
+          },
+          "docs": "Removes a webhook subscription."
+        }
+      ]
+    },
+    {
+      "info": { "name": "Reference Data", "type": "folder" },
+      "items": [
+        {
+          "info": { "name": "List CRM users.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.bloomerang.co/v2/users" },
+          "docs": "Lists the CRM users on the account. Modeled endpoint - see review.yml."
+        },
+        {
+          "info": { "name": "List funds.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.bloomerang.co/v2/funds" },
+          "docs": "Lists the funds available as transaction designations. Modeled endpoint - see review.yml."
+        },
+        {
+          "info": { "name": "List campaigns.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.bloomerang.co/v2/campaigns" },
+          "docs": "Lists fundraising campaigns. Modeled endpoint - see review.yml."
+        },
+        {
+          "info": { "name": "List appeals.", "type": "http" },
+          "http": { "method": "GET", "url": "https://api.bloomerang.co/v2/appeals" },
+          "docs": "Lists fundraising appeals. Modeled endpoint - see review.yml."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

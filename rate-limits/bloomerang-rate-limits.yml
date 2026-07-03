@@ -1,0 +1,62 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Bloomerang
+providerId: bloomerang
+created: '2026-07-03'
+modified: '2026-07-03'
+reconciled: false
+tags:
+- Nonprofit
+- Donor Management
+- CRM
+- Rate Limiting
+- Quotas
+description: >-
+  Bloomerang does not publish fixed numeric rate limits (requests per second
+  or per minute) for the REST API v2 in its public documentation. List
+  endpoints such as Constituents, Transactions, and Interactions are paginated
+  with skip/take query parameters (take defaults to 50 records per page in
+  documented and third-party client behavior). Because Bloomerang has no
+  sandbox environment, all API testing and integration development runs
+  against a live production account, which in practice encourages
+  conservative, well-paced request patterns rather than aggressive polling.
+notes: >-
+  No documented numeric ceiling on requests per key or per account was found
+  as of the review date. Clients should still expect and handle 429 Too Many
+  Requests responses defensively with backoff, since most hosted REST APIs
+  reserve the right to throttle abusive traffic even without a published
+  number. Verify current limits directly with Bloomerang support during
+  reconciliation.
+sources:
+- https://bloomerang.com/api/rest-api
+- https://bloomerang.com/api
+- https://github.com/chiperific/bloomerang_api
+responseCodes:
+  throttled: 429
+limits:
+- name: REST API v2 Requests
+  scope: account
+  metric: requests
+  limit: not published
+  notes: No fixed numeric request-rate limit is documented for the REST API v2.
+- name: List Endpoint Page Size
+  scope: request
+  metric: records
+  limit: 50 (default), configurable via take
+  notes: Constituents, Transactions, and Interactions list endpoints are paginated with skip/take query parameters.
+- name: Webhook Delivery Retries
+  scope: subscription
+  metric: deliveries
+  limit: not published
+  notes: Retry/backoff behavior for failed webhook deliveries is not documented.
+policies:
+- name: Sandbox-Free Testing
+  description: Bloomerang offers no sandbox environment, so all integration development and testing occurs against live production data.
+- name: Backoff Strategy
+  description: Clients should implement exponential backoff with jitter and honor Retry-After on any 429 responses, even without a published numeric limit.
+- name: Private Key Secrecy
+  description: The private API key grants full read/write access to the account and must be kept secret; Bloomerang recommends OAuth registration for third-party access scenarios instead of sharing a private key.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
