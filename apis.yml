@@ -191,6 +191,12 @@ apis:
     and appeals - used to populate designations on transactions and to attribute
     activity to a specific staff user.
 common:
+- type: TrustCenter
+  url: security/bloomerang-trust-center.yml
+- type: DomainSecurity
+  url: security/bloomerang-domain-security.yml
+- type: Authentication
+  url: authentication/bloomerang-authentication.yml
 - type: OAuthScopes
   url: scopes/bloomerang-scopes.yml
 - type: GitHubOrganization
