@@ -1,0 +1,19 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/bloomerang-openapi.yml
+schemes:
+- name: oauth2Bearer
+  source: openapi/bloomerang-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://crm.bloomerang.co/oauth/authorize
+    tokenUrl: https://api.bloomerang.co/v2/oauth/token
+  description: 'OAuth 2.0 access token for third-party applications, presented as `Authorization:
+    Bearer {access_token}`.'
+scopes:
+- scope: api
+  description: Full read/write access to account data.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/bloomerang-openapi.yml

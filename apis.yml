@@ -191,6 +191,8 @@ apis:
     and appeals - used to populate designations on transactions and to attribute
     activity to a specific staff user.
 common:
+- type: OAuthScopes
+  url: scopes/bloomerang-scopes.yml
 - type: GitHubOrganization
   url: https://github.com/Bloomerang
 - type: LinkedIn
@@ -205,6 +207,8 @@ common:
   url: rate-limits/bloomerang-rate-limits.yml
 - type: FinOps
   url: finops/bloomerang-finops.yml
+- url: https://bloomerang.com/blog
+  type: Blog
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
