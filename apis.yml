@@ -191,6 +191,8 @@ apis:
     and appeals - used to populate designations on transactions and to attribute
     activity to a specific staff user.
 common:
+- type: AgenticAccess
+  url: agentic-access/bloomerang-agentic-access.yml
 - type: TrustCenter
   url: security/bloomerang-trust-center.yml
 - type: DomainSecurity
