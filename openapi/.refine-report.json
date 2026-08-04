@@ -1,0 +1,30 @@
+{
+  "provider": "bloomerang",
+  "sources": [
+    "bloomerang-constituents-api-openapi.yml",
+    "bloomerang-custom-fields-api-openapi.yml",
+    "bloomerang-households-api-openapi.yml",
+    "bloomerang-interactions-api-openapi.yml",
+    "bloomerang-notes-api-openapi.yml",
+    "bloomerang-reference-data-api-openapi.yml",
+    "bloomerang-relationships-api-openapi.yml",
+    "bloomerang-transactions-api-openapi.yml",
+    "bloomerang-webhooks-api-openapi.yml"
+  ],
+  "outputs": [
+    "bloomerang-constituents-api-openapi.yml",
+    "bloomerang-custom-fields-api-openapi.yml",
+    "bloomerang-households-api-openapi.yml",
+    "bloomerang-interactions-api-openapi.yml",
+    "bloomerang-notes-api-openapi.yml",
+    "bloomerang-reference-data-api-openapi.yml",
+    "bloomerang-relationships-api-openapi.yml",
+    "bloomerang-transactions-api-openapi.yml",
+    "bloomerang-webhooks-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
