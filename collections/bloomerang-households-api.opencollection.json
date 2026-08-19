@@ -1,0 +1,83 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bloomerang REST API v2 Constituents Households API",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-Api-Key",
+      "value": "{{X-Api-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Households",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a household",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/households",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a household constituent grouping one or more individual constituent members. Endpoint modeled from Bloomerang REST API v1 household resource parity; not independently confirmed for v2 - see review.yml."
+        },
+        {
+          "info": {
+            "name": "Retrieve a household",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/households/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the household constituent."
+              }
+            ]
+          },
+          "docs": "Retrieves a household by ID. Endpoint modeled from Bloomerang REST API v1 household resource parity - see review.yml."
+        },
+        {
+          "info": {
+            "name": "Update a household",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.bloomerang.co/v2/households/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the household constituent."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates household membership or details. Endpoint modeled from Bloomerang REST API v1 household resource parity - see review.yml."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

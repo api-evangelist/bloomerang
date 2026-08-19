@@ -1,0 +1,60 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bloomerang REST API v2 Constituents Notes API",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-Api-Key",
+      "value": "{{X-Api-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Notes",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a note",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/notes",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a freeform note attached to a constituent, optionally with file attachment IDs. Endpoint path modeled from Bloomerang's documented Note object and AttachmentIds property - see review.yml."
+        },
+        {
+          "info": {
+            "name": "Retrieve a note",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/notes/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the note."
+              }
+            ]
+          },
+          "docs": "Retrieves a note by ID. Endpoint modeled from Bloomerang's documented Note object - see review.yml."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

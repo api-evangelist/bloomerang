@@ -1,0 +1,602 @@
+{
+  "item": [
+    {
+      "id": "acec0284-165b-49ec-9fe6-8a00cd1bf830",
+      "name": "Interactions",
+      "description": {
+        "content": "Logged touches between the organization and a constituent.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "8723792d-f3de-4cdd-9916-81fb1c27bd27",
+          "name": "List interactions",
+          "request": {
+            "name": "List interactions",
+            "description": {
+              "content": "Lists interactions, paginated with skip/take parameters.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "interactions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "skip",
+                  "value": "0",
+                  "description": "Number of records to skip, for pagination."
+                },
+                {
+                  "disabled": false,
+                  "key": "take",
+                  "value": "50",
+                  "description": "Number of records to return, for pagination."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "01f1332c-e298-494b-b2ec-6398d95c6bcb",
+              "name": "A page of interactions.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "interactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "skip",
+                      "value": "0"
+                    },
+                    {
+                      "key": "take",
+                      "value": "50"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Results\": [\n    {\n      \"AccountId\": 663,\n      \"Date\": \"1960-06-14\",\n      \"Channel\": \"Letter\",\n      \"Purpose\": \"string\",\n      \"Note\": \"string\",\n      \"UserId\": 6246,\n      \"Id\": 2941\n    },\n    {\n      \"AccountId\": 606,\n      \"Date\": \"1950-11-16\",\n      \"Channel\": \"Email\",\n      \"Purpose\": \"string\",\n      \"Note\": \"string\",\n      \"UserId\": 1695,\n      \"Id\": 8039\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "81d729dd-8aca-4ce5-bcdd-93ac2943c600",
+              "name": "Missing or invalid API key / access token.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "interactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "skip",
+                      "value": "0"
+                    },
+                    {
+                      "key": "take",
+                      "value": "50"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"Errors\": [\n    \"string\",\n    \"string\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a1bdeaaa-eb38-421a-b52d-0dadc6426c9b",
+          "name": "Create an interaction",
+          "request": {
+            "name": "Create an interaction",
+            "description": {
+              "content": "Creates an interaction - a logged touch (call, meeting, letter, email) between the organization and a constituent.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "interactions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Channel\": \"<string>\",\n  \"Purpose\": \"<string>\",\n  \"Note\": \"<string>\",\n  \"UserId\": \"<integer>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "09b86e91-8a5d-452c-ae8e-42a1b5fe7d87",
+              "name": "The created interaction.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "interactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Channel\": \"<string>\",\n  \"Purpose\": \"<string>\",\n  \"Note\": \"<string>\",\n  \"UserId\": \"<integer>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Channel\": \"<string>\",\n  \"Purpose\": \"<string>\",\n  \"Note\": \"<string>\",\n  \"UserId\": \"<integer>\",\n  \"Id\": 2021\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9b624a29-d201-4a09-97cb-0eacd48bc32d",
+              "name": "Missing or invalid API key / access token.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "interactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Channel\": \"<string>\",\n  \"Purpose\": \"<string>\",\n  \"Note\": \"<string>\",\n  \"UserId\": \"<integer>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"Errors\": [\n    \"string\",\n    \"string\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "1d605fb3-9be1-4560-8868-b2d9e570e0f3",
+              "name": "The request payload failed validation.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "interactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Channel\": \"<string>\",\n  \"Purpose\": \"<string>\",\n  \"Note\": \"<string>\",\n  \"UserId\": \"<integer>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"Errors\": [\n    \"string\",\n    \"string\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "883d6a4f-b1c8-45d3-923f-3f5a12652350",
+          "name": "Retrieve an interaction",
+          "request": {
+            "name": "Retrieve an interaction",
+            "description": {
+              "content": "Retrieves an interaction by ID.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "interactions",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<integer>",
+                  "key": "id",
+                  "description": "(Required) The ID of the interaction."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "88e29282-dfad-4ffe-af62-15211b4d4f7a",
+              "name": "The requested interaction.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "interactions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "id",
+                      "description": "(Required) The ID of the interaction."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Channel\": \"<string>\",\n  \"Purpose\": \"<string>\",\n  \"Note\": \"<string>\",\n  \"UserId\": \"<integer>\",\n  \"Id\": 2021\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d9959b84-3bb8-42e7-9869-d24be397d985",
+              "name": "Missing or invalid API key / access token.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "interactions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "id",
+                      "description": "(Required) The ID of the interaction."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"Errors\": [\n    \"string\",\n    \"string\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "363f9d54-f2c3-4159-9f50-9fe8985e19c9",
+              "name": "The requested resource was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "interactions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "id",
+                      "description": "(Required) The ID of the interaction."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"Errors\": [\n    \"string\",\n    \"string\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.bloomerang.co/v2",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-Api-Key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "f5c36606-84fe-4b7e-be5f-a60f624217f3",
+    "name": "Bloomerang REST API v2 Constituents Interactions API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Bloomerang REST API v2 is a private-key, server-to-server API for reading and writing data in a Bloomerang donor management CRM account - constituents, transactions (donations, pledges, recurring donations), interactions, notes, relationships, and webhook subscriptions. Requests are authenticated with either a private API key sent in the X-Api-Key header (generated by an Administrator user under User Settings) or an OAuth 2.0 access token for third-party applications. Bloomerang does not offer a sandbox environment - all requests operate against production data. Endpoints for Constituents, Transactions, and Interactions are directly confirmed in Bloomerang's public documentation and third-party integration guides; endpoints for Households, Notes, Relationships, Custom Fields, Webhooks, Users, Funds, Campaigns, and Appeals are modeled from Bloomerang's REST API v1 resource parity, community client libraries, and CRM feature documentation, since Bloomerang does not publish a complete, versioned OpenAPI/Swagger document for v2. See review.yml in this repository for the endpointsConfirmed vs endpointsModeled breakdown.\n\nContact Support:\n Name: Bloomerang",
+      "type": "text/plain"
+    }
+  }
+}

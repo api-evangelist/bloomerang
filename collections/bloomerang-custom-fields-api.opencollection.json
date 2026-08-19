@@ -1,0 +1,45 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bloomerang REST API v2 Constituents Custom Fields API",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-Api-Key",
+      "value": "{{X-Api-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Custom Fields",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List custom field definitions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/customFields/:type",
+            "params": [
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The object type to fetch custom field definitions for, e.g. Constituent, Transaction, Interaction, or Note."
+              }
+            ]
+          },
+          "docs": "Lists the custom field definitions configured for a given object type."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,85 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bloomerang REST API v2 Constituents Transactions API",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-Api-Key",
+      "value": "{{X-Api-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Transactions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List transactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/transactions",
+            "params": [
+              {
+                "name": "skip",
+                "value": "",
+                "type": "query",
+                "description": "Number of records to skip, for pagination."
+              },
+              {
+                "name": "take",
+                "value": "",
+                "type": "query",
+                "description": "Number of records to return, for pagination."
+              }
+            ]
+          },
+          "docs": "Lists transactions, paginated with skip/take parameters."
+        },
+        {
+          "info": {
+            "name": "Create a transaction",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/transactions",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a transaction - the total amount of a payment - split into one or more designations (Donation, Pledge, PledgePayment, RecurringDonation, RecurringDonationPayment) against a fund and constituent."
+        },
+        {
+          "info": {
+            "name": "Retrieve a transaction",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/transactions/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the transaction."
+              }
+            ]
+          },
+          "docs": "Retrieves a transaction by ID."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

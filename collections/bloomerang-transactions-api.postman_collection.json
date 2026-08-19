@@ -1,0 +1,602 @@
+{
+  "item": [
+    {
+      "id": "81ee1998-0575-4b8f-8565-0f543e74b831",
+      "name": "Transactions",
+      "description": {
+        "content": "Donations, pledges, pledge payments, and recurring donation designations.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "a9b8376a-f319-4ed9-a0fe-662eed476ed0",
+          "name": "List transactions",
+          "request": {
+            "name": "List transactions",
+            "description": {
+              "content": "Lists transactions, paginated with skip/take parameters.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "transactions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "skip",
+                  "value": "0",
+                  "description": "Number of records to skip, for pagination."
+                },
+                {
+                  "disabled": false,
+                  "key": "take",
+                  "value": "50",
+                  "description": "Number of records to return, for pagination."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "7b534943-a451-4edd-b35e-c1286078321e",
+              "name": "A page of transactions.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "skip",
+                      "value": "0"
+                    },
+                    {
+                      "key": "take",
+                      "value": "50"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Results\": [\n    {\n      \"AccountId\": 9682,\n      \"Date\": \"1988-10-10\",\n      \"Designations\": [\n        {\n          \"Type\": \"RecurringDonation\",\n          \"FundId\": 9529,\n          \"CampaignId\": 7102,\n          \"AppealId\": 7277,\n          \"Amount\": 1616.831014734046\n        },\n        {\n          \"Type\": \"RecurringDonationPayment\",\n          \"FundId\": 268,\n          \"CampaignId\": 5373,\n          \"AppealId\": 2266,\n          \"Amount\": 5435.227429097907\n        }\n      ],\n      \"Method\": \"AchDebit\",\n      \"Id\": 4822,\n      \"CreatedDate\": \"2018-07-16T11:13:39.623Z\"\n    },\n    {\n      \"AccountId\": 7237,\n      \"Date\": \"1960-03-30\",\n      \"Designations\": [\n        {\n          \"Type\": \"Pledge\",\n          \"FundId\": 2998,\n          \"CampaignId\": 144,\n          \"AppealId\": 7447,\n          \"Amount\": 1608.8983754448816\n        },\n        {\n          \"Type\": \"PledgePayment\",\n          \"FundId\": 7770,\n          \"CampaignId\": 1485,\n          \"AppealId\": 8837,\n          \"Amount\": 5772.041668148209\n        }\n      ],\n      \"Method\": \"Other\",\n      \"Id\": 6459,\n      \"CreatedDate\": \"1955-03-20T04:14:53.295Z\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c750c614-2ef8-4008-bb0f-2b61e3db15ad",
+              "name": "Missing or invalid API key / access token.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "skip",
+                      "value": "0"
+                    },
+                    {
+                      "key": "take",
+                      "value": "50"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"Errors\": [\n    \"string\",\n    \"string\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "39bb1a48-f62d-4ae7-bb65-c97f91c59c0b",
+          "name": "Create a transaction",
+          "request": {
+            "name": "Create a transaction",
+            "description": {
+              "content": "Creates a transaction - the total amount of a payment - split into one or more designations (Donation, Pledge, PledgePayment, RecurringDonation, RecurringDonationPayment) against a fund and constituent.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "transactions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Designations\": [\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    },\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    }\n  ],\n  \"Method\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "8b761ee9-c774-497e-81c5-626956a627b1",
+              "name": "The created transaction.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Designations\": [\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    },\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    }\n  ],\n  \"Method\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Designations\": [\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    },\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    }\n  ],\n  \"Method\": \"<string>\",\n  \"Id\": 7935,\n  \"CreatedDate\": \"1973-04-16T08:44:05.895Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "921975e1-5d80-42f6-bb92-83e03eff353f",
+              "name": "Missing or invalid API key / access token.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Designations\": [\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    },\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    }\n  ],\n  \"Method\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"Errors\": [\n    \"string\",\n    \"string\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "67a0d603-4063-4552-9003-7f1f66c8d3c6",
+              "name": "The request payload failed validation.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Designations\": [\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    },\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    }\n  ],\n  \"Method\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"Errors\": [\n    \"string\",\n    \"string\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "799b53ad-8e1b-421f-ad42-6eeeb391c74c",
+          "name": "Retrieve a transaction",
+          "request": {
+            "name": "Retrieve a transaction",
+            "description": {
+              "content": "Retrieves a transaction by ID.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "transactions",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<integer>",
+                  "key": "id",
+                  "description": "(Required) The ID of the transaction."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "49b884d1-3bf4-4a68-84e8-ec430fc14a28",
+              "name": "The requested transaction.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "transactions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "id",
+                      "description": "(Required) The ID of the transaction."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"AccountId\": \"<integer>\",\n  \"Date\": \"<date>\",\n  \"Designations\": [\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    },\n    {\n      \"Type\": \"<string>\",\n      \"FundId\": \"<integer>\",\n      \"CampaignId\": \"<integer>\",\n      \"AppealId\": \"<integer>\",\n      \"Amount\": \"<double>\"\n    }\n  ],\n  \"Method\": \"<string>\",\n  \"Id\": 7935,\n  \"CreatedDate\": \"1973-04-16T08:44:05.895Z\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a26140b4-db46-4bcd-a552-8a3e842cf2e3",
+              "name": "Missing or invalid API key / access token.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "transactions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "id",
+                      "description": "(Required) The ID of the transaction."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"Errors\": [\n    \"string\",\n    \"string\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "c77d787e-3fe9-4934-ba05-b9d745baa4d1",
+              "name": "The requested resource was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "transactions",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<integer>",
+                      "key": "id",
+                      "description": "(Required) The ID of the transaction."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "X-Api-Key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Message\": \"string\",\n  \"Errors\": [\n    \"string\",\n    \"string\"\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.bloomerang.co/v2",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-Api-Key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "header"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "54017073-ead8-4bcb-a728-1c526d6dd1f2",
+    "name": "Bloomerang REST API v2 Constituents Transactions API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Bloomerang REST API v2 is a private-key, server-to-server API for reading and writing data in a Bloomerang donor management CRM account - constituents, transactions (donations, pledges, recurring donations), interactions, notes, relationships, and webhook subscriptions. Requests are authenticated with either a private API key sent in the X-Api-Key header (generated by an Administrator user under User Settings) or an OAuth 2.0 access token for third-party applications. Bloomerang does not offer a sandbox environment - all requests operate against production data. Endpoints for Constituents, Transactions, and Interactions are directly confirmed in Bloomerang's public documentation and third-party integration guides; endpoints for Households, Notes, Relationships, Custom Fields, Webhooks, Users, Funds, Campaigns, and Appeals are modeled from Bloomerang's REST API v1 resource parity, community client libraries, and CRM feature documentation, since Bloomerang does not publish a complete, versioned OpenAPI/Swagger document for v2. See review.yml in this repository for the endpointsConfirmed vs endpointsModeled breakdown.\n\nContact Support:\n Name: Bloomerang",
+      "type": "text/plain"
+    }
+  }
+}

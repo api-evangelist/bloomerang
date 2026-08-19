@@ -1,0 +1,85 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bloomerang REST API v2 Constituents Interactions API",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-Api-Key",
+      "value": "{{X-Api-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Interactions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List interactions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/interactions",
+            "params": [
+              {
+                "name": "skip",
+                "value": "",
+                "type": "query",
+                "description": "Number of records to skip, for pagination."
+              },
+              {
+                "name": "take",
+                "value": "",
+                "type": "query",
+                "description": "Number of records to return, for pagination."
+              }
+            ]
+          },
+          "docs": "Lists interactions, paginated with skip/take parameters."
+        },
+        {
+          "info": {
+            "name": "Create an interaction",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/interactions",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates an interaction - a logged touch (call, meeting, letter, email) between the organization and a constituent."
+        },
+        {
+          "info": {
+            "name": "Retrieve an interaction",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/interactions/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the interaction."
+              }
+            ]
+          },
+          "docs": "Retrieves an interaction by ID."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

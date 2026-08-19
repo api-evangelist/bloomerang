@@ -1,0 +1,70 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bloomerang REST API v2 Constituents Reference Data API",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-Api-Key",
+      "value": "{{X-Api-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Reference Data",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List CRM users",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/users"
+          },
+          "docs": "Lists the CRM users on the account, for attributing interactions and tasks. Endpoint modeled from Bloomerang REST API v1 User resource parity - see review.yml."
+        },
+        {
+          "info": {
+            "name": "List funds",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/funds"
+          },
+          "docs": "Lists the funds available as transaction designations. Endpoint modeled from Bloomerang REST API v1 Fund resource parity - see review.yml."
+        },
+        {
+          "info": {
+            "name": "List campaigns",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/campaigns"
+          },
+          "docs": "Lists fundraising campaigns. Endpoint modeled from Bloomerang REST API v1 Campaign resource parity - see review.yml."
+        },
+        {
+          "info": {
+            "name": "List appeals",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/appeals"
+          },
+          "docs": "Lists fundraising appeals. Endpoint modeled from Bloomerang REST API v1 Appeal resource parity - see review.yml."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

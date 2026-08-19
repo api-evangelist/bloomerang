@@ -1,0 +1,158 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bloomerang REST API v2 Constituents API",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-Api-Key",
+      "value": "{{X-Api-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Constituents",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List constituents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/constituents",
+            "params": [
+              {
+                "name": "skip",
+                "value": "",
+                "type": "query",
+                "description": "Number of records to skip, for pagination."
+              },
+              {
+                "name": "take",
+                "value": "",
+                "type": "query",
+                "description": "Number of records to return, for pagination."
+              }
+            ]
+          },
+          "docs": "Lists constituents, paginated with skip/take parameters."
+        },
+        {
+          "info": {
+            "name": "Create a constituent",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/constituents",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a new constituent record."
+        },
+        {
+          "info": {
+            "name": "Search constituents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/constituents/search",
+            "params": [
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Search term, e.g. a constituent's name."
+              },
+              {
+                "name": "skip",
+                "value": "",
+                "type": "query",
+                "description": "Number of records to skip, for pagination."
+              },
+              {
+                "name": "take",
+                "value": "",
+                "type": "query",
+                "description": "Number of records to return, for pagination."
+              }
+            ]
+          },
+          "docs": "Full-text search across constituent names and identifying fields."
+        },
+        {
+          "info": {
+            "name": "Retrieve a constituent",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/constituents/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the constituent."
+              }
+            ]
+          },
+          "docs": "Retrieves a constituent by ID."
+        },
+        {
+          "info": {
+            "name": "Update a constituent",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.bloomerang.co/v2/constituents/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the constituent."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Updates fields on an existing constituent."
+        },
+        {
+          "info": {
+            "name": "Get a constituent's timeline",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/constituents/:id/timeline",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the constituent."
+              }
+            ]
+          },
+          "docs": "Retrieves the combined engagement timeline for a constituent - notes, interactions, donations, recurring donations, recurring donation payments, pledges, pledge payments, and tasks."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

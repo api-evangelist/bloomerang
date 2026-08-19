@@ -1,0 +1,68 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Bloomerang REST API v2 Constituents Relationships API",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "X-Api-Key",
+      "value": "{{X-Api-Key}}",
+      "placement": "header"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Relationships",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List a constituent's relationships",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.bloomerang.co/v2/constituents/:id/relationships",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the constituent."
+              }
+            ]
+          },
+          "docs": "Lists the relationships a constituent has to other constituents."
+        },
+        {
+          "info": {
+            "name": "Create a relationship",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.bloomerang.co/v2/constituents/:id/relationships",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the constituent."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates a relationship between the given constituent and another constituent."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
