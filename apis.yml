@@ -31,7 +31,7 @@ tags:
 - Fundraising Software
 created: '2026-07-03'
 modified: '2026-07-03'
-specificationVersion: '0.19'
+specificationVersion: '0.23'
 apis:
 - aid: bloomerang:bloomerang-constituents-api
   name: Bloomerang Constituents API
