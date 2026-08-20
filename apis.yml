@@ -24,6 +24,12 @@ accessModel:
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/bloomerang.png
 tags:
+- Non-Profit
+- Donor Management
+- CRM
+- Fundraising
+- Fundraising Software
+tags_raw:
 - Nonprofit
 - Donor Management
 - CRM
@@ -123,6 +129,8 @@ apis:
   humanURL: https://bloomerang.com/api/rest-api
   baseURL: https://api.bloomerang.co/v2
   tags:
+  - Transaction
+  tags_raw:
   - Transactions
   properties:
   - type: OpenAPI
@@ -135,6 +143,8 @@ apis:
   humanURL: https://bloomerang.com/api/rest-api
   baseURL: https://api.bloomerang.co/v2
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
