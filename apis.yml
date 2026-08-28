@@ -9,6 +9,18 @@ description: Bloomerang is a cloud-based donor management and fundraising CRM bu
   API and product line; this entry documents Bloomerang's own REST API v2 (base
   https://api.bloomerang.co/v2), authenticated with a private API key or OAuth 2.0,
   for managing constituents, transactions, interactions, and related donor data.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: paid
   onboarding: self-serve
