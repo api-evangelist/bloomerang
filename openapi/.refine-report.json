@@ -1,15 +1,7 @@
 {
   "provider": "bloomerang",
   "sources": [
-    "bloomerang-constituents-api-openapi.yml",
-    "bloomerang-custom-fields-api-openapi.yml",
-    "bloomerang-households-api-openapi.yml",
-    "bloomerang-interactions-api-openapi.yml",
-    "bloomerang-notes-api-openapi.yml",
-    "bloomerang-reference-data-api-openapi.yml",
-    "bloomerang-relationships-api-openapi.yml",
-    "bloomerang-transactions-api-openapi.yml",
-    "bloomerang-webhooks-api-openapi.yml"
+    "_original/bloomerang-openapi.yml"
   ],
   "outputs": [
     "bloomerang-constituents-api-openapi.yml",
@@ -25,6 +17,20 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "bloomerang-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "bloomerang-constituents-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bloomerang-custom-fields-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bloomerang-households-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bloomerang-interactions-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bloomerang-notes-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bloomerang-reference-data-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bloomerang-relationships-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bloomerang-transactions-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "bloomerang-webhooks-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
