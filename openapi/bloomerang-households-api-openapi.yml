@@ -97,15 +97,6 @@ components:
         properties:
           Id:
             type: integer
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
     HouseholdInput:
       type: object
       required:
@@ -131,9 +122,18 @@ components:
               type: string
             Country:
               type: string
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+        Errors:
+          type: array
+          items:
+            type: string
   responses:
-    ValidationError:
-      description: The request payload failed validation.
+    Unauthorized:
+      description: Missing or invalid API key / access token.
       content:
         application/json:
           schema:
@@ -144,8 +144,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
+    ValidationError:
+      description: The request payload failed validation.
       content:
         application/json:
           schema:

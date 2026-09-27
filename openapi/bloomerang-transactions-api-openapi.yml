@@ -90,25 +90,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    Transaction:
-      allOf:
-      - $ref: '#/components/schemas/TransactionInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-          CreatedDate:
-            type: string
-            format: date-time
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
     TransactionInput:
       type: object
       required:
@@ -152,26 +133,28 @@ components:
               Amount:
                 type: number
                 format: double
-  parameters:
-    Take:
-      name: take
-      in: query
-      required: false
-      description: Number of records to return, for pagination.
-      schema:
-        type: integer
-        default: 50
-    Skip:
-      name: skip
-      in: query
-      required: false
-      description: Number of records to skip, for pagination.
-      schema:
-        type: integer
-        default: 0
+    Transaction:
+      allOf:
+      - $ref: '#/components/schemas/TransactionInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+          CreatedDate:
+            type: string
+            format: date-time
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+        Errors:
+          type: array
+          items:
+            type: string
   responses:
-    ValidationError:
-      description: The request payload failed validation.
+    Unauthorized:
+      description: Missing or invalid API key / access token.
       content:
         application/json:
           schema:
@@ -182,12 +165,29 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
+    ValidationError:
+      description: The request payload failed validation.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+  parameters:
+    Skip:
+      name: skip
+      in: query
+      required: false
+      description: Number of records to skip, for pagination.
+      schema:
+        type: integer
+        default: 0
+    Take:
+      name: take
+      in: query
+      required: false
+      description: Number of records to return, for pagination.
+      schema:
+        type: integer
+        default: 50
   securitySchemes:
     apiKeyAuth:
       type: apiKey

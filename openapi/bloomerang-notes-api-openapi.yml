@@ -66,23 +66,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key / access token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
-    Note:
-      allOf:
-      - $ref: '#/components/schemas/NoteInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
     NoteInput:
       type: object
       required:
@@ -100,25 +103,22 @@ components:
           type: array
           items:
             type: integer
-  responses:
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+        Errors:
+          type: array
+          items:
+            type: string
+    Note:
+      allOf:
+      - $ref: '#/components/schemas/NoteInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
   securitySchemes:
     apiKeyAuth:
       type: apiKey

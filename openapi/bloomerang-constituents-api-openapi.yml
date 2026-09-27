@@ -162,6 +162,71 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
+    Constituent:
+      allOf:
+      - $ref: '#/components/schemas/ConstituentInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+          AccountNumber:
+            type: string
+          CreatedDate:
+            type: string
+            format: date-time
+          LastModifiedDate:
+            type: string
+            format: date-time
+    Interaction:
+      allOf:
+      - $ref: '#/components/schemas/InteractionInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+    TransactionInput:
+      type: object
+      required:
+      - AccountId
+      - Date
+      - Designations
+      properties:
+        AccountId:
+          type: integer
+          description: The constituent ID this transaction is attributed to.
+        Date:
+          type: string
+          format: date
+        Method:
+          type: string
+          enum:
+          - Cash
+          - Check
+          - CreditCard
+          - AchDebit
+          - Other
+        Designations:
+          type: array
+          items:
+            type: object
+            properties:
+              Type:
+                type: string
+                enum:
+                - Donation
+                - Pledge
+                - PledgePayment
+                - RecurringDonation
+                - RecurringDonationPayment
+              FundId:
+                type: integer
+              CampaignId:
+                type: integer
+              AppealId:
+                type: integer
+              Amount:
+                type: number
+                format: double
     Transaction:
       allOf:
       - $ref: '#/components/schemas/TransactionInput'
@@ -172,64 +237,6 @@ components:
           CreatedDate:
             type: string
             format: date-time
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
-    Interaction:
-      allOf:
-      - $ref: '#/components/schemas/InteractionInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-    ConstituentTimeline:
-      type: object
-      properties:
-        Id:
-          type: integer
-        Notes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Note'
-        Interactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Interaction'
-        Donations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Transaction'
-        RecurringDonations:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-        RecurringDonationPayments:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-        Pledges:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-        PledgePayments:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-        Tasks:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
     NoteInput:
       type: object
       required:
@@ -301,49 +308,6 @@ components:
           items:
             type: object
             additionalProperties: true
-    TransactionInput:
-      type: object
-      required:
-      - AccountId
-      - Date
-      - Designations
-      properties:
-        AccountId:
-          type: integer
-          description: The constituent ID this transaction is attributed to.
-        Date:
-          type: string
-          format: date
-        Method:
-          type: string
-          enum:
-          - Cash
-          - Check
-          - CreditCard
-          - AchDebit
-          - Other
-        Designations:
-          type: array
-          items:
-            type: object
-            properties:
-              Type:
-                type: string
-                enum:
-                - Donation
-                - Pledge
-                - PledgePayment
-                - RecurringDonation
-                - RecurringDonationPayment
-              FundId:
-                type: integer
-              CampaignId:
-                type: integer
-              AppealId:
-                type: integer
-              Amount:
-                type: number
-                format: double
     InteractionInput:
       type: object
       required:
@@ -370,6 +334,15 @@ components:
           type: string
         UserId:
           type: integer
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+        Errors:
+          type: array
+          items:
+            type: string
     Note:
       allOf:
       - $ref: '#/components/schemas/NoteInput'
@@ -377,21 +350,48 @@ components:
         properties:
           Id:
             type: integer
-    Constituent:
-      allOf:
-      - $ref: '#/components/schemas/ConstituentInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-          AccountNumber:
-            type: string
-          CreatedDate:
-            type: string
-            format: date-time
-          LastModifiedDate:
-            type: string
-            format: date-time
+    ConstituentTimeline:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+        Interactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Interaction'
+        Donations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+        RecurringDonations:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        RecurringDonationPayments:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        Pledges:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        PledgePayments:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        Tasks:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
   parameters:
     ConstituentId:
       name: id
@@ -400,14 +400,6 @@ components:
       description: The ID of the constituent.
       schema:
         type: integer
-    Take:
-      name: take
-      in: query
-      required: false
-      description: Number of records to return, for pagination.
-      schema:
-        type: integer
-        default: 50
     Skip:
       name: skip
       in: query
@@ -416,7 +408,21 @@ components:
       schema:
         type: integer
         default: 0
+    Take:
+      name: take
+      in: query
+      required: false
+      description: Number of records to return, for pagination.
+      schema:
+        type: integer
+        default: 50
   responses:
+    Unauthorized:
+      description: Missing or invalid API key / access token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     ValidationError:
       description: The request payload failed validation.
       content:
@@ -425,12 +431,6 @@ components:
             $ref: '#/components/schemas/Error'
     NotFound:
       description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
       content:
         application/json:
           schema:

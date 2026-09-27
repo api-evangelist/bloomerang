@@ -89,33 +89,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
-  parameters:
-    Take:
-      name: take
-      in: query
-      required: false
-      description: Number of records to return, for pagination.
-      schema:
-        type: integer
-        default: 50
-    Skip:
-      name: skip
-      in: query
-      required: false
-      description: Number of records to skip, for pagination.
-      schema:
-        type: integer
-        default: 0
   schemas:
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
     Interaction:
       allOf:
       - $ref: '#/components/schemas/InteractionInput'
@@ -149,9 +123,18 @@ components:
           type: string
         UserId:
           type: integer
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+        Errors:
+          type: array
+          items:
+            type: string
   responses:
-    ValidationError:
-      description: The request payload failed validation.
+    Unauthorized:
+      description: Missing or invalid API key / access token.
       content:
         application/json:
           schema:
@@ -162,12 +145,29 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
+    ValidationError:
+      description: The request payload failed validation.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+  parameters:
+    Skip:
+      name: skip
+      in: query
+      required: false
+      description: Number of records to skip, for pagination.
+      schema:
+        type: integer
+        default: 0
+    Take:
+      name: take
+      in: query
+      required: false
+      description: Number of records to return, for pagination.
+      schema:
+        type: integer
+        default: 50
   securitySchemes:
     apiKeyAuth:
       type: apiKey

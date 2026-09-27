@@ -84,14 +84,12 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
+    Webhook:
+      allOf:
+      - $ref: '#/components/schemas/WebhookInput'
+      - type: object
+        properties:
+          id:
             type: string
     WebhookInput:
       type: object
@@ -114,6 +112,15 @@ components:
         active:
           type: boolean
           default: true
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+        Errors:
+          type: array
+          items:
+            type: string
     DeleteResponse:
       type: object
       properties:
@@ -121,16 +128,9 @@ components:
           type: string
         Deleted:
           type: boolean
-    Webhook:
-      allOf:
-      - $ref: '#/components/schemas/WebhookInput'
-      - type: object
-        properties:
-          id:
-            type: string
   responses:
-    ValidationError:
-      description: The request payload failed validation.
+    Unauthorized:
+      description: Missing or invalid API key / access token.
       content:
         application/json:
           schema:
@@ -141,8 +141,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
+    ValidationError:
+      description: The request payload failed validation.
       content:
         application/json:
           schema:
