@@ -162,98 +162,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    Constituent:
-      allOf:
-      - $ref: '#/components/schemas/ConstituentInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-          AccountNumber:
-            type: string
-          CreatedDate:
-            type: string
-            format: date-time
-          LastModifiedDate:
-            type: string
-            format: date-time
-    Interaction:
-      allOf:
-      - $ref: '#/components/schemas/InteractionInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-    TransactionInput:
-      type: object
-      required:
-      - AccountId
-      - Date
-      - Designations
-      properties:
-        AccountId:
-          type: integer
-          description: The constituent ID this transaction is attributed to.
-        Date:
-          type: string
-          format: date
-        Method:
-          type: string
-          enum:
-          - Cash
-          - Check
-          - CreditCard
-          - AchDebit
-          - Other
-        Designations:
-          type: array
-          items:
-            type: object
-            properties:
-              Type:
-                type: string
-                enum:
-                - Donation
-                - Pledge
-                - PledgePayment
-                - RecurringDonation
-                - RecurringDonationPayment
-              FundId:
-                type: integer
-              CampaignId:
-                type: integer
-              AppealId:
-                type: integer
-              Amount:
-                type: number
-                format: double
-    Transaction:
-      allOf:
-      - $ref: '#/components/schemas/TransactionInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-          CreatedDate:
-            type: string
-            format: date-time
-    NoteInput:
-      type: object
-      required:
-      - AccountId
-      - Note
-      properties:
-        AccountId:
-          type: integer
-        Note:
-          type: string
-        Date:
-          type: string
-          format: date
-        AttachmentIds:
-          type: array
-          items:
-            type: integer
     ConstituentInput:
       type: object
       properties:
@@ -308,6 +216,16 @@ components:
           items:
             type: object
             additionalProperties: true
+    Transaction:
+      allOf:
+      - $ref: '#/components/schemas/TransactionInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+          CreatedDate:
+            type: string
+            format: date-time
     InteractionInput:
       type: object
       required:
@@ -343,13 +261,6 @@ components:
           type: array
           items:
             type: string
-    Note:
-      allOf:
-      - $ref: '#/components/schemas/NoteInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
     ConstituentTimeline:
       type: object
       properties:
@@ -392,6 +303,95 @@ components:
           items:
             type: object
             additionalProperties: true
+    Note:
+      allOf:
+      - $ref: '#/components/schemas/NoteInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+    Interaction:
+      allOf:
+      - $ref: '#/components/schemas/InteractionInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+    NoteInput:
+      type: object
+      required:
+      - AccountId
+      - Note
+      properties:
+        AccountId:
+          type: integer
+        Note:
+          type: string
+        Date:
+          type: string
+          format: date
+        AttachmentIds:
+          type: array
+          items:
+            type: integer
+    Constituent:
+      allOf:
+      - $ref: '#/components/schemas/ConstituentInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+          AccountNumber:
+            type: string
+          CreatedDate:
+            type: string
+            format: date-time
+          LastModifiedDate:
+            type: string
+            format: date-time
+    TransactionInput:
+      type: object
+      required:
+      - AccountId
+      - Date
+      - Designations
+      properties:
+        AccountId:
+          type: integer
+          description: The constituent ID this transaction is attributed to.
+        Date:
+          type: string
+          format: date
+        Method:
+          type: string
+          enum:
+          - Cash
+          - Check
+          - CreditCard
+          - AchDebit
+          - Other
+        Designations:
+          type: array
+          items:
+            type: object
+            properties:
+              Type:
+                type: string
+                enum:
+                - Donation
+                - Pledge
+                - PledgePayment
+                - RecurringDonation
+                - RecurringDonationPayment
+              FundId:
+                type: integer
+              CampaignId:
+                type: integer
+              AppealId:
+                type: integer
+              Amount:
+                type: number
+                format: double
   parameters:
     ConstituentId:
       name: id
@@ -400,14 +400,6 @@ components:
       description: The ID of the constituent.
       schema:
         type: integer
-    Skip:
-      name: skip
-      in: query
-      required: false
-      description: Number of records to skip, for pagination.
-      schema:
-        type: integer
-        default: 0
     Take:
       name: take
       in: query
@@ -416,7 +408,21 @@ components:
       schema:
         type: integer
         default: 50
+    Skip:
+      name: skip
+      in: query
+      required: false
+      description: Number of records to skip, for pagination.
+      schema:
+        type: integer
+        default: 0
   responses:
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     Unauthorized:
       description: Missing or invalid API key / access token.
       content:
@@ -425,12 +431,6 @@ components:
             $ref: '#/components/schemas/Error'
     ValidationError:
       description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
       content:
         application/json:
           schema:

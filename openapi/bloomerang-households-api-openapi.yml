@@ -90,13 +90,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    Household:
-      allOf:
-      - $ref: '#/components/schemas/HouseholdInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
     HouseholdInput:
       type: object
       required:
@@ -131,15 +124,22 @@ components:
           type: array
           items:
             type: string
+    Household:
+      allOf:
+      - $ref: '#/components/schemas/HouseholdInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
   responses:
-    Unauthorized:
-      description: Missing or invalid API key / access token.
+    NotFound:
+      description: The requested resource was not found.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
+    Unauthorized:
+      description: Missing or invalid API key / access token.
       content:
         application/json:
           schema:

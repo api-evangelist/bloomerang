@@ -84,13 +84,6 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    Webhook:
-      allOf:
-      - $ref: '#/components/schemas/WebhookInput'
-      - type: object
-        properties:
-          id:
-            type: string
     WebhookInput:
       type: object
       required:
@@ -128,15 +121,22 @@ components:
           type: string
         Deleted:
           type: boolean
+    Webhook:
+      allOf:
+      - $ref: '#/components/schemas/WebhookInput'
+      - type: object
+        properties:
+          id:
+            type: string
   responses:
-    Unauthorized:
-      description: Missing or invalid API key / access token.
+    NotFound:
+      description: The requested resource was not found.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
+    Unauthorized:
+      description: Missing or invalid API key / access token.
       content:
         application/json:
           schema:
