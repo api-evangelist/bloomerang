@@ -164,6 +164,9 @@ apis:
   - type: Documentation
     url: https://bloomerang.com/api/rest-api
 common:
+- type: CapabilityMap
+  url: capabilities/bloomerang-capability-edges.yml
+  name: Bloomerang Business Capability Map
 - type: AgenticAccess
   url: agentic-access/bloomerang-agentic-access.yml
 - type: TrustCenter

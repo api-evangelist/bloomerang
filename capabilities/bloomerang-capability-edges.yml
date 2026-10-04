@@ -1,0 +1,45 @@
+slug: bloomerang
+provider: Bloomerang
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 3
+edges:
+- tag: Constituents
+  spec_file: bloomerang-constituents-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.8
+  evidence: '''List constituents'', ''Create a constituent'', ''Search constituents'', ''Update a constituent''
+    in a ''donor management CRM account - constituents, transactions'''
+  reason: CRUD and search over constituent (donor) master records plus their timeline is maintenance of
+    the customer/constituent master record, i.e. Customer Data Management.
+- tag: Households
+  spec_file: bloomerang-households-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.75
+  evidence: POST /households createHousehold 'Create a household'; schemas HouseholdInput, Household in
+    a 'donor management CRM account - constituents'
+  reason: Households are groupings of constituent (donor/customer) master records in a CRM; create/retrieve/update
+    of these records is customer data management.
+- tag: Relationships
+  spec_file: bloomerang-relationships-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.7
+  evidence: GET /constituents/{id}/relationships 'List a constituent's relationships'; POST ... 'Create
+    a relationship'
+  reason: Maintaining relationships between constituent records is part of the donor/customer master data
+    and identity graph in the CRM.
