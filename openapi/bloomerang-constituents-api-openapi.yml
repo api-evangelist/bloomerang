@@ -216,51 +216,13 @@ components:
           items:
             type: object
             additionalProperties: true
-    Transaction:
+    Interaction:
       allOf:
-      - $ref: '#/components/schemas/TransactionInput'
+      - $ref: '#/components/schemas/InteractionInput'
       - type: object
         properties:
           Id:
             type: integer
-          CreatedDate:
-            type: string
-            format: date-time
-    InteractionInput:
-      type: object
-      required:
-      - AccountId
-      - Date
-      - Channel
-      properties:
-        AccountId:
-          type: integer
-        Date:
-          type: string
-          format: date
-        Channel:
-          type: string
-          enum:
-          - Call
-          - Email
-          - InPerson
-          - Letter
-          - Other
-        Purpose:
-          type: string
-        Note:
-          type: string
-        UserId:
-          type: integer
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
     ConstituentTimeline:
       type: object
       properties:
@@ -303,52 +265,32 @@ components:
           items:
             type: object
             additionalProperties: true
-    Note:
-      allOf:
-      - $ref: '#/components/schemas/NoteInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-    Interaction:
-      allOf:
-      - $ref: '#/components/schemas/InteractionInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-    NoteInput:
+    InteractionInput:
       type: object
       required:
       - AccountId
-      - Note
+      - Date
+      - Channel
       properties:
         AccountId:
           type: integer
-        Note:
-          type: string
         Date:
           type: string
           format: date
-        AttachmentIds:
-          type: array
-          items:
-            type: integer
-    Constituent:
-      allOf:
-      - $ref: '#/components/schemas/ConstituentInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-          AccountNumber:
-            type: string
-          CreatedDate:
-            type: string
-            format: date-time
-          LastModifiedDate:
-            type: string
-            format: date-time
+        Channel:
+          type: string
+          enum:
+          - Call
+          - Email
+          - InPerson
+          - Letter
+          - Other
+        Purpose:
+          type: string
+        Note:
+          type: string
+        UserId:
+          type: integer
     TransactionInput:
       type: object
       required:
@@ -392,6 +334,83 @@ components:
               Amount:
                 type: number
                 format: double
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+        Errors:
+          type: array
+          items:
+            type: string
+    Transaction:
+      allOf:
+      - $ref: '#/components/schemas/TransactionInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+          CreatedDate:
+            type: string
+            format: date-time
+    Note:
+      allOf:
+      - $ref: '#/components/schemas/NoteInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+    NoteInput:
+      type: object
+      required:
+      - AccountId
+      - Note
+      properties:
+        AccountId:
+          type: integer
+        Note:
+          type: string
+        Date:
+          type: string
+          format: date
+        AttachmentIds:
+          type: array
+          items:
+            type: integer
+    Constituent:
+      allOf:
+      - $ref: '#/components/schemas/ConstituentInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+          AccountNumber:
+            type: string
+          CreatedDate:
+            type: string
+            format: date-time
+          LastModifiedDate:
+            type: string
+            format: date-time
+  responses:
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid API key / access token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   parameters:
     ConstituentId:
       name: id
@@ -416,25 +435,6 @@ components:
       schema:
         type: integer
         default: 0
-  responses:
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   securitySchemes:
     apiKeyAuth:
       type: apiKey

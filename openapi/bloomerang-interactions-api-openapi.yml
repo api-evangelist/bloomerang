@@ -89,43 +89,14 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
-  parameters:
-    Take:
-      name: take
-      in: query
-      required: false
-      description: Number of records to return, for pagination.
-      schema:
-        type: integer
-        default: 50
-    Skip:
-      name: skip
-      in: query
-      required: false
-      description: Number of records to skip, for pagination.
-      schema:
-        type: integer
-        default: 0
-  responses:
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
+    Interaction:
+      allOf:
+      - $ref: '#/components/schemas/InteractionInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
     InteractionInput:
       type: object
       required:
@@ -161,13 +132,42 @@ components:
           type: array
           items:
             type: string
-    Interaction:
-      allOf:
-      - $ref: '#/components/schemas/InteractionInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
+  responses:
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid API key / access token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    Take:
+      name: take
+      in: query
+      required: false
+      description: Number of records to return, for pagination.
+      schema:
+        type: integer
+        default: 50
+    Skip:
+      name: skip
+      in: query
+      required: false
+      description: Number of records to skip, for pagination.
+      schema:
+        type: integer
+        default: 0
   securitySchemes:
     apiKeyAuth:
       type: apiKey

@@ -113,6 +113,15 @@ components:
           format: email
         IsActive:
           type: boolean
+    Fund:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Name:
+          type: string
+        IsActive:
+          type: boolean
     Error:
       type: object
       properties:
@@ -138,15 +147,6 @@ components:
         GoalAmount:
           type: number
           format: double
-    Fund:
-      type: object
-      properties:
-        Id:
-          type: integer
-        Name:
-          type: string
-        IsActive:
-          type: boolean
   responses:
     Unauthorized:
       description: Missing or invalid API key / access token.

@@ -89,26 +89,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  responses:
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid API key / access token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-    Transaction:
-      allOf:
-      - $ref: '#/components/schemas/TransactionInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-          CreatedDate:
-            type: string
-            format: date-time
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
     TransactionInput:
       type: object
       required:
@@ -152,6 +152,25 @@ components:
               Amount:
                 type: number
                 format: double
+    Transaction:
+      allOf:
+      - $ref: '#/components/schemas/TransactionInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+          CreatedDate:
+            type: string
+            format: date-time
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+        Errors:
+          type: array
+          items:
+            type: string
   parameters:
     Take:
       name: take
@@ -169,25 +188,6 @@ components:
       schema:
         type: integer
         default: 0
-  responses:
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   securitySchemes:
     apiKeyAuth:
       type: apiKey
