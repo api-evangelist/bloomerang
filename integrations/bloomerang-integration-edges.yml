@@ -1,16 +1,101 @@
 generated: '2026-10-12'
-method: none
+method: searched
 source:
 - https://zapier.com/apps/bloomerang/integrations
 - https://n8n.io/integrations/bloomerang/
 - https://composio.dev/toolkits/bloomerang
 - https://monid.ai/tools/bloomerang
 checked:
+- https://bloomerang.com/integrations/
 - https://composio.dev/toolkits/bloomerang
 - https://monid.ai/tools/bloomerang
 - https://n8n.io/integrations/bloomerang/
 - https://zapier.com/apps/bloomerang/integrations
 summary: null
 marketplace_apps: []
-edges: []
+edges:
+- partner_name: dataro
+  partner: null
+  partner_match: null
+  partner_candidate: null
+  type: claimed
+  channel: claimed
+  relationship: integration
+  direction: unknown
+  evidence: https://bloomerang.com/integrations/dataro
+  partner_domain: null
+  detected_by: sweep-nonprofit.py
+  detected: '2026-10-14'
+- partner_name: quickbooks
+  partner: null
+  partner_match: null
+  partner_candidate: null
+  type: claimed
+  channel: claimed
+  relationship: integration
+  direction: unknown
+  evidence: https://bloomerang.com/integrations/quickbooks
+  partner_domain: null
+  detected_by: sweep-nonprofit.py
+  detected: '2026-10-14'
+- partner_name: donor-search
+  partner: null
+  partner_match: null
+  partner_candidate: null
+  type: claimed
+  channel: claimed
+  relationship: integration
+  direction: unknown
+  evidence: https://bloomerang.com/integrations/donor-search
+  partner_domain: null
+  detected_by: sweep-nonprofit.py
+  detected: '2026-10-14'
+- partner_name: mailchimp
+  partner: null
+  partner_match: null
+  partner_candidate: null
+  type: claimed
+  channel: claimed
+  relationship: integration
+  direction: unknown
+  evidence: https://bloomerang.com/integrations/mailchimp
+  partner_domain: null
+  detected_by: sweep-nonprofit.py
+  detected: '2026-10-14'
+- partner_name: constant-contact
+  partner: null
+  partner_match: null
+  partner_candidate: null
+  type: claimed
+  channel: claimed
+  relationship: integration
+  direction: unknown
+  evidence: https://bloomerang.com/integrations/constant-contact
+  partner_domain: null
+  detected_by: sweep-nonprofit.py
+  detected: '2026-10-14'
+- partner_name: amilia
+  partner: null
+  partner_match: null
+  partner_candidate: null
+  type: claimed
+  channel: claimed
+  relationship: integration
+  direction: unknown
+  evidence: https://bloomerang.com/integrations/amilia
+  partner_domain: null
+  detected_by: sweep-nonprofit.py
+  detected: '2026-10-14'
+- partner_name: verified-first
+  partner: null
+  partner_match: null
+  partner_candidate: null
+  type: claimed
+  channel: claimed
+  relationship: integration
+  direction: unknown
+  evidence: https://bloomerang.com/integrations/verified-first
+  partner_domain: null
+  detected_by: sweep-nonprofit.py
+  detected: '2026-10-14'
 templates: []
