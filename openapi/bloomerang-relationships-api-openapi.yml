@@ -64,43 +64,6 @@ paths:
         '422':
           $ref: '#/components/responses/ValidationError'
 components:
-  schemas:
-    Relationship:
-      allOf:
-      - $ref: '#/components/schemas/RelationshipInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-          AccountId1:
-            type: integer
-    RelationshipInput:
-      type: object
-      required:
-      - AccountId2
-      - RelationshipRole1
-      - RelationshipRole2
-      properties:
-        AccountId2:
-          type: integer
-          description: The constituent ID on the other side of the relationship.
-        RelationshipRole1:
-          type: string
-          description: The role of the source constituent in the relationship, e.g. Spouse.
-        RelationshipRole2:
-          type: string
-          description: The role of the related constituent in the relationship, e.g. Spouse.
-        Note:
-          type: string
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
   responses:
     ValidationError:
       description: The request payload failed validation.
@@ -120,6 +83,43 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+  schemas:
+    RelationshipInput:
+      type: object
+      required:
+      - AccountId2
+      - RelationshipRole1
+      - RelationshipRole2
+      properties:
+        AccountId2:
+          type: integer
+          description: The constituent ID on the other side of the relationship.
+        RelationshipRole1:
+          type: string
+          description: The role of the source constituent in the relationship, e.g. Spouse.
+        RelationshipRole2:
+          type: string
+          description: The role of the related constituent in the relationship, e.g. Spouse.
+        Note:
+          type: string
+    Relationship:
+      allOf:
+      - $ref: '#/components/schemas/RelationshipInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+          AccountId1:
+            type: integer
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+        Errors:
+          type: array
+          items:
+            type: string
   parameters:
     ConstituentId:
       name: id

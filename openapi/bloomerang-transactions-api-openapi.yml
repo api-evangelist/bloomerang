@@ -109,6 +109,25 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
   schemas:
+    Transaction:
+      allOf:
+      - $ref: '#/components/schemas/TransactionInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+          CreatedDate:
+            type: string
+            format: date-time
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+        Errors:
+          type: array
+          items:
+            type: string
     TransactionInput:
       type: object
       required:
@@ -152,25 +171,6 @@ components:
               Amount:
                 type: number
                 format: double
-    Transaction:
-      allOf:
-      - $ref: '#/components/schemas/TransactionInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-          CreatedDate:
-            type: string
-            format: date-time
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
   parameters:
     Take:
       name: take

@@ -95,13 +95,6 @@ components:
           type: array
           items:
             type: string
-    Note:
-      allOf:
-      - $ref: '#/components/schemas/NoteInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
     NoteInput:
       type: object
       required:
@@ -118,6 +111,13 @@ components:
         AttachmentIds:
           type: array
           items:
+            type: integer
+    Note:
+      allOf:
+      - $ref: '#/components/schemas/NoteInput'
+      - type: object
+        properties:
+          Id:
             type: integer
   securitySchemes:
     apiKeyAuth:

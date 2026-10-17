@@ -90,15 +90,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
-    Appeal:
-      type: object
-      properties:
-        Id:
-          type: integer
-        Name:
-          type: string
-        IsActive:
-          type: boolean
     User:
       type: object
       properties:
@@ -114,6 +105,15 @@ components:
         IsActive:
           type: boolean
     Fund:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Name:
+          type: string
+        IsActive:
+          type: boolean
+    Appeal:
       type: object
       properties:
         Id:

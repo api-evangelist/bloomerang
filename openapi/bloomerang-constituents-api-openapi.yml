@@ -161,61 +161,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  responses:
+    ValidationError:
+      description: The request payload failed validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid API key / access token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-    ConstituentInput:
-      type: object
-      properties:
-        Type:
-          type: string
-          enum:
-          - Individual
-          - Organization
-          - Household
-        FirstName:
-          type: string
-        LastName:
-          type: string
-        FullName:
-          type: string
-        Status:
-          type: string
-          enum:
-          - Active
-          - Inactive
-          - Deceased
-        EmailAddress:
-          type: object
-          properties:
-            Value:
-              type: string
-              format: email
-            Type:
-              type: string
-        PhoneNumber:
-          type: object
-          properties:
-            Number:
-              type: string
-            Type:
-              type: string
-        Address:
-          type: object
-          properties:
-            Street:
-              type: string
-            City:
-              type: string
-            State:
-              type: string
-            PostalCode:
-              type: string
-            Country:
-              type: string
-        CustomValues:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
     Interaction:
       allOf:
       - $ref: '#/components/schemas/InteractionInput'
@@ -223,6 +188,31 @@ components:
         properties:
           Id:
             type: integer
+    Constituent:
+      allOf:
+      - $ref: '#/components/schemas/ConstituentInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+          AccountNumber:
+            type: string
+          CreatedDate:
+            type: string
+            format: date-time
+          LastModifiedDate:
+            type: string
+            format: date-time
+    Transaction:
+      allOf:
+      - $ref: '#/components/schemas/TransactionInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
+          CreatedDate:
+            type: string
+            format: date-time
     ConstituentTimeline:
       type: object
       properties:
@@ -291,6 +281,93 @@ components:
           type: string
         UserId:
           type: integer
+    NoteInput:
+      type: object
+      required:
+      - AccountId
+      - Note
+      properties:
+        AccountId:
+          type: integer
+        Note:
+          type: string
+        Date:
+          type: string
+          format: date
+        AttachmentIds:
+          type: array
+          items:
+            type: integer
+    ConstituentInput:
+      type: object
+      properties:
+        Type:
+          type: string
+          enum:
+          - Individual
+          - Organization
+          - Household
+        FirstName:
+          type: string
+        LastName:
+          type: string
+        FullName:
+          type: string
+        Status:
+          type: string
+          enum:
+          - Active
+          - Inactive
+          - Deceased
+        EmailAddress:
+          type: object
+          properties:
+            Value:
+              type: string
+              format: email
+            Type:
+              type: string
+        PhoneNumber:
+          type: object
+          properties:
+            Number:
+              type: string
+            Type:
+              type: string
+        Address:
+          type: object
+          properties:
+            Street:
+              type: string
+            City:
+              type: string
+            State:
+              type: string
+            PostalCode:
+              type: string
+            Country:
+              type: string
+        CustomValues:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    Error:
+      type: object
+      properties:
+        Message:
+          type: string
+        Errors:
+          type: array
+          items:
+            type: string
+    Note:
+      allOf:
+      - $ref: '#/components/schemas/NoteInput'
+      - type: object
+        properties:
+          Id:
+            type: integer
     TransactionInput:
       type: object
       required:
@@ -334,91 +411,7 @@ components:
               Amount:
                 type: number
                 format: double
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
-    Transaction:
-      allOf:
-      - $ref: '#/components/schemas/TransactionInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-          CreatedDate:
-            type: string
-            format: date-time
-    Note:
-      allOf:
-      - $ref: '#/components/schemas/NoteInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-    NoteInput:
-      type: object
-      required:
-      - AccountId
-      - Note
-      properties:
-        AccountId:
-          type: integer
-        Note:
-          type: string
-        Date:
-          type: string
-          format: date
-        AttachmentIds:
-          type: array
-          items:
-            type: integer
-    Constituent:
-      allOf:
-      - $ref: '#/components/schemas/ConstituentInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-          AccountNumber:
-            type: string
-          CreatedDate:
-            type: string
-            format: date-time
-          LastModifiedDate:
-            type: string
-            format: date-time
-  responses:
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   parameters:
-    ConstituentId:
-      name: id
-      in: path
-      required: true
-      description: The ID of the constituent.
-      schema:
-        type: integer
     Take:
       name: take
       in: query
@@ -427,6 +420,13 @@ components:
       schema:
         type: integer
         default: 50
+    ConstituentId:
+      name: id
+      in: path
+      required: true
+      description: The ID of the constituent.
+      schema:
+        type: integer
     Skip:
       name: skip
       in: query
