@@ -12,8 +12,18 @@ capability_model:
   attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
     CC BY 4.0
   notice: NOTICE
-edge_count: 4
+edge_count: 6
 edges:
+- tag: Transactions
+  spec_file: bloomerang-transactions-api-openapi.yml
+  capability_id: BC-4800.40
+  capability_id_l1: BC-4800
+  capability_name: Gift & Pledge Administration
+  confidence: 0.85
+  evidence: 'description: "transactions (donations, pledges, recurring donations)"; "POST /transactions
+    createTransaction"'
+  reason: Recording of donations, pledges and recurring gifts is squarely gift and pledge administration
+    within institutional advancement.
 - tag: Constituents
   spec_file: bloomerang-constituents-api-openapi.yml
   capability_id: BC-420.10
@@ -24,15 +34,17 @@ edges:
     in a ''donor management CRM account - constituents, transactions'''
   reason: CRUD and search over constituent (donor) master records plus their timeline is maintenance of
     the customer/constituent master record, i.e. Customer Data Management.
-- tag: Transactions
-  spec_file: bloomerang-transactions-api-openapi.yml
-  capability_id: BC-4800.40
+- tag: Constituents
+  spec_file: bloomerang-constituents-api-openapi.yml
+  capability_id: BC-4800.20
   capability_id_l1: BC-4800
-  capability_name: Gift & Pledge Administration
-  confidence: 0.8
-  evidence: '"transactions (donations, pledges, recurring donations)"; POST /transactions "Create a transaction"'
-  reason: The vendor explicitly defines transactions as donations, pledges and recurring donations, which
-    is receipt and recording of gifts and pledges.
+  capability_name: Donor Relationship Management
+  confidence: 0.75
+  evidence: '"POST /constituents createConstituent Create a constituent" in a "Bloomerang donor management
+    CRM account"'
+  reason: Constituent records in a donor-management CRM are the core donor/supporter master record; under
+    the Education frame this maps to Institutional Advancement's donor relationship management. Some ambiguity
+    since constituents may include non-donors (volunteers, alumni).
 - tag: Households
   spec_file: bloomerang-households-api-openapi.yml
   capability_id: BC-420.10
@@ -43,6 +55,16 @@ edges:
     a 'donor management CRM account - constituents'
   reason: Households are groupings of constituent (donor/customer) master records in a CRM; create/retrieve/update
     of these records is customer data management.
+- tag: Interactions
+  spec_file: bloomerang-interactions-api-openapi.yml
+  capability_id: BC-4800.20
+  capability_id_l1: BC-4800
+  capability_name: Donor Relationship Management
+  confidence: 0.7
+  evidence: '"POST /interactions createInteraction Create an interaction"; description cites "interactions,
+    notes, relationships" in a donor management CRM'
+  reason: Logging of contacts/touchpoints with constituents is donor cultivation and relationship management
+    activity.
 - tag: Relationships
   spec_file: bloomerang-relationships-api-openapi.yml
   capability_id: BC-420.10
