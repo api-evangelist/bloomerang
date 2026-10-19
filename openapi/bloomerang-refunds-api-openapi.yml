@@ -1,0 +1,395 @@
+openapi: 3.2.0
+info:
+  title: Bloomerang Refunds API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
+  contact:
+    name: Bloomerang
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
+servers:
+- url: https://api.bloomerang.co/v2
+security:
+- ApiKeyAuth: []
+- OAuth2: []
+tags:
+- name: Refunds
+paths:
+  /refunds:
+    get:
+      tags:
+      - Refunds
+      summary: Gets a list of refunds
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: lastModified
+        schema:
+          type: string
+          format: date-time
+        description: Filters to refunds last modified after the specified date
+      - in: query
+        name: transactionId
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the transaction ID for the refund.
+      - in: query
+        name: id
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the ID for the refund.
+      - in: query
+        name: orderBy
+        schema:
+          type: string
+          enum:
+          - CreatedDate
+          - Date
+          - LastModifiedDate
+        description: Sorts by Date, CreatedDate, or LastModifiedDate (default Date).
+      - in: query
+        name: orderDirection
+        schema:
+          type: string
+          enum:
+          - Asc
+          - Desc
+        description: Sorts the orderBy in ascending or descending order.
+      responses:
+        '200':
+          description: The list of refunds that met the specified filters.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - type: object
+                          properties:
+                            Id:
+                              type: integer
+                              format: int64
+                              description: The ID of the refund
+                        - properties:
+                            TransactionId:
+                              type: integer
+                              format: int64
+                              description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                            Note:
+                              type: string
+                              description: The reason for making this refund
+                        - type: object
+                          properties:
+                            Date:
+                              type: string
+                              format: date
+                            Amount:
+                              type: number
+                              format: currency
+                            AuditTrail:
+                              properties:
+                                CreatedDate:
+                                  type: string
+                                  format: date-time
+                                CreatedName:
+                                  type: string
+                                LastModifiedDate:
+                                  type: string
+                                  format: date-time
+                                LastModifiedName:
+                                  type: string
+      operationId: getRefunds
+      x-operation-id-source: derived
+  /refund:
+    post:
+      tags:
+      - Refunds
+      summary: Creates a refund
+      security:
+      - OAuth2:
+        - StandardEditFinancialData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - properties:
+                  TransactionId:
+                    type: integer
+                    format: int64
+                    description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                  Note:
+                    type: string
+                    description: The reason for making this refund
+              - type: object
+                properties:
+                  RunProcessorRefund:
+                    type: boolean
+                    description: If true, the processor will be asked to refund the transaction as well as in the CRM.  If false, only the CRM will be updated. If omitted this field will default to true.
+                required:
+                - TransactionId
+                - Date
+      responses:
+        '200':
+          description: The refund was created successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                      description: The ID of the refund
+                - properties:
+                    TransactionId:
+                      type: integer
+                      format: int64
+                      description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                    Note:
+                      type: string
+                      description: The reason for making this refund
+                - type: object
+                  properties:
+                    Date:
+                      type: string
+                      format: date
+                    Amount:
+                      type: number
+                      format: currency
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: postRefund
+      x-operation-id-source: derived
+  /refund/{id}:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: The ID of the refund to return.
+    get:
+      tags:
+      - Refunds
+      summary: Gets a refund by ID
+      responses:
+        '200':
+          description: The refund with the given ID.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                      description: The ID of the refund
+                - properties:
+                    TransactionId:
+                      type: integer
+                      format: int64
+                      description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                    Note:
+                      type: string
+                      description: The reason for making this refund
+                - type: object
+                  properties:
+                    Date:
+                      type: string
+                      format: date
+                    Amount:
+                      type: number
+                      format: currency
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: getRefundById
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Refunds
+      summary: Updates a refund
+      security:
+      - OAuth2:
+        - StandardEditFinancialData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                properties:
+                  Id:
+                    type: integer
+                    format: int64
+                    description: The ID of the refund
+                  Date:
+                    type: string
+                    format: date
+                required:
+                - Id
+              - properties:
+                  TransactionId:
+                    type: integer
+                    format: int64
+                    description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                  Note:
+                    type: string
+                    description: The reason for making this refund
+      responses:
+        '200':
+          description: The refund was updated successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                      description: The ID of the refund
+                - properties:
+                    TransactionId:
+                      type: integer
+                      format: int64
+                      description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                    Note:
+                      type: string
+                      description: The reason for making this refund
+                - type: object
+                  properties:
+                    Date:
+                      type: string
+                      format: date
+                    Amount:
+                      type: number
+                      format: currency
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: putRefundById
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Refunds
+      summary: Deletes a refund
+      security:
+      - OAuth2:
+        - StandardEditFinancialData
+      responses:
+        '200':
+          description: The refund was deleted successfully.
+          content:
+            application/json:
+              schema:
+                properties:
+                  Id:
+                    type: integer
+                    description: The ID of the object that was deleted
+                    format: int64
+                  Type:
+                    type: string
+                    description: The type of object that was deleted
+                  Deleted:
+                    type: boolean
+                    description: True if the object was deleted
+      operationId: deleteRefundById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    OAuth2:
+      type: oauth2
+      description: OAuth 2 with the authorization code flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://crm.bloomerang.com/authorize/
+          tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
+          scopes:
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

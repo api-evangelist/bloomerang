@@ -1,0 +1,203 @@
+openapi: 3.2.0
+info:
+  title: Bloomerang Processors API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
+  contact:
+    name: Bloomerang
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
+servers:
+- url: https://api.bloomerang.co/v2
+security:
+- ApiKeyAuth: []
+- OAuth2: []
+tags:
+- name: Processors
+paths:
+  /processors:
+    get:
+      tags:
+      - Processors
+      summary: Gets a list of processors
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: id
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters to processors with the IDs in the list (pipe-separated)
+      - in: query
+        name: isActive
+        schema:
+          type: boolean
+        description: Filters to either active or inactive processors
+      responses:
+        '200':
+          description: The list of processors that met the search criteria.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - type: object
+                          properties:
+                            Id:
+                              type: integer
+                              format: int64
+                            Type:
+                              type: string
+                        - allOf:
+                          - type: object
+                            properties:
+                              SortIndex:
+                                type: integer
+                                format: int32
+                          - properties:
+                              Name:
+                                type: string
+                              IsDefault:
+                                type: boolean
+                                description: Is this the default?
+                              IsActive:
+                                type: boolean
+                                description: Is this active?
+                        - type: object
+                          properties:
+                            PublicKey:
+                              type: string
+                              description: The public key for this processor
+                            IsStripeConnect:
+                              type: boolean
+                              description: Is this a Stripe processor with Stripe Connect enabled?
+                            BloomerangPaymentsProcessorId:
+                              type: string
+                              format: uuid
+                              description: The identifier of the associated Bloomerang Payments (Stripe Custom) processor. Only present for Bloomerang Payments (Stripe Custom) processors.
+                            Status:
+                              type: string
+                              description: 'The status of the processor. Only present for Bloomerang Payments (Stripe Custom) processors. Values may include: Pending, NeedsDocumentation, Completed, Disabled, NotStarted, Onboarding.'
+                            IsBloomerangPaymentsOnboarding:
+                              type: boolean
+                              description: Indicates whether the database is currently in the Bloomerang Payments (Stripe Custom) onboarding flow. Only present for Bloomerang Payments (Stripe Custom) processors.
+      operationId: getProcessors
+      x-operation-id-source: derived
+  /processor/{id}:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: The ID of the processor to return.
+    get:
+      tags:
+      - Processors
+      summary: Gets a processor by ID
+      responses:
+        '200':
+          description: The processor with the given ID.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    Type:
+                      type: string
+                - allOf:
+                  - type: object
+                    properties:
+                      SortIndex:
+                        type: integer
+                        format: int32
+                  - properties:
+                      Name:
+                        type: string
+                      IsDefault:
+                        type: boolean
+                        description: Is this the default?
+                      IsActive:
+                        type: boolean
+                        description: Is this active?
+                - type: object
+                  properties:
+                    PublicKey:
+                      type: string
+                      description: The public key for this processor
+                    IsStripeConnect:
+                      type: boolean
+                      description: Is this a Stripe processor with Stripe Connect enabled?
+                    BloomerangPaymentsProcessorId:
+                      type: string
+                      format: uuid
+                      description: The identifier of the associated Bloomerang Payments (Stripe Custom) processor. Only present for Bloomerang Payments (Stripe Custom) processors.
+                    Status:
+                      type: string
+                      description: 'The status of the processor. Only present for Bloomerang Payments (Stripe Custom) processors. Values may include: Pending, NeedsDocumentation, Completed, Disabled, NotStarted, Onboarding.'
+                    IsBloomerangPaymentsOnboarding:
+                      type: boolean
+                      description: Indicates whether the database is currently in the Bloomerang Payments (Stripe Custom) onboarding flow. Only present for Bloomerang Payments (Stripe Custom) processors.
+      operationId: getProcessorById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    OAuth2:
+      type: oauth2
+      description: OAuth 2 with the authorization code flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://crm.bloomerang.com/authorize/
+          tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
+          scopes:
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

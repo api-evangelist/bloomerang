@@ -1,185 +1,1061 @@
 openapi: 3.2.0
 info:
-  title: Bloomerang REST API v2 Interactions API
-  description: The Bloomerang REST API v2 is a private-key, server-to-server API for reading and writing data in a Bloomerang donor management CRM account - constituents, transactions (donations, pledges, recurring donations), interactions, notes, relationships, and webhook subscriptions.
-  version: '2.0'
+  title: Bloomerang Interactions API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
   contact:
     name: Bloomerang
-    url: https://bloomerang.com/api/rest-api
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
 servers:
 - url: https://api.bloomerang.co/v2
-  description: Bloomerang REST API v2 (production - no sandbox is offered)
 security:
-- apiKeyAuth: []
-- oauth2Bearer: []
+- ApiKeyAuth: []
+- OAuth2: []
 tags:
 - name: Interactions
-  description: Logged touches between the organization and a constituent.
 paths:
   /interactions:
     get:
-      operationId: listInteractions
       tags:
       - Interactions
-      summary: List interactions
-      description: Lists interactions, paginated with skip/take parameters.
+      summary: Gets a list of interactions
       parameters:
-      - $ref: '#/components/parameters/Skip'
-      - $ref: '#/components/parameters/Take'
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: channel
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - Email
+            - MassEmail
+            - Phone
+            - TextMessage
+            - Mail
+            - InPerson
+            - SocialMedia
+            - Website
+            - Twitter
+            - Other
+            - EngagementSurveyEmail
+            - EngagementSurvey
+        description: Filters results based on the interaction's channel.
+      - in: query
+        name: purpose
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - Acknowledgement
+            - ImpactCultivation
+            - Newsletter
+            - Receipt
+            - Solicitation
+            - SpecialEvent
+            - VolunteerActivity
+            - PledgeReminder
+            - Welcome
+            - BenevonPointOfEntry
+            - BenevonFollowUp
+            - BenevonAskEvent
+            - BenevonOneOnOneAsk
+            - BenevonOngoingCultivation
+            - Other
+        description: Filters results based on the interaction's purpose.
+      - in: query
+        name: constituent
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the Constituent ID for the interaction.
+      - in: query
+        name: id
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the ID for the interaction.
+      - in: query
+        name: orderBy
+        schema:
+          type: string
+          enum:
+          - CreatedDate
+          - Date
+          - LastModifiedDate
+        description: Sorts by Date, CreatedDate, or LastModifiedDate (default Date).
+      - in: query
+        name: orderDirection
+        schema:
+          type: string
+          enum:
+          - Asc
+          - Desc
+        description: Sorts the orderBy in ascending or descending order.
       responses:
         '200':
-          description: A page of interactions.
+          description: The list of interactions that met the specified filters.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  Results:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Interaction'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - type: object
+                          properties:
+                            Id:
+                              type: integer
+                              format: int64
+                        - properties:
+                            Date:
+                              type: string
+                              format: date
+                            Note:
+                              type: string
+                            Channel:
+                              type: string
+                              enum:
+                              - Email
+                              - MassEmail
+                              - Phone
+                              - TextMessage
+                              - Mail
+                              - InPerson
+                              - SocialMedia
+                              - Website
+                              - Twitter
+                              - Other
+                              - EngagementSurveyEmail
+                              - EngagementSurvey
+                            Purpose:
+                              type: string
+                              enum:
+                              - Acknowledgement
+                              - ImpactCultivation
+                              - Newsletter
+                              - Receipt
+                              - Solicitation
+                              - SpecialEvent
+                              - VolunteerActivity
+                              - PledgeReminder
+                              - Welcome
+                              - BenevonPointOfEntry
+                              - BenevonFollowUp
+                              - BenevonAskEvent
+                              - BenevonOneOnOneAsk
+                              - BenevonOngoingCultivation
+                              - Other
+                            Subject:
+                              type: string
+                            IsInbound:
+                              type: boolean
+                        - type: object
+                          properties:
+                            AccountId:
+                              type: integer
+                              format: int64
+                              description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                            TweetId:
+                              type: string
+                              description: If the Channel is Twitter, this contains the ID of the tweet that can be used to display the tweet by substituting into https://twitter.com/anyUser/status/{TweetId}
+                            IsBcc:
+                              type: boolean
+                              description: Whether or not this interaction was created by an email that was sent to Bloomerang via BCC
+                            EmailAddress:
+                              type: string
+                              format: email
+                              description: If the interaction is an email interaction, this is the email address of the constituent that received the email. Only populated when IsBcc is true.
+                            AttachmentIds:
+                              type: array
+                              items:
+                                type: integer
+                                format: int64
+                                description: The ID of the attachments on this interaction
+                            LetterAttachmentIds:
+                              type: array
+                              items:
+                                type: integer
+                                format: int64
+                                description: The ID of generated letter attachments on this interaction.
+                            SurveyLapsedResponses:
+                              type: array
+                              items:
+                                type: string
+                                description: The list of reasons the donor lapsed, if this interaction represents a lapsed donor survey response
+                            IsEngagementSurveyResponse:
+                              type: boolean
+                              description: Whether this interaction represents a donor survey response
+                            SurveyEmailInteractionId:
+                              type: integer
+                              format: int64
+                              description: The interaction ID of the survey email that was sent to the donor.  Only populated when IsEngagementSurveyResponse is true
+                            IsEngagementSurveyEmail:
+                              type: boolean
+                              description: Whether this interaction represents a survey email that was sent to the donor
+                            SurveyResponseInteractionId:
+                              type: integer
+                              format: int64
+                              description: The interaction ID of the survey response.  Only populated when IsEngagementSurveyEmail is true.
+                            CustomValues:
+                              type: array
+                              items:
+                                oneOf:
+                                - properties:
+                                    FieldId:
+                                      type: integer
+                                      format: int64
+                                    FieldText:
+                                      type: string
+                                      description: The label/text of the custom field
+                                    Value:
+                                      properties:
+                                        Id:
+                                          type: integer
+                                          format: int64
+                                        Value:
+                                          type: string
+                                - properties:
+                                    FieldId:
+                                      type: integer
+                                      format: int64
+                                    FieldText:
+                                      type: string
+                                      description: The label/text of the custom field
+                                    Values:
+                                      type: array
+                                      items:
+                                        properties:
+                                          Id:
+                                            type: integer
+                                            format: int64
+                                          Value:
+                                            type: string
+                            AuditTrail:
+                              properties:
+                                CreatedDate:
+                                  type: string
+                                  format: date-time
+                                CreatedName:
+                                  type: string
+                                LastModifiedDate:
+                                  type: string
+                                  format: date-time
+                                LastModifiedName:
+                                  type: string
+      operationId: getInteractions
+      x-operation-id-source: derived
+  /interaction:
     post:
-      operationId: createInteraction
       tags:
       - Interactions
-      summary: Create an interaction
-      description: Creates an interaction - a logged touch (call, meeting, letter, email) between the organization and a constituent.
+      summary: Creates an interaction
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InteractionInput'
+              allOf:
+              - type: object
+                properties:
+                  AccountId:
+                    type: integer
+                    format: int64
+                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+              - allOf:
+                - properties:
+                    Date:
+                      type: string
+                      format: date
+                    Note:
+                      type: string
+                    Channel:
+                      type: string
+                      enum:
+                      - Email
+                      - MassEmail
+                      - Phone
+                      - TextMessage
+                      - Mail
+                      - InPerson
+                      - SocialMedia
+                      - Website
+                      - Twitter
+                      - Other
+                      - EngagementSurveyEmail
+                      - EngagementSurvey
+                    Purpose:
+                      type: string
+                      enum:
+                      - Acknowledgement
+                      - ImpactCultivation
+                      - Newsletter
+                      - Receipt
+                      - Solicitation
+                      - SpecialEvent
+                      - VolunteerActivity
+                      - PledgeReminder
+                      - Welcome
+                      - BenevonPointOfEntry
+                      - BenevonFollowUp
+                      - BenevonAskEvent
+                      - BenevonOneOnOneAsk
+                      - BenevonOngoingCultivation
+                      - Other
+                    Subject:
+                      type: string
+                    IsInbound:
+                      type: boolean
+                - type: object
+                  properties:
+                    CustomValues:
+                      type: array
+                      items:
+                        oneOf:
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            Value:
+                              type: string
+                              description: The value to assign; null clears the field
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            ValueId:
+                              type: integer
+                              format: int64
+                              description: The ID of the pick value to assign; null clears the field
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            ValueIds:
+                              type: array
+                              items:
+                                type: integer
+                                format: int64
+                              description: The ID of the pick value to assign; an empty array clears the field
+                    Attachments:
+                      type: array
+                      items:
+                        oneOf:
+                        - allOf:
+                          - properties:
+                              Guid:
+                                type: string
+                                description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                          - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                            properties:
+                              Name:
+                                type: string
+                                description: User-friendly file name without the extension.
+                              Extension:
+                                type: string
+                                description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                          - properties:
+                              Url:
+                                type: string
+                                format: uri
+                                description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+                        - allOf:
+                          - properties:
+                              Id:
+                                type: integer
+                                format: int64
+                          - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                            properties:
+                              Name:
+                                type: string
+                                description: User-friendly file name without the extension.
+                              Extension:
+                                type: string
+                                description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                          - properties:
+                              Url:
+                                type: string
+                                format: uri
+                                description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+              required:
+              - Date
+              - Channel
+              - Purpose
+              - Subject
       responses:
         '200':
-          description: The created interaction.
+          description: The interaction was created successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Interaction'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/ValidationError'
-  /interactions/{id}:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                - properties:
+                    Date:
+                      type: string
+                      format: date
+                    Note:
+                      type: string
+                    Channel:
+                      type: string
+                      enum:
+                      - Email
+                      - MassEmail
+                      - Phone
+                      - TextMessage
+                      - Mail
+                      - InPerson
+                      - SocialMedia
+                      - Website
+                      - Twitter
+                      - Other
+                      - EngagementSurveyEmail
+                      - EngagementSurvey
+                    Purpose:
+                      type: string
+                      enum:
+                      - Acknowledgement
+                      - ImpactCultivation
+                      - Newsletter
+                      - Receipt
+                      - Solicitation
+                      - SpecialEvent
+                      - VolunteerActivity
+                      - PledgeReminder
+                      - Welcome
+                      - BenevonPointOfEntry
+                      - BenevonFollowUp
+                      - BenevonAskEvent
+                      - BenevonOneOnOneAsk
+                      - BenevonOngoingCultivation
+                      - Other
+                    Subject:
+                      type: string
+                    IsInbound:
+                      type: boolean
+                - type: object
+                  properties:
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    TweetId:
+                      type: string
+                      description: If the Channel is Twitter, this contains the ID of the tweet that can be used to display the tweet by substituting into https://twitter.com/anyUser/status/{TweetId}
+                    IsBcc:
+                      type: boolean
+                      description: Whether or not this interaction was created by an email that was sent to Bloomerang via BCC
+                    EmailAddress:
+                      type: string
+                      format: email
+                      description: If the interaction is an email interaction, this is the email address of the constituent that received the email. Only populated when IsBcc is true.
+                    AttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The ID of the attachments on this interaction
+                    LetterAttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The ID of generated letter attachments on this interaction.
+                    SurveyLapsedResponses:
+                      type: array
+                      items:
+                        type: string
+                        description: The list of reasons the donor lapsed, if this interaction represents a lapsed donor survey response
+                    IsEngagementSurveyResponse:
+                      type: boolean
+                      description: Whether this interaction represents a donor survey response
+                    SurveyEmailInteractionId:
+                      type: integer
+                      format: int64
+                      description: The interaction ID of the survey email that was sent to the donor.  Only populated when IsEngagementSurveyResponse is true
+                    IsEngagementSurveyEmail:
+                      type: boolean
+                      description: Whether this interaction represents a survey email that was sent to the donor
+                    SurveyResponseInteractionId:
+                      type: integer
+                      format: int64
+                      description: The interaction ID of the survey response.  Only populated when IsEngagementSurveyEmail is true.
+                    CustomValues:
+                      type: array
+                      items:
+                        oneOf:
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Value:
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                Value:
+                                  type: string
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Values:
+                              type: array
+                              items:
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  Value:
+                                    type: string
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: postInteraction
+      x-operation-id-source: derived
+  /interaction/{id}:
     parameters:
-    - name: id
-      in: path
+    - in: path
+      name: id
       required: true
-      description: The ID of the interaction.
       schema:
         type: integer
+        format: int64
+      description: The ID of the interaction to return.
     get:
-      operationId: getInteraction
       tags:
       - Interactions
-      summary: Retrieve an interaction
-      description: Retrieves an interaction by ID.
+      summary: Gets an interaction by ID
       responses:
         '200':
-          description: The requested interaction.
+          description: The interaction with the given ID.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Interaction'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                - properties:
+                    Date:
+                      type: string
+                      format: date
+                    Note:
+                      type: string
+                    Channel:
+                      type: string
+                      enum:
+                      - Email
+                      - MassEmail
+                      - Phone
+                      - TextMessage
+                      - Mail
+                      - InPerson
+                      - SocialMedia
+                      - Website
+                      - Twitter
+                      - Other
+                      - EngagementSurveyEmail
+                      - EngagementSurvey
+                    Purpose:
+                      type: string
+                      enum:
+                      - Acknowledgement
+                      - ImpactCultivation
+                      - Newsletter
+                      - Receipt
+                      - Solicitation
+                      - SpecialEvent
+                      - VolunteerActivity
+                      - PledgeReminder
+                      - Welcome
+                      - BenevonPointOfEntry
+                      - BenevonFollowUp
+                      - BenevonAskEvent
+                      - BenevonOneOnOneAsk
+                      - BenevonOngoingCultivation
+                      - Other
+                    Subject:
+                      type: string
+                    IsInbound:
+                      type: boolean
+                - type: object
+                  properties:
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    TweetId:
+                      type: string
+                      description: If the Channel is Twitter, this contains the ID of the tweet that can be used to display the tweet by substituting into https://twitter.com/anyUser/status/{TweetId}
+                    IsBcc:
+                      type: boolean
+                      description: Whether or not this interaction was created by an email that was sent to Bloomerang via BCC
+                    EmailAddress:
+                      type: string
+                      format: email
+                      description: If the interaction is an email interaction, this is the email address of the constituent that received the email. Only populated when IsBcc is true.
+                    AttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The ID of the attachments on this interaction
+                    LetterAttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The ID of generated letter attachments on this interaction.
+                    SurveyLapsedResponses:
+                      type: array
+                      items:
+                        type: string
+                        description: The list of reasons the donor lapsed, if this interaction represents a lapsed donor survey response
+                    IsEngagementSurveyResponse:
+                      type: boolean
+                      description: Whether this interaction represents a donor survey response
+                    SurveyEmailInteractionId:
+                      type: integer
+                      format: int64
+                      description: The interaction ID of the survey email that was sent to the donor.  Only populated when IsEngagementSurveyResponse is true
+                    IsEngagementSurveyEmail:
+                      type: boolean
+                      description: Whether this interaction represents a survey email that was sent to the donor
+                    SurveyResponseInteractionId:
+                      type: integer
+                      format: int64
+                      description: The interaction ID of the survey response.  Only populated when IsEngagementSurveyEmail is true.
+                    CustomValues:
+                      type: array
+                      items:
+                        oneOf:
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Value:
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                Value:
+                                  type: string
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Values:
+                              type: array
+                              items:
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  Value:
+                                    type: string
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: getInteractionById
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Interactions
+      summary: Updates an interaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - allOf:
+                - properties:
+                    Date:
+                      type: string
+                      format: date
+                    Note:
+                      type: string
+                    Channel:
+                      type: string
+                      enum:
+                      - Email
+                      - MassEmail
+                      - Phone
+                      - TextMessage
+                      - Mail
+                      - InPerson
+                      - SocialMedia
+                      - Website
+                      - Twitter
+                      - Other
+                      - EngagementSurveyEmail
+                      - EngagementSurvey
+                    Purpose:
+                      type: string
+                      enum:
+                      - Acknowledgement
+                      - ImpactCultivation
+                      - Newsletter
+                      - Receipt
+                      - Solicitation
+                      - SpecialEvent
+                      - VolunteerActivity
+                      - PledgeReminder
+                      - Welcome
+                      - BenevonPointOfEntry
+                      - BenevonFollowUp
+                      - BenevonAskEvent
+                      - BenevonOneOnOneAsk
+                      - BenevonOngoingCultivation
+                      - Other
+                    Subject:
+                      type: string
+                    IsInbound:
+                      type: boolean
+                - type: object
+                  properties:
+                    CustomValues:
+                      type: array
+                      items:
+                        oneOf:
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            Value:
+                              type: string
+                              description: The value to assign; null clears the field
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            ValueId:
+                              type: integer
+                              format: int64
+                              description: The ID of the pick value to assign; null clears the field
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            ValueIds:
+                              type: array
+                              items:
+                                type: integer
+                                format: int64
+                              description: The ID of the pick value to assign; an empty array clears the field
+                    Attachments:
+                      type: array
+                      items:
+                        oneOf:
+                        - allOf:
+                          - properties:
+                              Guid:
+                                type: string
+                                description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                          - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                            properties:
+                              Name:
+                                type: string
+                                description: User-friendly file name without the extension.
+                              Extension:
+                                type: string
+                                description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                          - properties:
+                              Url:
+                                type: string
+                                format: uri
+                                description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+                        - allOf:
+                          - properties:
+                              Id:
+                                type: integer
+                                format: int64
+                          - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                            properties:
+                              Name:
+                                type: string
+                                description: User-friendly file name without the extension.
+                              Extension:
+                                type: string
+                                description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                          - properties:
+                              Url:
+                                type: string
+                                format: uri
+                                description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+      responses:
+        '200':
+          description: The interaction was updated successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                - properties:
+                    Date:
+                      type: string
+                      format: date
+                    Note:
+                      type: string
+                    Channel:
+                      type: string
+                      enum:
+                      - Email
+                      - MassEmail
+                      - Phone
+                      - TextMessage
+                      - Mail
+                      - InPerson
+                      - SocialMedia
+                      - Website
+                      - Twitter
+                      - Other
+                      - EngagementSurveyEmail
+                      - EngagementSurvey
+                    Purpose:
+                      type: string
+                      enum:
+                      - Acknowledgement
+                      - ImpactCultivation
+                      - Newsletter
+                      - Receipt
+                      - Solicitation
+                      - SpecialEvent
+                      - VolunteerActivity
+                      - PledgeReminder
+                      - Welcome
+                      - BenevonPointOfEntry
+                      - BenevonFollowUp
+                      - BenevonAskEvent
+                      - BenevonOneOnOneAsk
+                      - BenevonOngoingCultivation
+                      - Other
+                    Subject:
+                      type: string
+                    IsInbound:
+                      type: boolean
+                - type: object
+                  properties:
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    TweetId:
+                      type: string
+                      description: If the Channel is Twitter, this contains the ID of the tweet that can be used to display the tweet by substituting into https://twitter.com/anyUser/status/{TweetId}
+                    IsBcc:
+                      type: boolean
+                      description: Whether or not this interaction was created by an email that was sent to Bloomerang via BCC
+                    EmailAddress:
+                      type: string
+                      format: email
+                      description: If the interaction is an email interaction, this is the email address of the constituent that received the email. Only populated when IsBcc is true.
+                    AttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The ID of the attachments on this interaction
+                    LetterAttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The ID of generated letter attachments on this interaction.
+                    SurveyLapsedResponses:
+                      type: array
+                      items:
+                        type: string
+                        description: The list of reasons the donor lapsed, if this interaction represents a lapsed donor survey response
+                    IsEngagementSurveyResponse:
+                      type: boolean
+                      description: Whether this interaction represents a donor survey response
+                    SurveyEmailInteractionId:
+                      type: integer
+                      format: int64
+                      description: The interaction ID of the survey email that was sent to the donor.  Only populated when IsEngagementSurveyResponse is true
+                    IsEngagementSurveyEmail:
+                      type: boolean
+                      description: Whether this interaction represents a survey email that was sent to the donor
+                    SurveyResponseInteractionId:
+                      type: integer
+                      format: int64
+                      description: The interaction ID of the survey response.  Only populated when IsEngagementSurveyEmail is true.
+                    CustomValues:
+                      type: array
+                      items:
+                        oneOf:
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Value:
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                Value:
+                                  type: string
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Values:
+                              type: array
+                              items:
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  Value:
+                                    type: string
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: putInteractionById
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Interactions
+      summary: Deletes an interaction
+      responses:
+        '200':
+          description: The interaction was deleted successfully.
+          content:
+            application/json:
+              schema:
+                properties:
+                  Id:
+                    type: integer
+                    description: The ID of the object that was deleted
+                    format: int64
+                  Type:
+                    type: string
+                    description: The type of object that was deleted
+                  Deleted:
+                    type: boolean
+                    description: True if the object was deleted
+      operationId: deleteInteractionById
+      x-operation-id-source: derived
 components:
-  responses:
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-  schemas:
-    Interaction:
-      allOf:
-      - $ref: '#/components/schemas/InteractionInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-    InteractionInput:
-      type: object
-      required:
-      - AccountId
-      - Date
-      - Channel
-      properties:
-        AccountId:
-          type: integer
-        Date:
-          type: string
-          format: date
-        Channel:
-          type: string
-          enum:
-          - Call
-          - Email
-          - InPerson
-          - Letter
-          - Other
-        Purpose:
-          type: string
-        Note:
-          type: string
-        UserId:
-          type: integer
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
-  parameters:
-    Take:
-      name: take
-      in: query
-      required: false
-      description: Number of records to return, for pagination.
-      schema:
-        type: integer
-        default: 50
-    Skip:
-      name: skip
-      in: query
-      required: false
-      description: Number of records to skip, for pagination.
-      schema:
-        type: integer
-        default: 0
   securitySchemes:
-    apiKeyAuth:
+    ApiKeyAuth:
       type: apiKey
       in: header
-      name: X-Api-Key
-      description: Private API key generated by an Administrator user in Bloomerang under User Settings > Edit My User. Grants full read/write access - keep it secret.
-    oauth2Bearer:
+      name: X-API-KEY
+    OAuth2:
       type: oauth2
-      description: 'OAuth 2.0 access token for third-party applications, presented as `Authorization: Bearer {access_token}`.'
+      description: OAuth 2 with the authorization code flow.
       flows:
         authorizationCode:
-          authorizationUrl: https://crm.bloomerang.co/oauth/authorize
+          authorizationUrl: https://crm.bloomerang.com/authorize/
           tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
           scopes:
-            api: Full read/write access to account data.
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

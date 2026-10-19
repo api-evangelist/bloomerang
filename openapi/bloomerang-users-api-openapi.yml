@@ -1,0 +1,436 @@
+openapi: 3.2.0
+info:
+  title: Bloomerang Users API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
+  contact:
+    name: Bloomerang
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
+servers:
+- url: https://api.bloomerang.co/v2
+security:
+- ApiKeyAuth: []
+- OAuth2: []
+tags:
+- name: Users
+paths:
+  /keys:
+    post:
+      tags:
+      - Users
+      summary: Returns the API keys for a given user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: The API keys for the user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  UserApiKeys:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        key:
+                          type: string
+      operationId: postKeys
+      x-operation-id-source: derived
+  /database:
+    get:
+      tags:
+      - Users
+      summary: Gets general organization information
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  Id:
+                    type: string
+                    description: Internal Bloomerang database ID
+                  Name:
+                    type: string
+                    description: Organization name
+                  Flavor:
+                    type: string
+                    enum:
+                    - Customer
+                    - Conversions
+                    - Demo
+                  BaseLicenseProvider:
+                    type: string
+                    enum:
+                    - Bloomerang
+                    - Firespring
+                    - Benevon
+                  AccountingIntegration:
+                    type: string
+                    enum:
+                    - Aplos
+                    - QuickBooks Desktop
+                    - QuickBooks Online
+                    - None
+                  CurrentFiscalYearStartDate:
+                    type: string
+                    format: date
+                    description: The start date of the organization's current fiscal year, as a date-only ISO string (YYYY-MM-DD). Advances by one year on the configured fiscal year start.
+      operationId: getDatabase
+      x-operation-id-source: derived
+  /user/current:
+    get:
+      tags:
+      - Users
+      summary: Gets the user corresponding to the private API key used
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    Name:
+                      type: string
+                      description: The user's friendly name
+                    Email:
+                      type: string
+                      format: email
+                    IsActive:
+                      type: boolean
+                    SendTaskEmails:
+                      type: boolean
+                      default: false
+                      description: User preference that determines whether Bloomerang will send them Task Reminder emails
+                - type: object
+                  properties:
+                    UserName:
+                      type: string
+                      description: The user's username
+                    PendingEmail:
+                      type: string
+                      description: An email address that will be used once the user verifies it
+                      format: email
+                    BccEmail:
+                      type: string
+                      format: email
+                    PermissionLevel:
+                      type: string
+                      enum:
+                      - Admin
+                      - Standard
+                      - StandardEditFinancialData
+                      description: A representation of the user's level of permission
+                    Phone:
+                      type: string
+                      format: phone
+                    UserTimeZone:
+                      type: object
+                      properties:
+                        Id:
+                          type: string
+                          description: See [.NET's TimeZoneInfo.Id property](https://docs.microsoft.com/en-us/dotnet/api/system.timezoneinfo.id)
+                        Name:
+                          type: string
+                          description: See [.NET's TimeZoneInfo.StandardName property](https://docs.microsoft.com/en-us/dotnet/api/system.timezoneinfo.standardname)
+                        UtcOffset:
+                          type: string
+                          description: See [.NET's TimeZoneInfo.BaseUtcOffset property](https://docs.microsoft.com/en-us/dotnet/api/system.timezoneinfo.baseutcoffset)
+      operationId: getUserCurrent
+      x-operation-id-source: derived
+  /users:
+    get:
+      tags:
+      - Users
+      summary: Gets a list of users
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: isActive
+        schema:
+          type: boolean
+          default: true
+        description: Filters to only users that are active (or inactive)
+      - in: query
+        name: username
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Filters results based on the username for the user.
+      - in: query
+        name: name
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: Filters results based on the name of the user.
+      - in: query
+        name: email
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: email
+        description: Filters results based on the email for the user.
+      - in: query
+        name: id
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the ID for the user.
+      responses:
+        '200':
+          description: The list of users that met the specified filters.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - properties:
+                            Id:
+                              type: integer
+                              format: int64
+                            Name:
+                              type: string
+                              description: The user's friendly name
+                            Email:
+                              type: string
+                              format: email
+                            IsActive:
+                              type: boolean
+                            SendTaskEmails:
+                              type: boolean
+                              default: false
+                              description: User preference that determines whether Bloomerang will send them Task Reminder emails
+                        - type: object
+                          properties:
+                            UserName:
+                              type: string
+                              description: The user's username
+                            PendingEmail:
+                              type: string
+                              description: An email address that will be used once the user verifies it
+                              format: email
+                            BccEmail:
+                              type: string
+                              format: email
+                            PermissionLevel:
+                              type: string
+                              enum:
+                              - Admin
+                              - Standard
+                              - StandardEditFinancialData
+                              description: A representation of the user's level of permission
+                            Phone:
+                              type: string
+                              format: phone
+                            UserTimeZone:
+                              type: object
+                              properties:
+                                Id:
+                                  type: string
+                                  description: See [.NET's TimeZoneInfo.Id property](https://docs.microsoft.com/en-us/dotnet/api/system.timezoneinfo.id)
+                                Name:
+                                  type: string
+                                  description: See [.NET's TimeZoneInfo.StandardName property](https://docs.microsoft.com/en-us/dotnet/api/system.timezoneinfo.standardname)
+                                UtcOffset:
+                                  type: string
+                                  description: See [.NET's TimeZoneInfo.BaseUtcOffset property](https://docs.microsoft.com/en-us/dotnet/api/system.timezoneinfo.baseutcoffset)
+      operationId: getUsers
+      x-operation-id-source: derived
+  /users/search:
+    get:
+      tags:
+      - Users
+      summary: Searches for users
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: The text to search username, name, and email address
+      - in: query
+        name: isActive
+        schema:
+          type: boolean
+          default: true
+        description: Filters to only users that are active (or inactive)
+      responses:
+        '200':
+          description: The list of users that met the search criteria.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - properties:
+                            Id:
+                              type: integer
+                              format: int64
+                            Name:
+                              type: string
+                              description: The user's friendly name
+                            Email:
+                              type: string
+                              format: email
+                            IsActive:
+                              type: boolean
+                            SendTaskEmails:
+                              type: boolean
+                              default: false
+                              description: User preference that determines whether Bloomerang will send them Task Reminder emails
+                        - type: object
+                          properties:
+                            UserName:
+                              type: string
+                              description: The user's username
+                            PendingEmail:
+                              type: string
+                              description: An email address that will be used once the user verifies it
+                              format: email
+                            BccEmail:
+                              type: string
+                              format: email
+                            PermissionLevel:
+                              type: string
+                              enum:
+                              - Admin
+                              - Standard
+                              - StandardEditFinancialData
+                              description: A representation of the user's level of permission
+                            Phone:
+                              type: string
+                              format: phone
+                            UserTimeZone:
+                              type: object
+                              properties:
+                                Id:
+                                  type: string
+                                  description: See [.NET's TimeZoneInfo.Id property](https://docs.microsoft.com/en-us/dotnet/api/system.timezoneinfo.id)
+                                Name:
+                                  type: string
+                                  description: See [.NET's TimeZoneInfo.StandardName property](https://docs.microsoft.com/en-us/dotnet/api/system.timezoneinfo.standardname)
+                                UtcOffset:
+                                  type: string
+                                  description: See [.NET's TimeZoneInfo.BaseUtcOffset property](https://docs.microsoft.com/en-us/dotnet/api/system.timezoneinfo.baseutcoffset)
+      operationId: getUsersSearch
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    OAuth2:
+      type: oauth2
+      description: OAuth 2 with the authorization code flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://crm.bloomerang.com/authorize/
+          tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
+          scopes:
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

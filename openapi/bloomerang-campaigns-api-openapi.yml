@@ -1,0 +1,541 @@
+openapi: 3.2.0
+info:
+  title: Bloomerang Campaigns API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
+  contact:
+    name: Bloomerang
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
+servers:
+- url: https://api.bloomerang.co/v2
+security:
+- ApiKeyAuth: []
+- OAuth2: []
+tags:
+- name: Campaigns
+paths:
+  /campaigns:
+    get:
+      tags:
+      - Campaigns
+      summary: Gets a list of campaigns
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: lastModified
+        schema:
+          type: string
+          format: date-time
+        description: Filters to campaigns last modified after the specified date
+      - in: query
+        name: id
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters to campaigns with the IDs in the list (pipe-separated)
+      - in: query
+        name: isActive
+        schema:
+          type: boolean
+        description: Filters to either active or inactive campaigns
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Filters to campaigns with names that match any part of the search string
+      - in: query
+        name: hasGoal
+        schema:
+          type: boolean
+        description: Filters to campaigns that have either non-zero-dollar or zero-dollar goals
+      responses:
+        '200':
+          description: The list of campaigns that met the search criteria.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - type: object
+                          properties:
+                            Id:
+                              type: integer
+                              format: int64
+                            Raised:
+                              type: number
+                              format: currency
+                              description: The total amount raised for this campaign. When RaisedCalculationMode is SoftCreditPledgeAdjusted, a donation whose soft credit paid down a pledge contributes only the remainder here, so this total is lower than the Legacy figure for the same campaign. The pledge normally contributes the rest; see RaisedCalculationMode for the written-off and overpaid cases where it does not. Always read that field alongside this one before comparing campaigns across databases or against a previously reported number.
+                            RaisedCalculationMode:
+                              type: string
+                              enum:
+                              - Legacy
+                              - SoftCreditPledgeAdjusted
+                              description: 'Which formula produced the Raised value in this response. This is not a fixed property of the API: the corrected calculation is being rolled out one database at a time, so the same endpoint can return one mode for one organization and the other mode for another at the same moment.
+
+                                SoftCreditPledgeAdjusted means the donation side subtracts any soft credits on the entry that pay down a pledge, floored at zero, so Raised can legitimately be less than Revenue. In the ordinary case the pledge reports that money instead and it stops being counted twice. Do not treat that as a guaranteed conservation, though: the two sides are computed independently rather than handed from one to the other, and a pledge that has been written off or overpaid absorbs less than the donation gave up, leaving the difference reported by neither side.
+
+                                Legacy means the older behaviour: Raised equals Revenue for non-pledge entries, and a soft credit that pays a pledge is counted both on the pledge and again on the donation it came from, so any total that combines the two counts that money twice.
+
+                                Do not compare or add Raised figures that carry different modes, and say which basis you used when reporting a total. If this field is absent the number came from a cached summary written before the mode was recorded, and which formula produced it is unknown.'
+                        - allOf:
+                          - type: object
+                            properties:
+                              StartDate:
+                                type: string
+                                format: date
+                              EndDate:
+                                type: string
+                                format: date
+                              Goal:
+                                type: number
+                                format: currency
+                        - properties:
+                            Name:
+                              type: string
+                            SortIndex:
+                              type: integer
+                              format: int32
+                            IsActive:
+                              type: boolean
+                              description: Is this active?
+                        - type: object
+                          properties:
+                            AuditTrail:
+                              properties:
+                                CreatedDate:
+                                  type: string
+                                  format: date-time
+                                CreatedName:
+                                  type: string
+                                LastModifiedDate:
+                                  type: string
+                                  format: date-time
+                                LastModifiedName:
+                                  type: string
+      operationId: getCampaigns
+      x-operation-id-source: derived
+  /campaign:
+    post:
+      tags:
+      - Campaigns
+      summary: Creates a campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+              - allOf:
+                - type: object
+                  properties:
+                    StartDate:
+                      type: string
+                      format: date
+                    EndDate:
+                      type: string
+                      format: date
+                    Goal:
+                      type: number
+                      format: currency
+              - properties:
+                  Name:
+                    type: string
+                  IsActive:
+                    type: boolean
+                    description: Is this active?
+                  SortIndex:
+                    type: integer
+                    format: int32
+              required:
+              - Name
+      responses:
+        '200':
+          description: The campaign was created successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    Raised:
+                      type: number
+                      format: currency
+                      description: The total amount raised for this campaign. When RaisedCalculationMode is SoftCreditPledgeAdjusted, a donation whose soft credit paid down a pledge contributes only the remainder here, so this total is lower than the Legacy figure for the same campaign. The pledge normally contributes the rest; see RaisedCalculationMode for the written-off and overpaid cases where it does not. Always read that field alongside this one before comparing campaigns across databases or against a previously reported number.
+                    RaisedCalculationMode:
+                      type: string
+                      enum:
+                      - Legacy
+                      - SoftCreditPledgeAdjusted
+                      description: 'Which formula produced the Raised value in this response. This is not a fixed property of the API: the corrected calculation is being rolled out one database at a time, so the same endpoint can return one mode for one organization and the other mode for another at the same moment.
+
+                        SoftCreditPledgeAdjusted means the donation side subtracts any soft credits on the entry that pay down a pledge, floored at zero, so Raised can legitimately be less than Revenue. In the ordinary case the pledge reports that money instead and it stops being counted twice. Do not treat that as a guaranteed conservation, though: the two sides are computed independently rather than handed from one to the other, and a pledge that has been written off or overpaid absorbs less than the donation gave up, leaving the difference reported by neither side.
+
+                        Legacy means the older behaviour: Raised equals Revenue for non-pledge entries, and a soft credit that pays a pledge is counted both on the pledge and again on the donation it came from, so any total that combines the two counts that money twice.
+
+                        Do not compare or add Raised figures that carry different modes, and say which basis you used when reporting a total. If this field is absent the number came from a cached summary written before the mode was recorded, and which formula produced it is unknown.'
+                - allOf:
+                  - type: object
+                    properties:
+                      StartDate:
+                        type: string
+                        format: date
+                      EndDate:
+                        type: string
+                        format: date
+                      Goal:
+                        type: number
+                        format: currency
+                - properties:
+                    Name:
+                      type: string
+                    SortIndex:
+                      type: integer
+                      format: int32
+                    IsActive:
+                      type: boolean
+                      description: Is this active?
+                - type: object
+                  properties:
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: postCampaign
+      x-operation-id-source: derived
+  /campaign/{id}:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: The ID of the campaign to return.
+    get:
+      tags:
+      - Campaigns
+      summary: Gets a campaign by ID
+      responses:
+        '200':
+          description: The campaign with the given ID.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    Raised:
+                      type: number
+                      format: currency
+                      description: The total amount raised for this campaign. When RaisedCalculationMode is SoftCreditPledgeAdjusted, a donation whose soft credit paid down a pledge contributes only the remainder here, so this total is lower than the Legacy figure for the same campaign. The pledge normally contributes the rest; see RaisedCalculationMode for the written-off and overpaid cases where it does not. Always read that field alongside this one before comparing campaigns across databases or against a previously reported number.
+                    RaisedCalculationMode:
+                      type: string
+                      enum:
+                      - Legacy
+                      - SoftCreditPledgeAdjusted
+                      description: 'Which formula produced the Raised value in this response. This is not a fixed property of the API: the corrected calculation is being rolled out one database at a time, so the same endpoint can return one mode for one organization and the other mode for another at the same moment.
+
+                        SoftCreditPledgeAdjusted means the donation side subtracts any soft credits on the entry that pay down a pledge, floored at zero, so Raised can legitimately be less than Revenue. In the ordinary case the pledge reports that money instead and it stops being counted twice. Do not treat that as a guaranteed conservation, though: the two sides are computed independently rather than handed from one to the other, and a pledge that has been written off or overpaid absorbs less than the donation gave up, leaving the difference reported by neither side.
+
+                        Legacy means the older behaviour: Raised equals Revenue for non-pledge entries, and a soft credit that pays a pledge is counted both on the pledge and again on the donation it came from, so any total that combines the two counts that money twice.
+
+                        Do not compare or add Raised figures that carry different modes, and say which basis you used when reporting a total. If this field is absent the number came from a cached summary written before the mode was recorded, and which formula produced it is unknown.'
+                - allOf:
+                  - type: object
+                    properties:
+                      StartDate:
+                        type: string
+                        format: date
+                      EndDate:
+                        type: string
+                        format: date
+                      Goal:
+                        type: number
+                        format: currency
+                - properties:
+                    Name:
+                      type: string
+                    SortIndex:
+                      type: integer
+                      format: int32
+                    IsActive:
+                      type: boolean
+                      description: Is this active?
+                - type: object
+                  properties:
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: getCampaignById
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Campaigns
+      summary: Updates a campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                properties:
+                  Id:
+                    type: integer
+                    format: int64
+              - allOf:
+                - type: object
+                  properties:
+                    StartDate:
+                      type: string
+                      format: date
+                    EndDate:
+                      type: string
+                      format: date
+                    Goal:
+                      type: number
+                      format: currency
+              - properties:
+                  Name:
+                    type: string
+                  IsActive:
+                    type: boolean
+                    description: Is this active?
+                  SortIndex:
+                    type: integer
+                    format: int32
+      responses:
+        '200':
+          description: The campaign with the given ID.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    Raised:
+                      type: number
+                      format: currency
+                      description: The total amount raised for this campaign. When RaisedCalculationMode is SoftCreditPledgeAdjusted, a donation whose soft credit paid down a pledge contributes only the remainder here, so this total is lower than the Legacy figure for the same campaign. The pledge normally contributes the rest; see RaisedCalculationMode for the written-off and overpaid cases where it does not. Always read that field alongside this one before comparing campaigns across databases or against a previously reported number.
+                    RaisedCalculationMode:
+                      type: string
+                      enum:
+                      - Legacy
+                      - SoftCreditPledgeAdjusted
+                      description: 'Which formula produced the Raised value in this response. This is not a fixed property of the API: the corrected calculation is being rolled out one database at a time, so the same endpoint can return one mode for one organization and the other mode for another at the same moment.
+
+                        SoftCreditPledgeAdjusted means the donation side subtracts any soft credits on the entry that pay down a pledge, floored at zero, so Raised can legitimately be less than Revenue. In the ordinary case the pledge reports that money instead and it stops being counted twice. Do not treat that as a guaranteed conservation, though: the two sides are computed independently rather than handed from one to the other, and a pledge that has been written off or overpaid absorbs less than the donation gave up, leaving the difference reported by neither side.
+
+                        Legacy means the older behaviour: Raised equals Revenue for non-pledge entries, and a soft credit that pays a pledge is counted both on the pledge and again on the donation it came from, so any total that combines the two counts that money twice.
+
+                        Do not compare or add Raised figures that carry different modes, and say which basis you used when reporting a total. If this field is absent the number came from a cached summary written before the mode was recorded, and which formula produced it is unknown.'
+                - allOf:
+                  - type: object
+                    properties:
+                      StartDate:
+                        type: string
+                        format: date
+                      EndDate:
+                        type: string
+                        format: date
+                      Goal:
+                        type: number
+                        format: currency
+                - properties:
+                    Name:
+                      type: string
+                    SortIndex:
+                      type: integer
+                      format: int32
+                    IsActive:
+                      type: boolean
+                      description: Is this active?
+                - type: object
+                  properties:
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: putCampaignById
+      x-operation-id-source: derived
+  /campaigns/refreshsummaries:
+    get:
+      tags:
+      - Campaigns
+      summary: Refreshes campaign goals
+      responses:
+        '200':
+          description: The list of campaigns that are active and have a non-zero goal.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - type: object
+                          properties:
+                            Id:
+                              type: integer
+                              format: int64
+                            Raised:
+                              type: number
+                              format: currency
+                              description: The total amount raised for this campaign. When RaisedCalculationMode is SoftCreditPledgeAdjusted, a donation whose soft credit paid down a pledge contributes only the remainder here, so this total is lower than the Legacy figure for the same campaign. The pledge normally contributes the rest; see RaisedCalculationMode for the written-off and overpaid cases where it does not. Always read that field alongside this one before comparing campaigns across databases or against a previously reported number.
+                            RaisedCalculationMode:
+                              type: string
+                              enum:
+                              - Legacy
+                              - SoftCreditPledgeAdjusted
+                              description: 'Which formula produced the Raised value in this response. This is not a fixed property of the API: the corrected calculation is being rolled out one database at a time, so the same endpoint can return one mode for one organization and the other mode for another at the same moment.
+
+                                SoftCreditPledgeAdjusted means the donation side subtracts any soft credits on the entry that pay down a pledge, floored at zero, so Raised can legitimately be less than Revenue. In the ordinary case the pledge reports that money instead and it stops being counted twice. Do not treat that as a guaranteed conservation, though: the two sides are computed independently rather than handed from one to the other, and a pledge that has been written off or overpaid absorbs less than the donation gave up, leaving the difference reported by neither side.
+
+                                Legacy means the older behaviour: Raised equals Revenue for non-pledge entries, and a soft credit that pays a pledge is counted both on the pledge and again on the donation it came from, so any total that combines the two counts that money twice.
+
+                                Do not compare or add Raised figures that carry different modes, and say which basis you used when reporting a total. If this field is absent the number came from a cached summary written before the mode was recorded, and which formula produced it is unknown.'
+                        - allOf:
+                          - type: object
+                            properties:
+                              StartDate:
+                                type: string
+                                format: date
+                              EndDate:
+                                type: string
+                                format: date
+                              Goal:
+                                type: number
+                                format: currency
+                        - properties:
+                            Name:
+                              type: string
+                            SortIndex:
+                              type: integer
+                              format: int32
+                            IsActive:
+                              type: boolean
+                              description: Is this active?
+                        - type: object
+                          properties:
+                            AuditTrail:
+                              properties:
+                                CreatedDate:
+                                  type: string
+                                  format: date-time
+                                CreatedName:
+                                  type: string
+                                LastModifiedDate:
+                                  type: string
+                                  format: date-time
+                                LastModifiedName:
+                                  type: string
+      operationId: getCampaignsRefreshsummaries
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    OAuth2:
+      type: oauth2
+      description: OAuth 2 with the authorization code flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://crm.bloomerang.com/authorize/
+          tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
+          scopes:
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

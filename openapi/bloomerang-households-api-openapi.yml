@@ -1,167 +1,2526 @@
 openapi: 3.2.0
 info:
-  title: Bloomerang REST API v2 Households API
-  description: The Bloomerang REST API v2 is a private-key, server-to-server API for reading and writing data in a Bloomerang donor management CRM account - constituents, transactions (donations, pledges, recurring donations), interactions, notes, relationships, and webhook subscriptions.
-  version: '2.0'
+  title: Bloomerang Households API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
   contact:
     name: Bloomerang
-    url: https://bloomerang.com/api/rest-api
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
 servers:
 - url: https://api.bloomerang.co/v2
-  description: Bloomerang REST API v2 (production - no sandbox is offered)
 security:
-- apiKeyAuth: []
-- oauth2Bearer: []
+- ApiKeyAuth: []
+- OAuth2: []
 tags:
 - name: Households
-  description: Family-unit grouping of individual constituents.
 paths:
-  /households:
-    post:
-      operationId: createHousehold
+  /constituents/search:
+    get:
       tags:
       - Households
-      summary: Create a household
-      description: Creates a household constituent grouping one or more individual constituent members. Endpoint modeled from Bloomerang REST API v1 household resource parity; not independently confirmed for v2 - see review.yml.
+      summary: Searches for constituents and households
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: The text to search
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - Individual
+          - Organization
+          - Household
+        description: Filters individuals, organizations, and households
+      responses:
+        '200':
+          description: The list of constituents and households that met the search criteria.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        oneOf:
+                        - allOf:
+                          - type: object
+                            properties:
+                              Id:
+                                type: integer
+                                format: int64
+                                description: The ID of the constituent used in the API (not to be confused with AccountNumber)
+                              AccountNumber:
+                                type: integer
+                                format: int64
+                                description: A user-friendly account number used in the Bloomerang CRM UI (not to be confused with ID).
+                              IsInHousehold:
+                                type: boolean
+                                description: Whether the Constituent is in a household
+                              IsHeadOfHousehold:
+                                type: boolean
+                                description: Whether the Constituent is in a household and is marked as the primary
+                              IsFavorite:
+                                type: boolean
+                                description: True if this constituent is a favorite of the current user
+                              FullCustomProfileImageId:
+                                type: integer
+                                format: int64
+                                description: The ID of the existing file attachment for the full version of the custom profile image.
+                              FullCustomProfileImageUrl:
+                                type: string
+                                format: url
+                                description: The URL of the existing file attachment for the full version of the custom profile image.
+                              CroppedCustomProfileImageId:
+                                type: integer
+                                format: int64
+                                description: The ID of the existing file attachment for the cropped version of the custom profile image.
+                              CroppedCustomProfileImageUrl:
+                                type: string
+                                format: url
+                                description: The URL of the existing file attachment for the cropped version of the custom profile image.
+                          - properties:
+                              Type:
+                                type: string
+                                enum:
+                                - Individual
+                                - Organization
+                              Status:
+                                type: string
+                                enum:
+                                - Active
+                                - Inactive
+                                - Deceased
+                              FirstName:
+                                type: string
+                              LastName:
+                                type: string
+                              MiddleName:
+                                type: string
+                              Prefix:
+                                type: string
+                                description: Must match a prefix in the Bloomerang CRM
+                              Suffix:
+                                type: string
+                                description: Must match a suffix in the Bloomerang CRM
+                              FullName:
+                                type: string
+                              InformalName:
+                                type: string
+                              FormalName:
+                                type: string
+                              EnvelopeName:
+                                type: string
+                              RecognitionName:
+                                type: string
+                              JobTitle:
+                                type: string
+                              Employer:
+                                type: string
+                              Website:
+                                type: string
+                                format: uri
+                              FacebookId:
+                                type: string
+                              TwitterId:
+                                type: string
+                              LinkedInId:
+                                type: string
+                              Gender:
+                                type: string
+                                enum:
+                                - Male
+                                - Female
+                                - Other
+                              Birthdate:
+                                type: string
+                                format: date
+                              ProfilePictureType:
+                                type: string
+                                enum:
+                                - None
+                                - Custom
+                                - Twitter
+                          - type: object
+                            properties:
+                              HouseholdId:
+                                type: integer
+                                format: int64
+                                description: The ID of the household this constituent is in (not to be confused with AccountNumber)
+                              PreferredCommunicationChannel:
+                                type: string
+                                enum:
+                                - Email
+                                - Phone
+                                - TextMessage
+                                - Mail
+                              CommunicationRestrictions:
+                                type: array
+                                items:
+                                  type: string
+                                  enum:
+                                  - DoNotCall
+                                  - DoNotMail
+                                  - DoNotSolicit
+                              CommunicationRestrictionsUpdateReason:
+                                type: string
+                                description: The most-recent reason for updating this constituent's communication restrictions
+                              EmailInterestType:
+                                type: string
+                                enum:
+                                - All
+                                - Custom
+                                - OptedOut
+                              CustomEmailInterests:
+                                type: array
+                                items:
+                                  properties:
+                                    Id:
+                                      type: integer
+                                      format: int64
+                                      description: The ID of the object
+                                    Name:
+                                      type: string
+                                description: IDs for custom email interests if the email interest type is Custom
+                              EmailInterestsUpdateReason:
+                                type: string
+                                description: The most-recent reason for updating this constituent's email interests
+                              PrimaryAddress:
+                                allOf:
+                                - type: object
+                                  properties:
+                                    Id:
+                                      type: integer
+                                      format: int64
+                                    AccountId:
+                                      type: integer
+                                      format: int64
+                                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                    Type:
+                                      type: string
+                                      enum:
+                                      - Home
+                                      - Vacation
+                                      - Work
+                                    Street:
+                                      type: string
+                                    City:
+                                      type: string
+                                    State:
+                                      type: string
+                                      description: Must match a state in the Bloomerang CRM
+                                    PostalCode:
+                                      type: string
+                                    Country:
+                                      type: string
+                                      description: Must match a state in the Bloomerang CRM
+                                    IsPrimary:
+                                      type: boolean
+                                    IsBad:
+                                      type: boolean
+                                - type: object
+                                  properties:
+                                    AuditTrail:
+                                      properties:
+                                        CreatedDate:
+                                          type: string
+                                          format: date-time
+                                        CreatedName:
+                                          type: string
+                                        LastModifiedDate:
+                                          type: string
+                                          format: date-time
+                                        LastModifiedName:
+                                          type: string
+                                - type: object
+                                  properties:
+                                    StateAbbreviation:
+                                      type: string
+                                      description: The 2-3 letter abbreviation for the state/province
+                                    CountryCode:
+                                      type: string
+                                      description: The 2 letter ISO code for the country
+                              PrimaryEmail:
+                                allOf:
+                                - type: object
+                                  properties:
+                                    Id:
+                                      type: integer
+                                      format: int64
+                                    AccountId:
+                                      type: integer
+                                      format: int64
+                                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                    Type:
+                                      type: string
+                                      enum:
+                                      - Home
+                                      - Work
+                                    Value:
+                                      type: string
+                                      format: email
+                                      description: The email address
+                                    IsPrimary:
+                                      type: boolean
+                                    IsBad:
+                                      type: boolean
+                                - type: object
+                                  properties:
+                                    AuditTrail:
+                                      properties:
+                                        CreatedDate:
+                                          type: string
+                                          format: date-time
+                                        CreatedName:
+                                          type: string
+                                        LastModifiedDate:
+                                          type: string
+                                          format: date-time
+                                        LastModifiedName:
+                                          type: string
+                              PrimaryPhone:
+                                allOf:
+                                - type: object
+                                  properties:
+                                    Id:
+                                      type: integer
+                                      format: int64
+                                    AccountId:
+                                      type: integer
+                                      format: int64
+                                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                    Type:
+                                      type: string
+                                      enum:
+                                      - Home
+                                      - Work
+                                      - Mobile
+                                      - Fax
+                                    Extension:
+                                      type: string
+                                    Number:
+                                      type: string
+                                      format: phone
+                                      description: The phone number including formatting but not the extension
+                                    IsPrimary:
+                                      type: boolean
+                                properties:
+                                  AuditTrail:
+                                    properties:
+                                      CreatedDate:
+                                        type: string
+                                        format: date-time
+                                      CreatedName:
+                                        type: string
+                                      LastModifiedDate:
+                                        type: string
+                                        format: date-time
+                                      LastModifiedName:
+                                        type: string
+                              EngagementScore:
+                                type: string
+                                enum:
+                                - Low
+                                - MediumLow
+                                - Medium
+                                - MediumHigh
+                                - High
+                              EngagementScoreLabel:
+                                type: string
+                                description: The display label for the constituent's Engagement Score (e.g. Cold, Cool, Warm, Hot, On Fire!, Not Scanned)
+                              DonorSearchInfo:
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  GenerosityScore:
+                                    type: string
+                                    enum:
+                                    - Low
+                                    - MediumLow
+                                    - Medium
+                                    - MediumHigh
+                                    - High
+                                    - NotScanned
+                                  GenerosityScoreLabel:
+                                    type: string
+                                    description: The display label for the constituent's Generosity Score (e.g. Cold, Cool, Warm, Hot, On Fire!, Not Scanned)
+                                  AnnualFundLikelihood:
+                                    type: string
+                                    enum:
+                                    - Low
+                                    - MediumLow
+                                    - Medium
+                                    - MediumHigh
+                                    - High
+                                    - NotScanned
+                                  MajorGiftLikelihood:
+                                    type: string
+                                    enum:
+                                    - Low
+                                    - MediumLow
+                                    - Medium
+                                    - MediumHigh
+                                    - High
+                                    - NotScanned
+                                  Quality:
+                                    type: string
+                                    enum:
+                                    - Low
+                                    - High
+                                  LargestGiftMin:
+                                    type: number
+                                    format: currency
+                                  LargestGiftMax:
+                                    type: number
+                                    format: currency
+                                  WealthAskMin:
+                                    type: number
+                                    format: currency
+                                  WealthAskMax:
+                                    type: number
+                                    format: currency
+                                  BusinessExecutive:
+                                    type: boolean
+                                  NamesScreened:
+                                    type: string
+                                  DateTimeScreenedUtc:
+                                    type: string
+                                    format: datetime
+                                  DemocraticContributionCount:
+                                    type: integer
+                                    format: int32
+                                  RepublicanContributionCount:
+                                    type: integer
+                                    format: int32
+                                  IndependentContributionCount:
+                                    type: integer
+                                    format: int32
+                                  BusinessRevenues:
+                                    type: number
+                                    format: currency
+                                  LargestGiftOrg:
+                                    type: string
+                                  TotalGiftAmount:
+                                    type: number
+                                    format: currency
+                                  RealEstateCount:
+                                    type: integer
+                                    format: int32
+                                  Foundations:
+                                    type: string
+                              AddressIds:
+                                type: array
+                                items:
+                                  type: integer
+                                  format: int64
+                                description: The IDs of the addresses including the primary address ID
+                              EmailIds:
+                                type: array
+                                items:
+                                  type: integer
+                                  format: int64
+                                description: The IDs of the emails including the primary email ID
+                              PhoneIds:
+                                type: array
+                                items:
+                                  type: integer
+                                  format: int64
+                                description: The IDs of the phones including the primary phone ID
+                              CustomValues:
+                                type: array
+                                items:
+                                  oneOf:
+                                  - properties:
+                                      FieldId:
+                                        type: integer
+                                        format: int64
+                                      FieldText:
+                                        type: string
+                                        description: The label/text of the custom field
+                                      Value:
+                                        properties:
+                                          Id:
+                                            type: integer
+                                            format: int64
+                                          Value:
+                                            type: string
+                                  - properties:
+                                      FieldId:
+                                        type: integer
+                                        format: int64
+                                      FieldText:
+                                        type: string
+                                        description: The label/text of the custom field
+                                      Values:
+                                        type: array
+                                        items:
+                                          properties:
+                                            Id:
+                                              type: integer
+                                              format: int64
+                                            Value:
+                                              type: string
+                              AuditTrail:
+                                properties:
+                                  CreatedDate:
+                                    type: string
+                                    format: date-time
+                                  CreatedName:
+                                    type: string
+                                  LastModifiedDate:
+                                    type: string
+                                    format: date-time
+                                  LastModifiedName:
+                                    type: string
+                        - allOf:
+                          - properties:
+                              FullName:
+                                type: string
+                              SortName:
+                                type: string
+                              InformalName:
+                                type: string
+                              FormalName:
+                                type: string
+                              EnvelopeName:
+                                type: string
+                              RecognitionName:
+                                type: string
+                          - properties:
+                              Id:
+                                type: integer
+                                format: int64
+                                description: The ID of the household used in the API (not to be confused with AccountNumber)
+                              AccountNumber:
+                                type: integer
+                                format: int64
+                                description: A user-friendly account number used in the Bloomerang CRM UI (not to be confused with ID).
+                              Type:
+                                type: string
+                                enum:
+                                - Household
+                              Status:
+                                type: string
+                                enum:
+                                - Active
+                                - Inactive
+                                - Deceased
+                              HeadId:
+                                type: integer
+                                format: int64
+                                description: The ID of the head of household used in the API (not to be confused with AccountNumber)
+                              MemberIds:
+                                type: array
+                                items:
+                                  type: integer
+                                  format: int64
+                                description: The IDs of the members of the household used in the API, including the head of household's ID (not to be confused with AccountNumber)
+                              CommunicationRestrictions:
+                                type: array
+                                items:
+                                  type: string
+                                  enum:
+                                  - DoNotCall
+                                  - DoNotMail
+                                  - DoNotSolicit
+                              AuditTrail:
+                                properties:
+                                  CreatedDate:
+                                    type: string
+                                    format: date-time
+                                  CreatedName:
+                                    type: string
+                                  LastModifiedDate:
+                                    type: string
+                                    format: date-time
+                                  LastModifiedName:
+                                    type: string
+                              IsFavorite:
+                                type: boolean
+                                description: True if this constituent is a favorite of the current user
+                              EngagementScore:
+                                type: string
+                                enum:
+                                - Low
+                                - MediumLow
+                                - Medium
+                                - MediumHigh
+                                - High
+      operationId: getConstituentsSearch
+      x-operation-id-source: derived
+  /households:
+    get:
+      tags:
+      - Households
+      summary: Gets a list of households
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: lastModified
+        schema:
+          type: string
+          format: date-time
+        description: Filters to households last modified after the specified date
+      - in: query
+        name: id
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the ID for the household.
+      responses:
+        '200':
+          description: The list of households that met the search criteria.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - properties:
+                            FullName:
+                              type: string
+                            SortName:
+                              type: string
+                            InformalName:
+                              type: string
+                            FormalName:
+                              type: string
+                            EnvelopeName:
+                              type: string
+                            RecognitionName:
+                              type: string
+                        - properties:
+                            Id:
+                              type: integer
+                              format: int64
+                              description: The ID of the household used in the API (not to be confused with AccountNumber)
+                            AccountNumber:
+                              type: integer
+                              format: int64
+                              description: A user-friendly account number used in the Bloomerang CRM UI (not to be confused with ID).
+                            Type:
+                              type: string
+                              enum:
+                              - Household
+                            Status:
+                              type: string
+                              enum:
+                              - Active
+                              - Inactive
+                              - Deceased
+                            HeadId:
+                              type: integer
+                              format: int64
+                              description: The ID of the head of household used in the API (not to be confused with AccountNumber)
+                            MemberIds:
+                              type: array
+                              items:
+                                type: integer
+                                format: int64
+                              description: The IDs of the members of the household used in the API, including the head of household's ID (not to be confused with AccountNumber)
+                            CommunicationRestrictions:
+                              type: array
+                              items:
+                                type: string
+                                enum:
+                                - DoNotCall
+                                - DoNotMail
+                                - DoNotSolicit
+                            AuditTrail:
+                              properties:
+                                CreatedDate:
+                                  type: string
+                                  format: date-time
+                                CreatedName:
+                                  type: string
+                                LastModifiedDate:
+                                  type: string
+                                  format: date-time
+                                LastModifiedName:
+                                  type: string
+                            IsFavorite:
+                              type: boolean
+                              description: True if this constituent is a favorite of the current user
+                            EngagementScore:
+                              type: string
+                              enum:
+                              - Low
+                              - MediumLow
+                              - Medium
+                              - MediumHigh
+                              - High
+      operationId: getHouseholds
+      x-operation-id-source: derived
+  /household:
+    post:
+      tags:
+      - Households
+      summary: Creates a Household
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdInput'
+              allOf:
+              - allOf:
+                - properties:
+                    FullName:
+                      type: string
+                    SortName:
+                      type: string
+                    InformalName:
+                      type: string
+                    FormalName:
+                      type: string
+                    EnvelopeName:
+                      type: string
+                    RecognitionName:
+                      type: string
+                - properties:
+                    Head:
+                      description: Additional validation note - FirstName and LastName are required when Type is Individual.  FullName is required when Type is Organization.
+                      allOf:
+                      - properties:
+                          Type:
+                            type: string
+                            enum:
+                            - Individual
+                            - Organization
+                          Status:
+                            type: string
+                            enum:
+                            - Active
+                            - Inactive
+                            - Deceased
+                          FirstName:
+                            type: string
+                          LastName:
+                            type: string
+                          MiddleName:
+                            type: string
+                          Prefix:
+                            type: string
+                            description: Must match a prefix in the Bloomerang CRM
+                          Suffix:
+                            type: string
+                            description: Must match a suffix in the Bloomerang CRM
+                          FullName:
+                            type: string
+                          InformalName:
+                            type: string
+                          FormalName:
+                            type: string
+                          EnvelopeName:
+                            type: string
+                          RecognitionName:
+                            type: string
+                          JobTitle:
+                            type: string
+                          Employer:
+                            type: string
+                          Website:
+                            type: string
+                            format: uri
+                          FacebookId:
+                            type: string
+                          TwitterId:
+                            type: string
+                          LinkedInId:
+                            type: string
+                          Gender:
+                            type: string
+                            enum:
+                            - Male
+                            - Female
+                            - Other
+                          Birthdate:
+                            type: string
+                            format: date
+                          ProfilePictureType:
+                            type: string
+                            enum:
+                            - None
+                            - Custom
+                            - Twitter
+                      - type: object
+                        properties:
+                          PrimaryAddress:
+                            type: object
+                            properties:
+                              Id:
+                                type: integer
+                                format: int64
+                              AccountId:
+                                type: integer
+                                format: int64
+                                description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                              Type:
+                                type: string
+                                enum:
+                                - Home
+                                - Vacation
+                                - Work
+                              Street:
+                                type: string
+                              City:
+                                type: string
+                              State:
+                                type: string
+                                description: Must match a state in the Bloomerang CRM
+                              PostalCode:
+                                type: string
+                              Country:
+                                type: string
+                                description: Must match a state in the Bloomerang CRM
+                              IsPrimary:
+                                type: boolean
+                              IsBad:
+                                type: boolean
+                          SecondaryAddresses:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                AccountId:
+                                  type: integer
+                                  format: int64
+                                  description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                Type:
+                                  type: string
+                                  enum:
+                                  - Home
+                                  - Vacation
+                                  - Work
+                                Street:
+                                  type: string
+                                City:
+                                  type: string
+                                State:
+                                  type: string
+                                  description: Must match a state in the Bloomerang CRM
+                                PostalCode:
+                                  type: string
+                                Country:
+                                  type: string
+                                  description: Must match a state in the Bloomerang CRM
+                                IsPrimary:
+                                  type: boolean
+                                IsBad:
+                                  type: boolean
+                            description: Non-primary addresses
+                          PrimaryEmail:
+                            type: object
+                            properties:
+                              Id:
+                                type: integer
+                                format: int64
+                              AccountId:
+                                type: integer
+                                format: int64
+                                description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                              Type:
+                                type: string
+                                enum:
+                                - Home
+                                - Work
+                              Value:
+                                type: string
+                                format: email
+                                description: The email address
+                              IsPrimary:
+                                type: boolean
+                              IsBad:
+                                type: boolean
+                          SecondaryEmails:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                AccountId:
+                                  type: integer
+                                  format: int64
+                                  description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                Type:
+                                  type: string
+                                  enum:
+                                  - Home
+                                  - Work
+                                Value:
+                                  type: string
+                                  format: email
+                                  description: The email address
+                                IsPrimary:
+                                  type: boolean
+                                IsBad:
+                                  type: boolean
+                            description: Non-primary email addresses
+                          PrimaryPhone:
+                            allOf:
+                            - type: object
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                AccountId:
+                                  type: integer
+                                  format: int64
+                                  description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                Type:
+                                  type: string
+                                  enum:
+                                  - Home
+                                  - Work
+                                  - Mobile
+                                  - Fax
+                                Extension:
+                                  type: string
+                                Number:
+                                  type: string
+                                  format: phone
+                                  description: The phone number including formatting but not the extension
+                                IsPrimary:
+                                  type: boolean
+                            properties:
+                              AuditTrail:
+                                properties:
+                                  CreatedDate:
+                                    type: string
+                                    format: date-time
+                                  CreatedName:
+                                    type: string
+                                  LastModifiedDate:
+                                    type: string
+                                    format: date-time
+                                  LastModifiedName:
+                                    type: string
+                          SecondaryPhones:
+                            type: array
+                            items:
+                              allOf:
+                              - type: object
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  AccountId:
+                                    type: integer
+                                    format: int64
+                                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                  Type:
+                                    type: string
+                                    enum:
+                                    - Home
+                                    - Work
+                                    - Mobile
+                                    - Fax
+                                  Extension:
+                                    type: string
+                                  Number:
+                                    type: string
+                                    format: phone
+                                    description: The phone number including formatting but not the extension
+                                  IsPrimary:
+                                    type: boolean
+                              properties:
+                                AuditTrail:
+                                  properties:
+                                    CreatedDate:
+                                      type: string
+                                      format: date-time
+                                    CreatedName:
+                                      type: string
+                                    LastModifiedDate:
+                                      type: string
+                                      format: date-time
+                                    LastModifiedName:
+                                      type: string
+                            description: Non-primary phones
+                          FullCustomProfileImage:
+                            items:
+                              oneOf:
+                              - allOf:
+                                - properties:
+                                    Guid:
+                                      type: string
+                                      description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                                - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                                  properties:
+                                    Name:
+                                      type: string
+                                      description: User-friendly file name without the extension.
+                                    Extension:
+                                      type: string
+                                      description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                            description: The full picture File Attachment. Note that a Constituent can only have one Profile Picture; adding a new one will remove the old one.
+                          CroppedCustomProfileImage:
+                            items:
+                              oneOf:
+                              - allOf:
+                                - properties:
+                                    Guid:
+                                      type: string
+                                      description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                                - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                                  properties:
+                                    Name:
+                                      type: string
+                                      description: User-friendly file name without the extension.
+                                    Extension:
+                                      type: string
+                                      description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                            description: The cropped picture File Attachment. Note that a Constituent can only have one Profile Picture; adding a new one will remove the old one.
+                          CustomValues:
+                            type: array
+                            items:
+                              oneOf:
+                              - properties:
+                                  FieldId:
+                                    type: integer
+                                    format: int64
+                                  Value:
+                                    type: string
+                                    description: The value to assign; null clears the field
+                              - properties:
+                                  FieldId:
+                                    type: integer
+                                    format: int64
+                                  ValueId:
+                                    type: integer
+                                    format: int64
+                                    description: The ID of the pick value to assign; null clears the field
+                              - properties:
+                                  FieldId:
+                                    type: integer
+                                    format: int64
+                                  ValueIds:
+                                    type: array
+                                    items:
+                                      type: integer
+                                      format: int64
+                                    description: The ID of the pick value to assign; an empty array clears the field
+                    Members:
+                      type: array
+                      items:
+                        description: Additional validation note - FirstName and LastName are required when Type is Individual.  FullName is required when Type is Organization.
+                        allOf:
+                        - properties:
+                            Type:
+                              type: string
+                              enum:
+                              - Individual
+                              - Organization
+                            Status:
+                              type: string
+                              enum:
+                              - Active
+                              - Inactive
+                              - Deceased
+                            FirstName:
+                              type: string
+                            LastName:
+                              type: string
+                            MiddleName:
+                              type: string
+                            Prefix:
+                              type: string
+                              description: Must match a prefix in the Bloomerang CRM
+                            Suffix:
+                              type: string
+                              description: Must match a suffix in the Bloomerang CRM
+                            FullName:
+                              type: string
+                            InformalName:
+                              type: string
+                            FormalName:
+                              type: string
+                            EnvelopeName:
+                              type: string
+                            RecognitionName:
+                              type: string
+                            JobTitle:
+                              type: string
+                            Employer:
+                              type: string
+                            Website:
+                              type: string
+                              format: uri
+                            FacebookId:
+                              type: string
+                            TwitterId:
+                              type: string
+                            LinkedInId:
+                              type: string
+                            Gender:
+                              type: string
+                              enum:
+                              - Male
+                              - Female
+                              - Other
+                            Birthdate:
+                              type: string
+                              format: date
+                            ProfilePictureType:
+                              type: string
+                              enum:
+                              - None
+                              - Custom
+                              - Twitter
+                        - type: object
+                          properties:
+                            PrimaryAddress:
+                              type: object
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                AccountId:
+                                  type: integer
+                                  format: int64
+                                  description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                Type:
+                                  type: string
+                                  enum:
+                                  - Home
+                                  - Vacation
+                                  - Work
+                                Street:
+                                  type: string
+                                City:
+                                  type: string
+                                State:
+                                  type: string
+                                  description: Must match a state in the Bloomerang CRM
+                                PostalCode:
+                                  type: string
+                                Country:
+                                  type: string
+                                  description: Must match a state in the Bloomerang CRM
+                                IsPrimary:
+                                  type: boolean
+                                IsBad:
+                                  type: boolean
+                            SecondaryAddresses:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  AccountId:
+                                    type: integer
+                                    format: int64
+                                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                  Type:
+                                    type: string
+                                    enum:
+                                    - Home
+                                    - Vacation
+                                    - Work
+                                  Street:
+                                    type: string
+                                  City:
+                                    type: string
+                                  State:
+                                    type: string
+                                    description: Must match a state in the Bloomerang CRM
+                                  PostalCode:
+                                    type: string
+                                  Country:
+                                    type: string
+                                    description: Must match a state in the Bloomerang CRM
+                                  IsPrimary:
+                                    type: boolean
+                                  IsBad:
+                                    type: boolean
+                              description: Non-primary addresses
+                            PrimaryEmail:
+                              type: object
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                AccountId:
+                                  type: integer
+                                  format: int64
+                                  description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                Type:
+                                  type: string
+                                  enum:
+                                  - Home
+                                  - Work
+                                Value:
+                                  type: string
+                                  format: email
+                                  description: The email address
+                                IsPrimary:
+                                  type: boolean
+                                IsBad:
+                                  type: boolean
+                            SecondaryEmails:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  AccountId:
+                                    type: integer
+                                    format: int64
+                                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                  Type:
+                                    type: string
+                                    enum:
+                                    - Home
+                                    - Work
+                                  Value:
+                                    type: string
+                                    format: email
+                                    description: The email address
+                                  IsPrimary:
+                                    type: boolean
+                                  IsBad:
+                                    type: boolean
+                              description: Non-primary email addresses
+                            PrimaryPhone:
+                              allOf:
+                              - type: object
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  AccountId:
+                                    type: integer
+                                    format: int64
+                                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                  Type:
+                                    type: string
+                                    enum:
+                                    - Home
+                                    - Work
+                                    - Mobile
+                                    - Fax
+                                  Extension:
+                                    type: string
+                                  Number:
+                                    type: string
+                                    format: phone
+                                    description: The phone number including formatting but not the extension
+                                  IsPrimary:
+                                    type: boolean
+                              properties:
+                                AuditTrail:
+                                  properties:
+                                    CreatedDate:
+                                      type: string
+                                      format: date-time
+                                    CreatedName:
+                                      type: string
+                                    LastModifiedDate:
+                                      type: string
+                                      format: date-time
+                                    LastModifiedName:
+                                      type: string
+                            SecondaryPhones:
+                              type: array
+                              items:
+                                allOf:
+                                - type: object
+                                  properties:
+                                    Id:
+                                      type: integer
+                                      format: int64
+                                    AccountId:
+                                      type: integer
+                                      format: int64
+                                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                    Type:
+                                      type: string
+                                      enum:
+                                      - Home
+                                      - Work
+                                      - Mobile
+                                      - Fax
+                                    Extension:
+                                      type: string
+                                    Number:
+                                      type: string
+                                      format: phone
+                                      description: The phone number including formatting but not the extension
+                                    IsPrimary:
+                                      type: boolean
+                                properties:
+                                  AuditTrail:
+                                    properties:
+                                      CreatedDate:
+                                        type: string
+                                        format: date-time
+                                      CreatedName:
+                                        type: string
+                                      LastModifiedDate:
+                                        type: string
+                                        format: date-time
+                                      LastModifiedName:
+                                        type: string
+                              description: Non-primary phones
+                            FullCustomProfileImage:
+                              items:
+                                oneOf:
+                                - allOf:
+                                  - properties:
+                                      Guid:
+                                        type: string
+                                        description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                                  - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                                    properties:
+                                      Name:
+                                        type: string
+                                        description: User-friendly file name without the extension.
+                                      Extension:
+                                        type: string
+                                        description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                              description: The full picture File Attachment. Note that a Constituent can only have one Profile Picture; adding a new one will remove the old one.
+                            CroppedCustomProfileImage:
+                              items:
+                                oneOf:
+                                - allOf:
+                                  - properties:
+                                      Guid:
+                                        type: string
+                                        description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                                  - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                                    properties:
+                                      Name:
+                                        type: string
+                                        description: User-friendly file name without the extension.
+                                      Extension:
+                                        type: string
+                                        description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                              description: The cropped picture File Attachment. Note that a Constituent can only have one Profile Picture; adding a new one will remove the old one.
+                            CustomValues:
+                              type: array
+                              items:
+                                oneOf:
+                                - properties:
+                                    FieldId:
+                                      type: integer
+                                      format: int64
+                                    Value:
+                                      type: string
+                                      description: The value to assign; null clears the field
+                                - properties:
+                                    FieldId:
+                                      type: integer
+                                      format: int64
+                                    ValueId:
+                                      type: integer
+                                      format: int64
+                                      description: The ID of the pick value to assign; null clears the field
+                                - properties:
+                                    FieldId:
+                                      type: integer
+                                      format: int64
+                                    ValueIds:
+                                      type: array
+                                      items:
+                                        type: integer
+                                        format: int64
+                                      description: The ID of the pick value to assign; an empty array clears the field
+              required:
+              - FullName
+              - SortName
+              - InformalName
+              - FormalName
+              - EnvelopeName
+              - RecognitionName
+              - Head
       responses:
         '200':
-          description: The created household.
+          description: The household was created successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Household'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/ValidationError'
-  /households/{id}:
+                allOf:
+                - properties:
+                    FullName:
+                      type: string
+                    SortName:
+                      type: string
+                    InformalName:
+                      type: string
+                    FormalName:
+                      type: string
+                    EnvelopeName:
+                      type: string
+                    RecognitionName:
+                      type: string
+                - properties:
+                    Id:
+                      type: integer
+                      format: int64
+                      description: The ID of the household used in the API (not to be confused with AccountNumber)
+                    AccountNumber:
+                      type: integer
+                      format: int64
+                      description: A user-friendly account number used in the Bloomerang CRM UI (not to be confused with ID).
+                    Type:
+                      type: string
+                      enum:
+                      - Household
+                    Status:
+                      type: string
+                      enum:
+                      - Active
+                      - Inactive
+                      - Deceased
+                    HeadId:
+                      type: integer
+                      format: int64
+                      description: The ID of the head of household used in the API (not to be confused with AccountNumber)
+                    MemberIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                      description: The IDs of the members of the household used in the API, including the head of household's ID (not to be confused with AccountNumber)
+                    CommunicationRestrictions:
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                        - DoNotCall
+                        - DoNotMail
+                        - DoNotSolicit
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+                    IsFavorite:
+                      type: boolean
+                      description: True if this constituent is a favorite of the current user
+                    EngagementScore:
+                      type: string
+                      enum:
+                      - Low
+                      - MediumLow
+                      - Medium
+                      - MediumHigh
+                      - High
+      operationId: postHousehold
+      x-operation-id-source: derived
+  /household/{id}:
     parameters:
-    - name: id
-      in: path
+    - in: path
+      name: id
       required: true
-      description: The ID of the household constituent.
       schema:
         type: integer
+        format: int64
+      description: The ID of the household.
     get:
-      operationId: getHousehold
       tags:
       - Households
-      summary: Retrieve a household
-      description: Retrieves a household by ID. Endpoint modeled from Bloomerang REST API v1 household resource parity - see review.yml.
+      summary: Gets a household by ID
       responses:
         '200':
-          description: The requested household.
+          description: The household with the given ID.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Household'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    patch:
-      operationId: updateHousehold
+                allOf:
+                - properties:
+                    FullName:
+                      type: string
+                    SortName:
+                      type: string
+                    InformalName:
+                      type: string
+                    FormalName:
+                      type: string
+                    EnvelopeName:
+                      type: string
+                    RecognitionName:
+                      type: string
+                - properties:
+                    Id:
+                      type: integer
+                      format: int64
+                      description: The ID of the household used in the API (not to be confused with AccountNumber)
+                    AccountNumber:
+                      type: integer
+                      format: int64
+                      description: A user-friendly account number used in the Bloomerang CRM UI (not to be confused with ID).
+                    Type:
+                      type: string
+                      enum:
+                      - Household
+                    Status:
+                      type: string
+                      enum:
+                      - Active
+                      - Inactive
+                      - Deceased
+                    HeadId:
+                      type: integer
+                      format: int64
+                      description: The ID of the head of household used in the API (not to be confused with AccountNumber)
+                    MemberIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                      description: The IDs of the members of the household used in the API, including the head of household's ID (not to be confused with AccountNumber)
+                    CommunicationRestrictions:
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                        - DoNotCall
+                        - DoNotMail
+                        - DoNotSolicit
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+                    IsFavorite:
+                      type: boolean
+                      description: True if this constituent is a favorite of the current user
+                    EngagementScore:
+                      type: string
+                      enum:
+                      - Low
+                      - MediumLow
+                      - Medium
+                      - MediumHigh
+                      - High
+      operationId: getHouseholdById
+      x-operation-id-source: derived
+    delete:
       tags:
       - Households
-      summary: Update a household
-      description: Updates household membership or details. Endpoint modeled from Bloomerang REST API v1 household resource parity - see review.yml.
+      summary: Deletes a household
+      description: Only the household will be deleted, not the members of the household.
+      responses:
+        '200':
+          description: The household was deleted successfully.
+          content:
+            application/json:
+              schema:
+                properties:
+                  Id:
+                    type: integer
+                    description: The ID of the object that was deleted
+                    format: int64
+                  Type:
+                    type: string
+                    description: The type of object that was deleted
+                  Deleted:
+                    type: boolean
+                    description: True if the object was deleted
+      operationId: deleteHouseholdById
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Households
+      summary: Updates a household
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HouseholdInput'
+              allOf:
+              - properties:
+                  Id:
+                    type: integer
+                    format: int64
+                    description: The ID of the household used in the API (not to be confused with AccountNumber)
+              - allOf:
+                - properties:
+                    FullName:
+                      type: string
+                    SortName:
+                      type: string
+                    InformalName:
+                      type: string
+                    FormalName:
+                      type: string
+                    EnvelopeName:
+                      type: string
+                    RecognitionName:
+                      type: string
+                - properties:
+                    Head:
+                      description: Additional validation note - FirstName and LastName are required when Type is Individual.  FullName is required when Type is Organization.
+                      allOf:
+                      - properties:
+                          Type:
+                            type: string
+                            enum:
+                            - Individual
+                            - Organization
+                          Status:
+                            type: string
+                            enum:
+                            - Active
+                            - Inactive
+                            - Deceased
+                          FirstName:
+                            type: string
+                          LastName:
+                            type: string
+                          MiddleName:
+                            type: string
+                          Prefix:
+                            type: string
+                            description: Must match a prefix in the Bloomerang CRM
+                          Suffix:
+                            type: string
+                            description: Must match a suffix in the Bloomerang CRM
+                          FullName:
+                            type: string
+                          InformalName:
+                            type: string
+                          FormalName:
+                            type: string
+                          EnvelopeName:
+                            type: string
+                          RecognitionName:
+                            type: string
+                          JobTitle:
+                            type: string
+                          Employer:
+                            type: string
+                          Website:
+                            type: string
+                            format: uri
+                          FacebookId:
+                            type: string
+                          TwitterId:
+                            type: string
+                          LinkedInId:
+                            type: string
+                          Gender:
+                            type: string
+                            enum:
+                            - Male
+                            - Female
+                            - Other
+                          Birthdate:
+                            type: string
+                            format: date
+                          ProfilePictureType:
+                            type: string
+                            enum:
+                            - None
+                            - Custom
+                            - Twitter
+                      - type: object
+                        properties:
+                          PrimaryAddress:
+                            type: object
+                            properties:
+                              Id:
+                                type: integer
+                                format: int64
+                              AccountId:
+                                type: integer
+                                format: int64
+                                description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                              Type:
+                                type: string
+                                enum:
+                                - Home
+                                - Vacation
+                                - Work
+                              Street:
+                                type: string
+                              City:
+                                type: string
+                              State:
+                                type: string
+                                description: Must match a state in the Bloomerang CRM
+                              PostalCode:
+                                type: string
+                              Country:
+                                type: string
+                                description: Must match a state in the Bloomerang CRM
+                              IsPrimary:
+                                type: boolean
+                              IsBad:
+                                type: boolean
+                          SecondaryAddresses:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                AccountId:
+                                  type: integer
+                                  format: int64
+                                  description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                Type:
+                                  type: string
+                                  enum:
+                                  - Home
+                                  - Vacation
+                                  - Work
+                                Street:
+                                  type: string
+                                City:
+                                  type: string
+                                State:
+                                  type: string
+                                  description: Must match a state in the Bloomerang CRM
+                                PostalCode:
+                                  type: string
+                                Country:
+                                  type: string
+                                  description: Must match a state in the Bloomerang CRM
+                                IsPrimary:
+                                  type: boolean
+                                IsBad:
+                                  type: boolean
+                            description: Non-primary addresses
+                          PrimaryEmail:
+                            type: object
+                            properties:
+                              Id:
+                                type: integer
+                                format: int64
+                              AccountId:
+                                type: integer
+                                format: int64
+                                description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                              Type:
+                                type: string
+                                enum:
+                                - Home
+                                - Work
+                              Value:
+                                type: string
+                                format: email
+                                description: The email address
+                              IsPrimary:
+                                type: boolean
+                              IsBad:
+                                type: boolean
+                          SecondaryEmails:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                AccountId:
+                                  type: integer
+                                  format: int64
+                                  description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                Type:
+                                  type: string
+                                  enum:
+                                  - Home
+                                  - Work
+                                Value:
+                                  type: string
+                                  format: email
+                                  description: The email address
+                                IsPrimary:
+                                  type: boolean
+                                IsBad:
+                                  type: boolean
+                            description: Non-primary email addresses
+                          PrimaryPhone:
+                            allOf:
+                            - type: object
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                AccountId:
+                                  type: integer
+                                  format: int64
+                                  description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                Type:
+                                  type: string
+                                  enum:
+                                  - Home
+                                  - Work
+                                  - Mobile
+                                  - Fax
+                                Extension:
+                                  type: string
+                                Number:
+                                  type: string
+                                  format: phone
+                                  description: The phone number including formatting but not the extension
+                                IsPrimary:
+                                  type: boolean
+                            properties:
+                              AuditTrail:
+                                properties:
+                                  CreatedDate:
+                                    type: string
+                                    format: date-time
+                                  CreatedName:
+                                    type: string
+                                  LastModifiedDate:
+                                    type: string
+                                    format: date-time
+                                  LastModifiedName:
+                                    type: string
+                          SecondaryPhones:
+                            type: array
+                            items:
+                              allOf:
+                              - type: object
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  AccountId:
+                                    type: integer
+                                    format: int64
+                                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                  Type:
+                                    type: string
+                                    enum:
+                                    - Home
+                                    - Work
+                                    - Mobile
+                                    - Fax
+                                  Extension:
+                                    type: string
+                                  Number:
+                                    type: string
+                                    format: phone
+                                    description: The phone number including formatting but not the extension
+                                  IsPrimary:
+                                    type: boolean
+                              properties:
+                                AuditTrail:
+                                  properties:
+                                    CreatedDate:
+                                      type: string
+                                      format: date-time
+                                    CreatedName:
+                                      type: string
+                                    LastModifiedDate:
+                                      type: string
+                                      format: date-time
+                                    LastModifiedName:
+                                      type: string
+                            description: Non-primary phones
+                          FullCustomProfileImage:
+                            items:
+                              oneOf:
+                              - allOf:
+                                - properties:
+                                    Guid:
+                                      type: string
+                                      description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                                - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                                  properties:
+                                    Name:
+                                      type: string
+                                      description: User-friendly file name without the extension.
+                                    Extension:
+                                      type: string
+                                      description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                            description: The full picture File Attachment. Note that a Constituent can only have one Profile Picture; adding a new one will remove the old one.
+                          CroppedCustomProfileImage:
+                            items:
+                              oneOf:
+                              - allOf:
+                                - properties:
+                                    Guid:
+                                      type: string
+                                      description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                                - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                                  properties:
+                                    Name:
+                                      type: string
+                                      description: User-friendly file name without the extension.
+                                    Extension:
+                                      type: string
+                                      description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                            description: The cropped picture File Attachment. Note that a Constituent can only have one Profile Picture; adding a new one will remove the old one.
+                          CustomValues:
+                            type: array
+                            items:
+                              oneOf:
+                              - properties:
+                                  FieldId:
+                                    type: integer
+                                    format: int64
+                                  Value:
+                                    type: string
+                                    description: The value to assign; null clears the field
+                              - properties:
+                                  FieldId:
+                                    type: integer
+                                    format: int64
+                                  ValueId:
+                                    type: integer
+                                    format: int64
+                                    description: The ID of the pick value to assign; null clears the field
+                              - properties:
+                                  FieldId:
+                                    type: integer
+                                    format: int64
+                                  ValueIds:
+                                    type: array
+                                    items:
+                                      type: integer
+                                      format: int64
+                                    description: The ID of the pick value to assign; an empty array clears the field
+                    Members:
+                      type: array
+                      items:
+                        description: Additional validation note - FirstName and LastName are required when Type is Individual.  FullName is required when Type is Organization.
+                        allOf:
+                        - properties:
+                            Type:
+                              type: string
+                              enum:
+                              - Individual
+                              - Organization
+                            Status:
+                              type: string
+                              enum:
+                              - Active
+                              - Inactive
+                              - Deceased
+                            FirstName:
+                              type: string
+                            LastName:
+                              type: string
+                            MiddleName:
+                              type: string
+                            Prefix:
+                              type: string
+                              description: Must match a prefix in the Bloomerang CRM
+                            Suffix:
+                              type: string
+                              description: Must match a suffix in the Bloomerang CRM
+                            FullName:
+                              type: string
+                            InformalName:
+                              type: string
+                            FormalName:
+                              type: string
+                            EnvelopeName:
+                              type: string
+                            RecognitionName:
+                              type: string
+                            JobTitle:
+                              type: string
+                            Employer:
+                              type: string
+                            Website:
+                              type: string
+                              format: uri
+                            FacebookId:
+                              type: string
+                            TwitterId:
+                              type: string
+                            LinkedInId:
+                              type: string
+                            Gender:
+                              type: string
+                              enum:
+                              - Male
+                              - Female
+                              - Other
+                            Birthdate:
+                              type: string
+                              format: date
+                            ProfilePictureType:
+                              type: string
+                              enum:
+                              - None
+                              - Custom
+                              - Twitter
+                        - type: object
+                          properties:
+                            PrimaryAddress:
+                              type: object
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                AccountId:
+                                  type: integer
+                                  format: int64
+                                  description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                Type:
+                                  type: string
+                                  enum:
+                                  - Home
+                                  - Vacation
+                                  - Work
+                                Street:
+                                  type: string
+                                City:
+                                  type: string
+                                State:
+                                  type: string
+                                  description: Must match a state in the Bloomerang CRM
+                                PostalCode:
+                                  type: string
+                                Country:
+                                  type: string
+                                  description: Must match a state in the Bloomerang CRM
+                                IsPrimary:
+                                  type: boolean
+                                IsBad:
+                                  type: boolean
+                            SecondaryAddresses:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  AccountId:
+                                    type: integer
+                                    format: int64
+                                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                  Type:
+                                    type: string
+                                    enum:
+                                    - Home
+                                    - Vacation
+                                    - Work
+                                  Street:
+                                    type: string
+                                  City:
+                                    type: string
+                                  State:
+                                    type: string
+                                    description: Must match a state in the Bloomerang CRM
+                                  PostalCode:
+                                    type: string
+                                  Country:
+                                    type: string
+                                    description: Must match a state in the Bloomerang CRM
+                                  IsPrimary:
+                                    type: boolean
+                                  IsBad:
+                                    type: boolean
+                              description: Non-primary addresses
+                            PrimaryEmail:
+                              type: object
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                AccountId:
+                                  type: integer
+                                  format: int64
+                                  description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                Type:
+                                  type: string
+                                  enum:
+                                  - Home
+                                  - Work
+                                Value:
+                                  type: string
+                                  format: email
+                                  description: The email address
+                                IsPrimary:
+                                  type: boolean
+                                IsBad:
+                                  type: boolean
+                            SecondaryEmails:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  AccountId:
+                                    type: integer
+                                    format: int64
+                                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                  Type:
+                                    type: string
+                                    enum:
+                                    - Home
+                                    - Work
+                                  Value:
+                                    type: string
+                                    format: email
+                                    description: The email address
+                                  IsPrimary:
+                                    type: boolean
+                                  IsBad:
+                                    type: boolean
+                              description: Non-primary email addresses
+                            PrimaryPhone:
+                              allOf:
+                              - type: object
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  AccountId:
+                                    type: integer
+                                    format: int64
+                                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                  Type:
+                                    type: string
+                                    enum:
+                                    - Home
+                                    - Work
+                                    - Mobile
+                                    - Fax
+                                  Extension:
+                                    type: string
+                                  Number:
+                                    type: string
+                                    format: phone
+                                    description: The phone number including formatting but not the extension
+                                  IsPrimary:
+                                    type: boolean
+                              properties:
+                                AuditTrail:
+                                  properties:
+                                    CreatedDate:
+                                      type: string
+                                      format: date-time
+                                    CreatedName:
+                                      type: string
+                                    LastModifiedDate:
+                                      type: string
+                                      format: date-time
+                                    LastModifiedName:
+                                      type: string
+                            SecondaryPhones:
+                              type: array
+                              items:
+                                allOf:
+                                - type: object
+                                  properties:
+                                    Id:
+                                      type: integer
+                                      format: int64
+                                    AccountId:
+                                      type: integer
+                                      format: int64
+                                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                                    Type:
+                                      type: string
+                                      enum:
+                                      - Home
+                                      - Work
+                                      - Mobile
+                                      - Fax
+                                    Extension:
+                                      type: string
+                                    Number:
+                                      type: string
+                                      format: phone
+                                      description: The phone number including formatting but not the extension
+                                    IsPrimary:
+                                      type: boolean
+                                properties:
+                                  AuditTrail:
+                                    properties:
+                                      CreatedDate:
+                                        type: string
+                                        format: date-time
+                                      CreatedName:
+                                        type: string
+                                      LastModifiedDate:
+                                        type: string
+                                        format: date-time
+                                      LastModifiedName:
+                                        type: string
+                              description: Non-primary phones
+                            FullCustomProfileImage:
+                              items:
+                                oneOf:
+                                - allOf:
+                                  - properties:
+                                      Guid:
+                                        type: string
+                                        description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                                  - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                                    properties:
+                                      Name:
+                                        type: string
+                                        description: User-friendly file name without the extension.
+                                      Extension:
+                                        type: string
+                                        description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                              description: The full picture File Attachment. Note that a Constituent can only have one Profile Picture; adding a new one will remove the old one.
+                            CroppedCustomProfileImage:
+                              items:
+                                oneOf:
+                                - allOf:
+                                  - properties:
+                                      Guid:
+                                        type: string
+                                        description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                                  - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                                    properties:
+                                      Name:
+                                        type: string
+                                        description: User-friendly file name without the extension.
+                                      Extension:
+                                        type: string
+                                        description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                              description: The cropped picture File Attachment. Note that a Constituent can only have one Profile Picture; adding a new one will remove the old one.
+                            CustomValues:
+                              type: array
+                              items:
+                                oneOf:
+                                - properties:
+                                    FieldId:
+                                      type: integer
+                                      format: int64
+                                    Value:
+                                      type: string
+                                      description: The value to assign; null clears the field
+                                - properties:
+                                    FieldId:
+                                      type: integer
+                                      format: int64
+                                    ValueId:
+                                      type: integer
+                                      format: int64
+                                      description: The ID of the pick value to assign; null clears the field
+                                - properties:
+                                    FieldId:
+                                      type: integer
+                                      format: int64
+                                    ValueIds:
+                                      type: array
+                                      items:
+                                        type: integer
+                                        format: int64
+                                      description: The ID of the pick value to assign; an empty array clears the field
       responses:
         '200':
-          description: The updated household.
+          description: The household was updated successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Household'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                allOf:
+                - properties:
+                    FullName:
+                      type: string
+                    SortName:
+                      type: string
+                    InformalName:
+                      type: string
+                    FormalName:
+                      type: string
+                    EnvelopeName:
+                      type: string
+                    RecognitionName:
+                      type: string
+                - properties:
+                    Id:
+                      type: integer
+                      format: int64
+                      description: The ID of the household used in the API (not to be confused with AccountNumber)
+                    AccountNumber:
+                      type: integer
+                      format: int64
+                      description: A user-friendly account number used in the Bloomerang CRM UI (not to be confused with ID).
+                    Type:
+                      type: string
+                      enum:
+                      - Household
+                    Status:
+                      type: string
+                      enum:
+                      - Active
+                      - Inactive
+                      - Deceased
+                    HeadId:
+                      type: integer
+                      format: int64
+                      description: The ID of the head of household used in the API (not to be confused with AccountNumber)
+                    MemberIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                      description: The IDs of the members of the household used in the API, including the head of household's ID (not to be confused with AccountNumber)
+                    CommunicationRestrictions:
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                        - DoNotCall
+                        - DoNotMail
+                        - DoNotSolicit
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+                    IsFavorite:
+                      type: boolean
+                      description: True if this constituent is a favorite of the current user
+                    EngagementScore:
+                      type: string
+                      enum:
+                      - Low
+                      - MediumLow
+                      - Medium
+                      - MediumHigh
+                      - High
+      operationId: putHouseholdById
+      x-operation-id-source: derived
+  /household/{id}/updateCommunicationSettings:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: Household ID for which to update communication settings
+    put:
+      tags:
+      - Households
+      summary: Updates the communication settings for a household and all its members
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                Id:
+                  type: integer
+                  format: int64
+                  description: The ID of the household used in the API (not to be confused with AccountNumber)
+                CommunicationRestrictions:
+                  properties:
+                    UpdateReason:
+                      type: string
+                      description: The reason for updating this constituent's communication restrictions
+                    CommunicationRestrictions:
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                        - DoNotCall
+                        - DoNotMail
+                        - DoNotSolicit
+                  required:
+                  - UpdateReason
+                  - CommunicationRestrictions
+              required:
+              - CommunicationRestrictionsUpdateModel
+      responses:
+        '200':
+          description: The household with updated communication settings
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    FullName:
+                      type: string
+                    SortName:
+                      type: string
+                    InformalName:
+                      type: string
+                    FormalName:
+                      type: string
+                    EnvelopeName:
+                      type: string
+                    RecognitionName:
+                      type: string
+                - properties:
+                    Id:
+                      type: integer
+                      format: int64
+                      description: The ID of the household used in the API (not to be confused with AccountNumber)
+                    AccountNumber:
+                      type: integer
+                      format: int64
+                      description: A user-friendly account number used in the Bloomerang CRM UI (not to be confused with ID).
+                    Type:
+                      type: string
+                      enum:
+                      - Household
+                    Status:
+                      type: string
+                      enum:
+                      - Active
+                      - Inactive
+                      - Deceased
+                    HeadId:
+                      type: integer
+                      format: int64
+                      description: The ID of the head of household used in the API (not to be confused with AccountNumber)
+                    MemberIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                      description: The IDs of the members of the household used in the API, including the head of household's ID (not to be confused with AccountNumber)
+                    CommunicationRestrictions:
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                        - DoNotCall
+                        - DoNotMail
+                        - DoNotSolicit
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+                    IsFavorite:
+                      type: boolean
+                      description: True if this constituent is a favorite of the current user
+                    EngagementScore:
+                      type: string
+                      enum:
+                      - Low
+                      - MediumLow
+                      - Medium
+                      - MediumHigh
+                      - High
+      operationId: putHouseholdByIdUpdateCommunicationSettings
+      x-operation-id-source: derived
 components:
-  responses:
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-  schemas:
-    HouseholdInput:
-      type: object
-      required:
-      - Name
-      properties:
-        Name:
-          type: string
-        MemberIds:
-          type: array
-          description: Constituent IDs of the individuals belonging to this household.
-          items:
-            type: integer
-        Address:
-          type: object
-          properties:
-            Street:
-              type: string
-            City:
-              type: string
-            State:
-              type: string
-            PostalCode:
-              type: string
-            Country:
-              type: string
-    Household:
-      allOf:
-      - $ref: '#/components/schemas/HouseholdInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
   securitySchemes:
-    apiKeyAuth:
+    ApiKeyAuth:
       type: apiKey
       in: header
-      name: X-Api-Key
-      description: Private API key generated by an Administrator user in Bloomerang under User Settings > Edit My User. Grants full read/write access - keep it secret.
-    oauth2Bearer:
+      name: X-API-KEY
+    OAuth2:
       type: oauth2
-      description: 'OAuth 2.0 access token for third-party applications, presented as `Authorization: Bearer {access_token}`.'
+      description: OAuth 2 with the authorization code flow.
       flows:
         authorizationCode:
-          authorizationUrl: https://crm.bloomerang.co/oauth/authorize
+          authorizationUrl: https://crm.bloomerang.com/authorize/
           tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
           scopes:
-            api: Full read/write access to account data.
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

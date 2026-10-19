@@ -1,0 +1,379 @@
+openapi: 3.2.0
+info:
+  title: Bloomerang Wallet Items API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
+  contact:
+    name: Bloomerang
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
+servers:
+- url: https://api.bloomerang.co/v2
+security:
+- ApiKeyAuth: []
+- OAuth2: []
+tags:
+- name: Wallet Items
+paths:
+  /walletitems:
+    get:
+      tags:
+      - Wallet Items
+      summary: Gets a list of wallet items for an account
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: requireActiveProcessor
+        schema:
+          type: boolean
+        description: Includes only Wallet Items with an active Processor
+      - in: query
+        name: type
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: string
+          enum:
+          - CreditCard
+          - Eft
+          - ApplePay
+          - GooglePay
+        description: Filters results based on the provided wallet item type.
+      - in: query
+        name: constituent
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the Constituent ID for the wallet item.
+      - in: query
+        name: id
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the ID for the wallet item.
+      responses:
+        '200':
+          description: The list of wallet items that met the specified filters.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - type: object
+                          properties:
+                            Id:
+                              type: integer
+                              format: int64
+                        - properties:
+                            AccountId:
+                              type: integer
+                              format: int64
+                              description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                            TransactionProcessorAccountId:
+                              type: integer
+                              format: int64
+                              description: The ID of the processor account used in the API
+                        - type: object
+                          properties:
+                            Type:
+                              type: string
+                              enum:
+                              - CreditCard
+                              - Eft
+                              - ApplePay
+                              - GooglePay
+                            CreditCardType:
+                              type: string
+                              enum:
+                              - Visa
+                              - MasterCard
+                              - Discover
+                              - AmericanExpress
+                              - DinersClub
+                              - JCB
+                            CreditCardLastFour:
+                              type: string
+                            CreditCardExpiration:
+                              type: string
+                            EftAccountType:
+                              type: string
+                              enum:
+                              - Checking
+                              - Savings
+                            EftAccountLastFour:
+                              type: string
+                            EftRoutingNumber:
+                              type: string
+                            PaymentMethodToken:
+                              type: string
+      operationId: getWalletitems
+      x-operation-id-source: derived
+  /walletitem:
+    post:
+      tags:
+      - Wallet Items
+      summary: Creates a wallet item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - properties:
+                  AccountId:
+                    type: integer
+                    format: int64
+                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                  TransactionProcessorAccountId:
+                    type: integer
+                    format: int64
+                    description: The ID of the processor account used in the API
+              - type: object
+                properties:
+                  Type:
+                    type: string
+                    enum:
+                    - CreditCard
+                    - Eft
+                  Token:
+                    type: string
+                  IsSpreedlyToken:
+                    type: boolean
+                    description: Is the provided token from Spreedly?
+                  EftAccountType:
+                    type: string
+                    enum:
+                    - Checking
+                    - Savings
+                    description: Required if Type is Eft
+                  EftAccountLastFour:
+                    type: string
+                    description: Required if Type is Eft.  Must be exactly 4 characters
+                  EftRoutingNumber:
+                    type: string
+                    description: Required if Type is Eft.  Must be no more than 32 characters
+                  CreditCardType:
+                    type: string
+                    enum:
+                    - Visa
+                    - MasterCard
+                    - Discover
+                    - AmericanExpress
+                    - DinersClub
+                    - JCB
+              required:
+              - AccountId
+              - Type
+              - TransactionProcessorAccountId
+              - Token
+              - IsSpreedlyToken
+      responses:
+        '200':
+          description: The wallet item was created successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                - properties:
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    TransactionProcessorAccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the processor account used in the API
+                - type: object
+                  properties:
+                    Type:
+                      type: string
+                      enum:
+                      - CreditCard
+                      - Eft
+                      - ApplePay
+                      - GooglePay
+                    CreditCardType:
+                      type: string
+                      enum:
+                      - Visa
+                      - MasterCard
+                      - Discover
+                      - AmericanExpress
+                      - DinersClub
+                      - JCB
+                    CreditCardLastFour:
+                      type: string
+                    CreditCardExpiration:
+                      type: string
+                    EftAccountType:
+                      type: string
+                      enum:
+                      - Checking
+                      - Savings
+                    EftAccountLastFour:
+                      type: string
+                    EftRoutingNumber:
+                      type: string
+                    PaymentMethodToken:
+                      type: string
+      operationId: postWalletitem
+      x-operation-id-source: derived
+  /walletitem/{id}:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: The ID of the wallet item to return.
+    get:
+      tags:
+      - Wallet Items
+      summary: Gets a wallet item by ID
+      responses:
+        '200':
+          description: The wallet item with the given ID.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                - properties:
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    TransactionProcessorAccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the processor account used in the API
+                - type: object
+                  properties:
+                    Type:
+                      type: string
+                      enum:
+                      - CreditCard
+                      - Eft
+                      - ApplePay
+                      - GooglePay
+                    CreditCardType:
+                      type: string
+                      enum:
+                      - Visa
+                      - MasterCard
+                      - Discover
+                      - AmericanExpress
+                      - DinersClub
+                      - JCB
+                    CreditCardLastFour:
+                      type: string
+                    CreditCardExpiration:
+                      type: string
+                    EftAccountType:
+                      type: string
+                      enum:
+                      - Checking
+                      - Savings
+                    EftAccountLastFour:
+                      type: string
+                    EftRoutingNumber:
+                      type: string
+                    PaymentMethodToken:
+                      type: string
+      operationId: getWalletitemById
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Wallet Items
+      summary: Deletes a wallet item
+      responses:
+        '200':
+          description: The wallet item was deleted successfully.
+          content:
+            application/json:
+              schema:
+                properties:
+                  Id:
+                    type: integer
+                    description: The ID of the object that was deleted
+                    format: int64
+                  Type:
+                    type: string
+                    description: The type of object that was deleted
+                  Deleted:
+                    type: boolean
+                    description: True if the object was deleted
+      operationId: deleteWalletitemById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    OAuth2:
+      type: oauth2
+      description: OAuth 2 with the authorization code flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://crm.bloomerang.com/authorize/
+          tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
+          scopes:
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

@@ -1,0 +1,440 @@
+openapi: 3.2.0
+info:
+  title: Bloomerang Soft Credits API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
+  contact:
+    name: Bloomerang
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
+servers:
+- url: https://api.bloomerang.co/v2
+security:
+- ApiKeyAuth: []
+- OAuth2: []
+tags:
+- name: Soft Credits
+paths:
+  /softcredits:
+    get:
+      tags:
+      - Soft Credits
+      summary: Gets a list of soft credits
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: lastModified
+        schema:
+          type: string
+          format: date-time
+        description: Filters soft credits to last modified after the specified date.
+      - in: query
+        name: constituent
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the Constituent ID for the soft credit.
+      - in: query
+        name: id
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the ID for the soft credit.
+      - in: query
+        name: orderBy
+        schema:
+          type: string
+          enum:
+          - AccountId
+          - CreatedDate
+          - LastModifiedDate
+        description: Sorts by AccountId, CreatedDate, or LastModifiedDate (default AccountId).
+      - in: query
+        name: orderDirection
+        schema:
+          type: string
+          enum:
+          - Asc
+          - Desc
+        description: Sorts the orderBy in ascending or descending order.
+      responses:
+        '200':
+          description: The list of soft credits that met the specified filters.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - type: object
+                          properties:
+                            Id:
+                              type: integer
+                              format: int64
+                              description: The ID of the soft credit
+                            DesignationId:
+                              type: integer
+                              format: int64
+                              description: The ID of the designation used in the API (not to be confused with designationNumber)
+                            TransactionId:
+                              type: integer
+                              format: int64
+                              description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                            PledgeId:
+                              type: integer
+                              format: int64
+                              description: The ID of the pledge this soft credit was applied to. When set, this soft credit is paying down that pledge, which means the donation it sits on (see DesignationId) has its Raised reduced by this Amount wherever the corrected raised calculation is active. Omitted when the soft credit is not applied to a pledge.
+                            IsAppliedToPledge:
+                              type: boolean
+                              description: True when this soft credit pays down a pledge. Equivalent to PledgeId being set, and provided as an explicit flag because PledgeId is omitted rather than returned as null when there is no pledge.
+                        - properties:
+                            Amount:
+                              type: number
+                              format: currency
+                              description: The soft credit amount. Where the corrected raised calculation is active (see RaisedCalculationMode on the transaction or campaign) this may not exceed the amount of the designation the soft credit is attached to, and a larger value is rejected with a 400.
+                            AccountId:
+                              type: integer
+                              format: int64
+                              description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                        - type: object
+                          properties:
+                            AuditTrail:
+                              properties:
+                                CreatedDate:
+                                  type: string
+                                  format: date-time
+                                CreatedName:
+                                  type: string
+                                LastModifiedDate:
+                                  type: string
+                                  format: date-time
+                                LastModifiedName:
+                                  type: string
+      operationId: getSoftcredits
+      x-operation-id-source: derived
+  /softcredit:
+    post:
+      tags:
+      - Soft Credits
+      summary: Creates a soft credit
+      security:
+      - OAuth2:
+        - StandardEditFinancialData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - properties:
+                  Amount:
+                    type: number
+                    format: currency
+                    description: The soft credit amount. Where the corrected raised calculation is active (see RaisedCalculationMode on the transaction or campaign) this may not exceed the amount of the designation the soft credit is attached to, and a larger value is rejected with a 400.
+                  AccountId:
+                    type: integer
+                    format: int64
+                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+              - type: object
+                properties:
+                  DesignationId:
+                    type: integer
+                    format: int64
+                    description: The ID of the designation used in the API (not to be confused with designationNumber)
+                required:
+                - Amount
+                - AccountId
+                - DesignationId
+      responses:
+        '200':
+          description: The soft credit was created successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                      description: The ID of the soft credit
+                    DesignationId:
+                      type: integer
+                      format: int64
+                      description: The ID of the designation used in the API (not to be confused with designationNumber)
+                    TransactionId:
+                      type: integer
+                      format: int64
+                      description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                    PledgeId:
+                      type: integer
+                      format: int64
+                      description: The ID of the pledge this soft credit was applied to. When set, this soft credit is paying down that pledge, which means the donation it sits on (see DesignationId) has its Raised reduced by this Amount wherever the corrected raised calculation is active. Omitted when the soft credit is not applied to a pledge.
+                    IsAppliedToPledge:
+                      type: boolean
+                      description: True when this soft credit pays down a pledge. Equivalent to PledgeId being set, and provided as an explicit flag because PledgeId is omitted rather than returned as null when there is no pledge.
+                - properties:
+                    Amount:
+                      type: number
+                      format: currency
+                      description: The soft credit amount. Where the corrected raised calculation is active (see RaisedCalculationMode on the transaction or campaign) this may not exceed the amount of the designation the soft credit is attached to, and a larger value is rejected with a 400.
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                - type: object
+                  properties:
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+        '400':
+          description: 'The request was rejected. Among the possible causes: the Amount exceeds the amount of the designation the soft credit is attached to, the designation is a pledge or recurring donation payment, or that constituent already has a soft credit on it.'
+      operationId: postSoftcredit
+      x-operation-id-source: derived
+  /softcredit/{id}:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: The ID of the soft credit to return.
+    get:
+      tags:
+      - Soft Credits
+      summary: Gets a soft credit by ID
+      responses:
+        '200':
+          description: The soft credit with the given ID.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                      description: The ID of the soft credit
+                    DesignationId:
+                      type: integer
+                      format: int64
+                      description: The ID of the designation used in the API (not to be confused with designationNumber)
+                    TransactionId:
+                      type: integer
+                      format: int64
+                      description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                    PledgeId:
+                      type: integer
+                      format: int64
+                      description: The ID of the pledge this soft credit was applied to. When set, this soft credit is paying down that pledge, which means the donation it sits on (see DesignationId) has its Raised reduced by this Amount wherever the corrected raised calculation is active. Omitted when the soft credit is not applied to a pledge.
+                    IsAppliedToPledge:
+                      type: boolean
+                      description: True when this soft credit pays down a pledge. Equivalent to PledgeId being set, and provided as an explicit flag because PledgeId is omitted rather than returned as null when there is no pledge.
+                - properties:
+                    Amount:
+                      type: number
+                      format: currency
+                      description: The soft credit amount. Where the corrected raised calculation is active (see RaisedCalculationMode on the transaction or campaign) this may not exceed the amount of the designation the soft credit is attached to, and a larger value is rejected with a 400.
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                - type: object
+                  properties:
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: getSoftcreditById
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Soft Credits
+      summary: Updates a soft credit
+      security:
+      - OAuth2:
+        - StandardEditFinancialData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - type: object
+                properties:
+                  Id:
+                    type: integer
+                    format: int64
+                    description: The ID of the soft credit
+                required:
+                - Id
+              - properties:
+                  Amount:
+                    type: number
+                    format: currency
+                    description: The soft credit amount. Where the corrected raised calculation is active (see RaisedCalculationMode on the transaction or campaign) this may not exceed the amount of the designation the soft credit is attached to, and a larger value is rejected with a 400.
+                  AccountId:
+                    type: integer
+                    format: int64
+                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+      responses:
+        '200':
+          description: The soft credit was updated successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                      description: The ID of the soft credit
+                    DesignationId:
+                      type: integer
+                      format: int64
+                      description: The ID of the designation used in the API (not to be confused with designationNumber)
+                    TransactionId:
+                      type: integer
+                      format: int64
+                      description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                    PledgeId:
+                      type: integer
+                      format: int64
+                      description: The ID of the pledge this soft credit was applied to. When set, this soft credit is paying down that pledge, which means the donation it sits on (see DesignationId) has its Raised reduced by this Amount wherever the corrected raised calculation is active. Omitted when the soft credit is not applied to a pledge.
+                    IsAppliedToPledge:
+                      type: boolean
+                      description: True when this soft credit pays down a pledge. Equivalent to PledgeId being set, and provided as an explicit flag because PledgeId is omitted rather than returned as null when there is no pledge.
+                - properties:
+                    Amount:
+                      type: number
+                      format: currency
+                      description: The soft credit amount. Where the corrected raised calculation is active (see RaisedCalculationMode on the transaction or campaign) this may not exceed the amount of the designation the soft credit is attached to, and a larger value is rejected with a 400.
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                - type: object
+                  properties:
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+        '400':
+          description: 'The request was rejected. Among the possible causes: the Amount exceeds the amount of the designation the soft credit is attached to, or the request tried to change the AccountId.'
+      operationId: putSoftcreditById
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Soft Credits
+      summary: Deletes a soft credit
+      security:
+      - OAuth2:
+        - StandardEditFinancialData
+      responses:
+        '200':
+          description: The soft credit was deleted successfully.
+          content:
+            application/json:
+              schema:
+                properties:
+                  Id:
+                    type: integer
+                    description: The ID of the object that was deleted
+                    format: int64
+                  Type:
+                    type: string
+                    description: The type of object that was deleted
+                  Deleted:
+                    type: boolean
+                    description: True if the object was deleted
+      operationId: deleteSoftcreditById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    OAuth2:
+      type: oauth2
+      description: OAuth 2 with the authorization code flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://crm.bloomerang.com/authorize/
+          tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
+          scopes:
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

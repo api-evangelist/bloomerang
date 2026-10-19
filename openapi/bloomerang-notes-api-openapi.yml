@@ -1,136 +1,653 @@
 openapi: 3.2.0
 info:
-  title: Bloomerang REST API v2 Notes API
-  description: The Bloomerang REST API v2 is a private-key, server-to-server API for reading and writing data in a Bloomerang donor management CRM account - constituents, transactions (donations, pledges, recurring donations), interactions, notes, relationships, and webhook subscriptions.
-  version: '2.0'
+  title: Bloomerang Notes API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
   contact:
     name: Bloomerang
-    url: https://bloomerang.com/api/rest-api
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
 servers:
 - url: https://api.bloomerang.co/v2
-  description: Bloomerang REST API v2 (production - no sandbox is offered)
 security:
-- apiKeyAuth: []
-- oauth2Bearer: []
+- ApiKeyAuth: []
+- OAuth2: []
 tags:
 - name: Notes
-  description: Freeform notes attached to a constituent record.
 paths:
   /notes:
-    post:
-      operationId: createNote
+    get:
       tags:
       - Notes
-      summary: Create a note
-      description: Creates a freeform note attached to a constituent, optionally with file attachment IDs. Endpoint path modeled from Bloomerang's documented Note object and AttachmentIds property - see review.yml.
+      summary: Gets a list of notes
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: constituent
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the Constituent ID for the note.
+      - in: query
+        name: id
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the ID for the note.
+      - in: query
+        name: orderBy
+        schema:
+          type: string
+          enum:
+          - CreatedDate
+          - Date
+          - LastModifiedDate
+        description: Sorts by Date, CreatedDate, or LastModifiedDate (default Date).
+      - in: query
+        name: orderDirection
+        schema:
+          type: string
+          enum:
+          - Asc
+          - Desc
+        description: Sorts the orderBy in ascending or descending order.
+      responses:
+        '200':
+          description: The list of notes that met the specified filters.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - type: object
+                          properties:
+                            Id:
+                              type: integer
+                              format: int64
+                            AttachmentIds:
+                              type: array
+                              items:
+                                type: integer
+                                format: int64
+                                description: The IDs of the attachments on this note
+                        - properties:
+                            AccountId:
+                              type: integer
+                              format: int64
+                              description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                            Date:
+                              type: string
+                              format: date
+                            Note:
+                              type: string
+                        - type: object
+                          properties:
+                            CustomValues:
+                              type: array
+                              items:
+                                oneOf:
+                                - properties:
+                                    FieldId:
+                                      type: integer
+                                      format: int64
+                                    FieldText:
+                                      type: string
+                                      description: The label/text of the custom field
+                                    Value:
+                                      properties:
+                                        Id:
+                                          type: integer
+                                          format: int64
+                                        Value:
+                                          type: string
+                                - properties:
+                                    FieldId:
+                                      type: integer
+                                      format: int64
+                                    FieldText:
+                                      type: string
+                                      description: The label/text of the custom field
+                                    Values:
+                                      type: array
+                                      items:
+                                        properties:
+                                          Id:
+                                            type: integer
+                                            format: int64
+                                          Value:
+                                            type: string
+                            AuditTrail:
+                              properties:
+                                CreatedDate:
+                                  type: string
+                                  format: date-time
+                                CreatedName:
+                                  type: string
+                                LastModifiedDate:
+                                  type: string
+                                  format: date-time
+                                LastModifiedName:
+                                  type: string
+      operationId: getNotes
+      x-operation-id-source: derived
+  /note:
+    post:
+      tags:
+      - Notes
+      summary: Creates a note
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NoteInput'
+              allOf:
+              - allOf:
+                - properties:
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    Date:
+                      type: string
+                      format: date
+                    Note:
+                      type: string
+                - type: object
+                  properties:
+                    CustomValues:
+                      type: array
+                      items:
+                        oneOf:
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            Value:
+                              type: string
+                              description: The value to assign; null clears the field
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            ValueId:
+                              type: integer
+                              format: int64
+                              description: The ID of the pick value to assign; null clears the field
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            ValueIds:
+                              type: array
+                              items:
+                                type: integer
+                                format: int64
+                              description: The ID of the pick value to assign; an empty array clears the field
+                    Attachments:
+                      type: array
+                      items:
+                        oneOf:
+                        - allOf:
+                          - properties:
+                              Guid:
+                                type: string
+                                description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                          - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                            properties:
+                              Name:
+                                type: string
+                                description: User-friendly file name without the extension.
+                              Extension:
+                                type: string
+                                description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                          - properties:
+                              Url:
+                                type: string
+                                format: uri
+                                description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+                        - allOf:
+                          - properties:
+                              Id:
+                                type: integer
+                                format: int64
+                          - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                            properties:
+                              Name:
+                                type: string
+                                description: User-friendly file name without the extension.
+                              Extension:
+                                type: string
+                                description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                          - properties:
+                              Url:
+                                type: string
+                                format: uri
+                                description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+              required:
+              - AccountId
+              - Date
+              - Note
       responses:
         '200':
-          description: The created note.
+          description: The note was created successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Note'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '422':
-          $ref: '#/components/responses/ValidationError'
-  /notes/{id}:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The IDs of the attachments on this note
+                - properties:
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    Date:
+                      type: string
+                      format: date
+                    Note:
+                      type: string
+                - type: object
+                  properties:
+                    CustomValues:
+                      type: array
+                      items:
+                        oneOf:
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Value:
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                Value:
+                                  type: string
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Values:
+                              type: array
+                              items:
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  Value:
+                                    type: string
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: postNote
+      x-operation-id-source: derived
+  /note/{id}:
     parameters:
-    - name: id
-      in: path
+    - in: path
+      name: id
       required: true
-      description: The ID of the note.
       schema:
         type: integer
+        format: int64
+      description: The ID of the note to return.
     get:
-      operationId: getNote
       tags:
       - Notes
-      summary: Retrieve a note
-      description: Retrieves a note by ID. Endpoint modeled from Bloomerang's documented Note object - see review.yml.
+      summary: Gets a note by ID
       responses:
         '200':
-          description: The requested note.
+          description: The note with the given ID.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Note'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The IDs of the attachments on this note
+                - properties:
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    Date:
+                      type: string
+                      format: date
+                    Note:
+                      type: string
+                - type: object
+                  properties:
+                    CustomValues:
+                      type: array
+                      items:
+                        oneOf:
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Value:
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                Value:
+                                  type: string
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Values:
+                              type: array
+                              items:
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  Value:
+                                    type: string
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: getNoteById
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Notes
+      summary: Updates a note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - allOf:
+                - properties:
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    Date:
+                      type: string
+                      format: date
+                    Note:
+                      type: string
+                - type: object
+                  properties:
+                    CustomValues:
+                      type: array
+                      items:
+                        oneOf:
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            Value:
+                              type: string
+                              description: The value to assign; null clears the field
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            ValueId:
+                              type: integer
+                              format: int64
+                              description: The ID of the pick value to assign; null clears the field
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            ValueIds:
+                              type: array
+                              items:
+                                type: integer
+                                format: int64
+                              description: The ID of the pick value to assign; an empty array clears the field
+                    Attachments:
+                      type: array
+                      items:
+                        oneOf:
+                        - allOf:
+                          - properties:
+                              Guid:
+                                type: string
+                                description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                          - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                            properties:
+                              Name:
+                                type: string
+                                description: User-friendly file name without the extension.
+                              Extension:
+                                type: string
+                                description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                          - properties:
+                              Url:
+                                type: string
+                                format: uri
+                                description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+                        - allOf:
+                          - properties:
+                              Id:
+                                type: integer
+                                format: int64
+                          - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                            properties:
+                              Name:
+                                type: string
+                                description: User-friendly file name without the extension.
+                              Extension:
+                                type: string
+                                description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                          - properties:
+                              Url:
+                                type: string
+                                format: uri
+                                description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+      responses:
+        '200':
+          description: The note was updated successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The IDs of the attachments on this note
+                - properties:
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    Date:
+                      type: string
+                      format: date
+                    Note:
+                      type: string
+                - type: object
+                  properties:
+                    CustomValues:
+                      type: array
+                      items:
+                        oneOf:
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Value:
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                Value:
+                                  type: string
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Values:
+                              type: array
+                              items:
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  Value:
+                                    type: string
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: putNoteById
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Notes
+      summary: Deletes a note
+      responses:
+        '200':
+          description: The note was deleted successfully.
+          content:
+            application/json:
+              schema:
+                properties:
+                  Id:
+                    type: integer
+                    description: The ID of the object that was deleted
+                    format: int64
+                  Type:
+                    type: string
+                    description: The type of object that was deleted
+                  Deleted:
+                    type: boolean
+                    description: True if the object was deleted
+      operationId: deleteNoteById
+      x-operation-id-source: derived
 components:
-  responses:
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-  schemas:
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
-    NoteInput:
-      type: object
-      required:
-      - AccountId
-      - Note
-      properties:
-        AccountId:
-          type: integer
-        Note:
-          type: string
-        Date:
-          type: string
-          format: date
-        AttachmentIds:
-          type: array
-          items:
-            type: integer
-    Note:
-      allOf:
-      - $ref: '#/components/schemas/NoteInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
   securitySchemes:
-    apiKeyAuth:
+    ApiKeyAuth:
       type: apiKey
       in: header
-      name: X-Api-Key
-      description: Private API key generated by an Administrator user in Bloomerang under User Settings > Edit My User. Grants full read/write access - keep it secret.
-    oauth2Bearer:
+      name: X-API-KEY
+    OAuth2:
       type: oauth2
-      description: 'OAuth 2.0 access token for third-party applications, presented as `Authorization: Bearer {access_token}`.'
+      description: OAuth 2 with the authorization code flow.
       flows:
         authorizationCode:
-          authorizationUrl: https://crm.bloomerang.co/oauth/authorize
+          authorizationUrl: https://crm.bloomerang.com/authorize/
           tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
           scopes:
-            api: Full read/write access to account data.
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

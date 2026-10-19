@@ -1,0 +1,12 @@
+{
+ "url": "https://bloomerang-api-documentation.s3.us-west-2.amazonaws.com/public_crm_generated.json",
+ "final": "https://bloomerang-api-documentation.s3.us-west-2.amazonaws.com/public_crm_generated.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 1803052,
+ "sha256": "275be4658441ca9bacd349a75b834bb9796e03b39c5363785a6cdbd6df6456f5",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "re-archived: the provider's current document replaced a stale archive (roadmap#793); the old files are in openapi/_superseded/2026-10-19-stale"
+}

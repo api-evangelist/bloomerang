@@ -1,145 +1,413 @@
 openapi: 3.2.0
 info:
-  title: Bloomerang REST API v2 Relationships API
-  description: The Bloomerang REST API v2 is a private-key, server-to-server API for reading and writing data in a Bloomerang donor management CRM account - constituents, transactions (donations, pledges, recurring donations), interactions, notes, relationships, and webhook subscriptions.
-  version: '2.0'
+  title: Bloomerang Relationships API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
   contact:
     name: Bloomerang
-    url: https://bloomerang.com/api/rest-api
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
 servers:
 - url: https://api.bloomerang.co/v2
-  description: Bloomerang REST API v2 (production - no sandbox is offered)
 security:
-- apiKeyAuth: []
-- oauth2Bearer: []
+- ApiKeyAuth: []
+- OAuth2: []
 tags:
 - name: Relationships
-  description: Relationships between two constituents.
 paths:
-  /constituents/{id}/relationships:
-    parameters:
-    - $ref: '#/components/parameters/ConstituentId'
-    get:
-      operationId: listConstituentRelationships
-      tags:
-      - Relationships
-      summary: List a constituent's relationships
-      description: Lists the relationships a constituent has to other constituents.
-      responses:
-        '200':
-          description: A list of relationships.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Relationship'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+  /relationship:
     post:
-      operationId: createConstituentRelationship
       tags:
       - Relationships
-      summary: Create a relationship
-      description: Creates a relationship between the given constituent and another constituent.
+      summary: Creates a Relationship between two non-household Constituents
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RelationshipInput'
+              allOf:
+              - allOf:
+                - properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AccountId1:
+                      type: integer
+                      format: int64
+                    AccountId2:
+                      type: integer
+                      format: int64
+                    Note:
+                      type: string
+                properties:
+                  RelationshipRoleId1:
+                    type: integer
+                    format: int64
+                  RelationshipRoleId2:
+                    type: integer
+                    format: int64
+              required:
+              - AccountId1
+              - AccountId2
+              - RelationshipRoleId1
+              - RelationshipRoleId2
       responses:
         '200':
-          description: The created relationship.
+          description: The relationship was created successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Relationship'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/ValidationError'
-components:
-  responses:
-    ValidationError:
-      description: The request payload failed validation.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: The requested resource was not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid API key / access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-  schemas:
-    RelationshipInput:
-      type: object
-      required:
-      - AccountId2
-      - RelationshipRole1
-      - RelationshipRole2
-      properties:
-        AccountId2:
-          type: integer
-          description: The constituent ID on the other side of the relationship.
-        RelationshipRole1:
-          type: string
-          description: The role of the source constituent in the relationship, e.g. Spouse.
-        RelationshipRole2:
-          type: string
-          description: The role of the related constituent in the relationship, e.g. Spouse.
-        Note:
-          type: string
-    Relationship:
-      allOf:
-      - $ref: '#/components/schemas/RelationshipInput'
-      - type: object
-        properties:
-          Id:
-            type: integer
-          AccountId1:
-            type: integer
-    Error:
-      type: object
-      properties:
-        Message:
-          type: string
-        Errors:
-          type: array
-          items:
-            type: string
-  parameters:
-    ConstituentId:
+                allOf:
+                - properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AccountId1:
+                      type: integer
+                      format: int64
+                    AccountId2:
+                      type: integer
+                      format: int64
+                    Note:
+                      type: string
+                properties:
+                  RelationshipRole1:
+                    allOf:
+                    - type: object
+                      properties:
+                        Id:
+                          type: integer
+                          format: int64
+                        AuditTrail:
+                          properties:
+                            CreatedDate:
+                              type: string
+                              format: date-time
+                            CreatedName:
+                              type: string
+                            LastModifiedDate:
+                              type: string
+                              format: date-time
+                            LastModifiedName:
+                              type: string
+                    - allOf:
+                      - type: object
+                        properties:
+                          SortIndex:
+                            type: integer
+                            format: int32
+                      - properties:
+                          Name:
+                            type: string
+                          IsDefault:
+                            type: boolean
+                            description: Is this the default?
+                          IsActive:
+                            type: boolean
+                            description: Is this active?
+                  RelationshipRole2:
+                    allOf:
+                    - type: object
+                      properties:
+                        Id:
+                          type: integer
+                          format: int64
+                        AuditTrail:
+                          properties:
+                            CreatedDate:
+                              type: string
+                              format: date-time
+                            CreatedName:
+                              type: string
+                            LastModifiedDate:
+                              type: string
+                              format: date-time
+                            LastModifiedName:
+                              type: string
+                    - allOf:
+                      - type: object
+                        properties:
+                          SortIndex:
+                            type: integer
+                            format: int32
+                      - properties:
+                          Name:
+                            type: string
+                          IsDefault:
+                            type: boolean
+                            description: Is this the default?
+                          IsActive:
+                            type: boolean
+                            description: Is this active?
+      operationId: postRelationship
+      x-operation-id-source: derived
+  /relationship/{id}:
+    parameters:
+    - in: path
       name: id
-      in: path
       required: true
-      description: The ID of the constituent.
       schema:
         type: integer
+        format: int64
+      description: The ID of the relationship
+    get:
+      tags:
+      - Relationships
+      summary: Gets a relationship
+      responses:
+        '200':
+          description: The Relationship that was found
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AccountId1:
+                      type: integer
+                      format: int64
+                    AccountId2:
+                      type: integer
+                      format: int64
+                    Note:
+                      type: string
+                properties:
+                  RelationshipRole1:
+                    allOf:
+                    - type: object
+                      properties:
+                        Id:
+                          type: integer
+                          format: int64
+                        AuditTrail:
+                          properties:
+                            CreatedDate:
+                              type: string
+                              format: date-time
+                            CreatedName:
+                              type: string
+                            LastModifiedDate:
+                              type: string
+                              format: date-time
+                            LastModifiedName:
+                              type: string
+                    - allOf:
+                      - type: object
+                        properties:
+                          SortIndex:
+                            type: integer
+                            format: int32
+                      - properties:
+                          Name:
+                            type: string
+                          IsDefault:
+                            type: boolean
+                            description: Is this the default?
+                          IsActive:
+                            type: boolean
+                            description: Is this active?
+                  RelationshipRole2:
+                    allOf:
+                    - type: object
+                      properties:
+                        Id:
+                          type: integer
+                          format: int64
+                        AuditTrail:
+                          properties:
+                            CreatedDate:
+                              type: string
+                              format: date-time
+                            CreatedName:
+                              type: string
+                            LastModifiedDate:
+                              type: string
+                              format: date-time
+                            LastModifiedName:
+                              type: string
+                    - allOf:
+                      - type: object
+                        properties:
+                          SortIndex:
+                            type: integer
+                            format: int32
+                      - properties:
+                          Name:
+                            type: string
+                          IsDefault:
+                            type: boolean
+                            description: Is this the default?
+                          IsActive:
+                            type: boolean
+                            description: Is this active?
+      operationId: getRelationshipById
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Relationships
+      summary: Updates a relationship
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - allOf:
+                - properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AccountId1:
+                      type: integer
+                      format: int64
+                    AccountId2:
+                      type: integer
+                      format: int64
+                    Note:
+                      type: string
+                properties:
+                  RelationshipRoleId1:
+                    type: integer
+                    format: int64
+                  RelationshipRoleId2:
+                    type: integer
+                    format: int64
+              required:
+              - Id
+      responses:
+        '200':
+          description: The Relationship was updated
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AccountId1:
+                      type: integer
+                      format: int64
+                    AccountId2:
+                      type: integer
+                      format: int64
+                    Note:
+                      type: string
+                properties:
+                  RelationshipRole1:
+                    allOf:
+                    - type: object
+                      properties:
+                        Id:
+                          type: integer
+                          format: int64
+                        AuditTrail:
+                          properties:
+                            CreatedDate:
+                              type: string
+                              format: date-time
+                            CreatedName:
+                              type: string
+                            LastModifiedDate:
+                              type: string
+                              format: date-time
+                            LastModifiedName:
+                              type: string
+                    - allOf:
+                      - type: object
+                        properties:
+                          SortIndex:
+                            type: integer
+                            format: int32
+                      - properties:
+                          Name:
+                            type: string
+                          IsDefault:
+                            type: boolean
+                            description: Is this the default?
+                          IsActive:
+                            type: boolean
+                            description: Is this active?
+                  RelationshipRole2:
+                    allOf:
+                    - type: object
+                      properties:
+                        Id:
+                          type: integer
+                          format: int64
+                        AuditTrail:
+                          properties:
+                            CreatedDate:
+                              type: string
+                              format: date-time
+                            CreatedName:
+                              type: string
+                            LastModifiedDate:
+                              type: string
+                              format: date-time
+                            LastModifiedName:
+                              type: string
+                    - allOf:
+                      - type: object
+                        properties:
+                          SortIndex:
+                            type: integer
+                            format: int32
+                      - properties:
+                          Name:
+                            type: string
+                          IsDefault:
+                            type: boolean
+                            description: Is this the default?
+                          IsActive:
+                            type: boolean
+                            description: Is this active?
+      operationId: putRelationshipById
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Relationships
+      summary: Deletes a Relationship
+      responses:
+        '201':
+          description: The relationship was deleted successfully.
+          content:
+            application/json:
+              schema:
+                properties:
+                  Id:
+                    type: integer
+                    description: The ID of the object that was deleted
+                    format: int64
+                  Type:
+                    type: string
+                    description: The type of object that was deleted
+                  Deleted:
+                    type: boolean
+                    description: True if the object was deleted
+      operationId: deleteRelationshipById
+      x-operation-id-source: derived
+components:
   securitySchemes:
-    apiKeyAuth:
+    ApiKeyAuth:
       type: apiKey
       in: header
-      name: X-Api-Key
-      description: Private API key generated by an Administrator user in Bloomerang under User Settings > Edit My User. Grants full read/write access - keep it secret.
-    oauth2Bearer:
+      name: X-API-KEY
+    OAuth2:
       type: oauth2
-      description: 'OAuth 2.0 access token for third-party applications, presented as `Authorization: Bearer {access_token}`.'
+      description: OAuth 2 with the authorization code flow.
       flows:
         authorizationCode:
-          authorizationUrl: https://crm.bloomerang.co/oauth/authorize
+          authorizationUrl: https://crm.bloomerang.com/authorize/
           tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
           scopes:
-            api: Full read/write access to account data.
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

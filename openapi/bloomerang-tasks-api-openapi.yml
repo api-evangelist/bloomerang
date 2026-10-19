@@ -1,0 +1,967 @@
+openapi: 3.2.0
+info:
+  title: Bloomerang Tasks API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
+  contact:
+    name: Bloomerang
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
+servers:
+- url: https://api.bloomerang.co/v2
+security:
+- ApiKeyAuth: []
+- OAuth2: []
+tags:
+- name: Tasks
+paths:
+  /tasks:
+    get:
+      tags:
+      - Tasks
+      summary: Gets a list of tasks
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: status
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - Active
+            - Complete
+            - Archived
+        description: Filters results based on the task's status.
+      - in: query
+        name: minDueDate
+        schema:
+          type: string
+          format: date
+        description: Includes only tasks where the due date is on or after the parameter.
+      - in: query
+        name: maxDueDate
+        schema:
+          type: string
+          format: date
+        description: Includes only tasks where the due date is on or before the parameter.
+      - in: query
+        name: assignee
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the User ID the task is assigned to.
+      - in: query
+        name: channel
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - Email
+            - MassEmail
+            - Phone
+            - TextMessage
+            - Mail
+            - InPerson
+            - SocialMedia
+            - Website
+            - Twitter
+            - Other
+            - EngagementSurveyEmail
+            - EngagementSurvey
+        description: Filters results based on the task's channel.
+      - in: query
+        name: purpose
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - Acknowledgement
+            - ImpactCultivation
+            - Newsletter
+            - Receipt
+            - Solicitation
+            - SpecialEvent
+            - VolunteerActivity
+            - PledgeReminder
+            - Welcome
+            - BenevonPointOfEntry
+            - BenevonFollowUp
+            - BenevonAskEvent
+            - BenevonOneOnOneAsk
+            - BenevonOngoingCultivation
+            - Other
+        description: Filters results based on the task's purpose.
+      - in: query
+        name: constituent
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the Constituent ID for the task.
+      - in: query
+        name: id
+        style: pipeDelimited
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters results based on the ID for the task.
+      - in: query
+        name: orderBy
+        schema:
+          type: string
+          enum:
+          - CreatedDate
+          - Date
+          - LastModifiedDate
+        description: Sorts by Date, CreatedDate, or LastModifiedDate (default Date).
+      - in: query
+        name: orderDirection
+        schema:
+          type: string
+          enum:
+          - Asc
+          - Desc
+        description: Sorts the orderBy in ascending or descending order.
+      responses:
+        '200':
+          description: The list of tasks that met the specified filters.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - type: object
+                          properties:
+                            Id:
+                              type: integer
+                              format: int64
+                            AccountId:
+                              type: integer
+                              format: int64
+                              description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                            Status:
+                              type: string
+                              enum:
+                              - Active
+                              - Complete
+                              - Archived
+                            CompletedDate:
+                              type: string
+                              format: date
+                        - properties:
+                            DueDate:
+                              type: string
+                              format: date
+                            Subject:
+                              type: string
+                            Note:
+                              type: string
+                            Channel:
+                              type: string
+                              enum:
+                              - Email
+                              - MassEmail
+                              - Phone
+                              - TextMessage
+                              - Mail
+                              - InPerson
+                              - SocialMedia
+                              - Website
+                              - Twitter
+                              - Other
+                              - EngagementSurveyEmail
+                              - EngagementSurvey
+                            Purpose:
+                              type: string
+                              enum:
+                              - Acknowledgement
+                              - ImpactCultivation
+                              - Newsletter
+                              - Receipt
+                              - Solicitation
+                              - SpecialEvent
+                              - VolunteerActivity
+                              - PledgeReminder
+                              - Welcome
+                              - BenevonPointOfEntry
+                              - BenevonFollowUp
+                              - BenevonAskEvent
+                              - BenevonOneOnOneAsk
+                              - BenevonOngoingCultivation
+                              - Other
+                            UserId:
+                              type: integer
+                              format: int64
+                              description: The ID of the user assigned to this task
+                        - type: object
+                          properties:
+                            InteractionId:
+                              type: integer
+                              format: int64
+                              description: The ID of the interaction created by the completion of this task
+                            AttachmentIds:
+                              type: array
+                              items:
+                                type: integer
+                                format: int64
+                                description: The ID of the attachments on this task
+                            AuditTrail:
+                              properties:
+                                CreatedDate:
+                                  type: string
+                                  format: date-time
+                                CreatedName:
+                                  type: string
+                                LastModifiedDate:
+                                  type: string
+                                  format: date-time
+                                LastModifiedName:
+                                  type: string
+      operationId: getTasks
+      x-operation-id-source: derived
+  /task:
+    post:
+      tags:
+      - Tasks
+      summary: Creates a task
+      parameters:
+      - in: query
+        name: sendNotifications
+        schema:
+          type: boolean
+          default: false
+        description: If true, Bloomerang will send email notifications to the user for this task.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - properties:
+                  DueDate:
+                    type: string
+                    format: date
+                  Subject:
+                    type: string
+                  Note:
+                    type: string
+                  Channel:
+                    type: string
+                    enum:
+                    - Email
+                    - MassEmail
+                    - Phone
+                    - TextMessage
+                    - Mail
+                    - InPerson
+                    - SocialMedia
+                    - Website
+                    - Twitter
+                    - Other
+                    - EngagementSurveyEmail
+                    - EngagementSurvey
+                  Purpose:
+                    type: string
+                    enum:
+                    - Acknowledgement
+                    - ImpactCultivation
+                    - Newsletter
+                    - Receipt
+                    - Solicitation
+                    - SpecialEvent
+                    - VolunteerActivity
+                    - PledgeReminder
+                    - Welcome
+                    - BenevonPointOfEntry
+                    - BenevonFollowUp
+                    - BenevonAskEvent
+                    - BenevonOneOnOneAsk
+                    - BenevonOngoingCultivation
+                    - Other
+                  UserId:
+                    type: integer
+                    format: int64
+                    description: The ID of the user assigned to this task
+              - type: object
+                properties:
+                  AccountId:
+                    type: integer
+                    format: int64
+                    description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                  Attachments:
+                    type: array
+                    items:
+                      oneOf:
+                      - allOf:
+                        - properties:
+                            Guid:
+                              type: string
+                              description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                        - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                          properties:
+                            Name:
+                              type: string
+                              description: User-friendly file name without the extension.
+                            Extension:
+                              type: string
+                              description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                        - properties:
+                            Url:
+                              type: string
+                              format: uri
+                              description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+                      - allOf:
+                        - properties:
+                            Id:
+                              type: integer
+                              format: int64
+                        - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                          properties:
+                            Name:
+                              type: string
+                              description: User-friendly file name without the extension.
+                            Extension:
+                              type: string
+                              description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                        - properties:
+                            Url:
+                              type: string
+                              format: uri
+                              description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+      responses:
+        '200':
+          description: The task was created successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    Status:
+                      type: string
+                      enum:
+                      - Active
+                      - Complete
+                      - Archived
+                    CompletedDate:
+                      type: string
+                      format: date
+                - properties:
+                    DueDate:
+                      type: string
+                      format: date
+                    Subject:
+                      type: string
+                    Note:
+                      type: string
+                    Channel:
+                      type: string
+                      enum:
+                      - Email
+                      - MassEmail
+                      - Phone
+                      - TextMessage
+                      - Mail
+                      - InPerson
+                      - SocialMedia
+                      - Website
+                      - Twitter
+                      - Other
+                      - EngagementSurveyEmail
+                      - EngagementSurvey
+                    Purpose:
+                      type: string
+                      enum:
+                      - Acknowledgement
+                      - ImpactCultivation
+                      - Newsletter
+                      - Receipt
+                      - Solicitation
+                      - SpecialEvent
+                      - VolunteerActivity
+                      - PledgeReminder
+                      - Welcome
+                      - BenevonPointOfEntry
+                      - BenevonFollowUp
+                      - BenevonAskEvent
+                      - BenevonOneOnOneAsk
+                      - BenevonOngoingCultivation
+                      - Other
+                    UserId:
+                      type: integer
+                      format: int64
+                      description: The ID of the user assigned to this task
+                - type: object
+                  properties:
+                    InteractionId:
+                      type: integer
+                      format: int64
+                      description: The ID of the interaction created by the completion of this task
+                    AttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The ID of the attachments on this task
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: postTask
+      x-operation-id-source: derived
+  /task/{id}:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: The ID of the task to return.
+    get:
+      tags:
+      - Tasks
+      summary: Gets a task by ID
+      responses:
+        '200':
+          description: The task with the given ID.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    Status:
+                      type: string
+                      enum:
+                      - Active
+                      - Complete
+                      - Archived
+                    CompletedDate:
+                      type: string
+                      format: date
+                - properties:
+                    DueDate:
+                      type: string
+                      format: date
+                    Subject:
+                      type: string
+                    Note:
+                      type: string
+                    Channel:
+                      type: string
+                      enum:
+                      - Email
+                      - MassEmail
+                      - Phone
+                      - TextMessage
+                      - Mail
+                      - InPerson
+                      - SocialMedia
+                      - Website
+                      - Twitter
+                      - Other
+                      - EngagementSurveyEmail
+                      - EngagementSurvey
+                    Purpose:
+                      type: string
+                      enum:
+                      - Acknowledgement
+                      - ImpactCultivation
+                      - Newsletter
+                      - Receipt
+                      - Solicitation
+                      - SpecialEvent
+                      - VolunteerActivity
+                      - PledgeReminder
+                      - Welcome
+                      - BenevonPointOfEntry
+                      - BenevonFollowUp
+                      - BenevonAskEvent
+                      - BenevonOneOnOneAsk
+                      - BenevonOngoingCultivation
+                      - Other
+                    UserId:
+                      type: integer
+                      format: int64
+                      description: The ID of the user assigned to this task
+                - type: object
+                  properties:
+                    InteractionId:
+                      type: integer
+                      format: int64
+                      description: The ID of the interaction created by the completion of this task
+                    AttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The ID of the attachments on this task
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: getTaskById
+      x-operation-id-source: derived
+    put:
+      tags:
+      - Tasks
+      summary: Updates a task
+      parameters:
+      - in: query
+        name: sendNotifications
+        schema:
+          type: boolean
+          default: false
+        description: If true, Bloomerang will send email notifications to the user for this task.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - allOf:
+                - properties:
+                    DueDate:
+                      type: string
+                      format: date
+                    Subject:
+                      type: string
+                    Note:
+                      type: string
+                    Channel:
+                      type: string
+                      enum:
+                      - Email
+                      - MassEmail
+                      - Phone
+                      - TextMessage
+                      - Mail
+                      - InPerson
+                      - SocialMedia
+                      - Website
+                      - Twitter
+                      - Other
+                      - EngagementSurveyEmail
+                      - EngagementSurvey
+                    Purpose:
+                      type: string
+                      enum:
+                      - Acknowledgement
+                      - ImpactCultivation
+                      - Newsletter
+                      - Receipt
+                      - Solicitation
+                      - SpecialEvent
+                      - VolunteerActivity
+                      - PledgeReminder
+                      - Welcome
+                      - BenevonPointOfEntry
+                      - BenevonFollowUp
+                      - BenevonAskEvent
+                      - BenevonOneOnOneAsk
+                      - BenevonOngoingCultivation
+                      - Other
+                    UserId:
+                      type: integer
+                      format: int64
+                      description: The ID of the user assigned to this task
+                - type: object
+                  properties:
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    Attachments:
+                      type: array
+                      items:
+                        oneOf:
+                        - allOf:
+                          - properties:
+                              Guid:
+                                type: string
+                                description: The GUID of the object uploaded to S3. This should be generated by the client that is uploading the file attachment.
+                          - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                            properties:
+                              Name:
+                                type: string
+                                description: User-friendly file name without the extension.
+                              Extension:
+                                type: string
+                                description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                          - properties:
+                              Url:
+                                type: string
+                                format: uri
+                                description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+                        - allOf:
+                          - properties:
+                              Id:
+                                type: integer
+                                format: int64
+                          - description: Validation notes - URL is required.  If creating attachments directly via the attachments endpoint (as opposed to including them a nested objects within other models), ParentType and ParentId are required.
+                            properties:
+                              Name:
+                                type: string
+                                description: User-friendly file name without the extension.
+                              Extension:
+                                type: string
+                                description: No dot needed (use "txt" instead of ".txt"). May be null if the attachment is just a URL.
+                          - properties:
+                              Url:
+                                type: string
+                                format: uri
+                                description: If the file is stored in Bloomerang (not just a URL), this URL will only be good for 24 hours
+              - type: object
+                properties:
+                  AccountId:
+                    type: integer
+                    format: int64
+                    description: The ID of the constituent used in the API (not to be confused with accountNumber). AccountId can only be edited if it is being changed from Null to a valid AccountId.
+                  CompletedDate:
+                    type: string
+                    format: date
+      responses:
+        '200':
+          description: The task was updated successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    Status:
+                      type: string
+                      enum:
+                      - Active
+                      - Complete
+                      - Archived
+                    CompletedDate:
+                      type: string
+                      format: date
+                - properties:
+                    DueDate:
+                      type: string
+                      format: date
+                    Subject:
+                      type: string
+                    Note:
+                      type: string
+                    Channel:
+                      type: string
+                      enum:
+                      - Email
+                      - MassEmail
+                      - Phone
+                      - TextMessage
+                      - Mail
+                      - InPerson
+                      - SocialMedia
+                      - Website
+                      - Twitter
+                      - Other
+                      - EngagementSurveyEmail
+                      - EngagementSurvey
+                    Purpose:
+                      type: string
+                      enum:
+                      - Acknowledgement
+                      - ImpactCultivation
+                      - Newsletter
+                      - Receipt
+                      - Solicitation
+                      - SpecialEvent
+                      - VolunteerActivity
+                      - PledgeReminder
+                      - Welcome
+                      - BenevonPointOfEntry
+                      - BenevonFollowUp
+                      - BenevonAskEvent
+                      - BenevonOneOnOneAsk
+                      - BenevonOngoingCultivation
+                      - Other
+                    UserId:
+                      type: integer
+                      format: int64
+                      description: The ID of the user assigned to this task
+                - type: object
+                  properties:
+                    InteractionId:
+                      type: integer
+                      format: int64
+                      description: The ID of the interaction created by the completion of this task
+                    AttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The ID of the attachments on this task
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: putTaskById
+      x-operation-id-source: derived
+    delete:
+      tags:
+      - Tasks
+      summary: Deletes a task
+      responses:
+        '200':
+          description: The task was deleted successfully.
+          content:
+            application/json:
+              schema:
+                properties:
+                  Id:
+                    type: integer
+                    description: The ID of the object that was deleted
+                    format: int64
+                  Type:
+                    type: string
+                    description: The type of object that was deleted
+                  Deleted:
+                    type: boolean
+                    description: True if the object was deleted
+      operationId: deleteTaskById
+      x-operation-id-source: derived
+  /task/{id}/complete:
+    put:
+      tags:
+      - Tasks
+      summary: Completes a task
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: The task ID
+      - in: query
+        name: saveAsInteraction
+        schema:
+          type: boolean
+          default: true
+        description: True to create an interaction from the task; must be false if the task does not have a constituent
+      - in: query
+        name: completedDate
+        schema:
+          type: string
+          format: date
+          default: today
+        description: The date the task is completed
+      responses:
+        '200':
+          description: The task was completed.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AccountId:
+                      type: integer
+                      format: int64
+                      description: The ID of the constituent used in the API (not to be confused with accountNumber)
+                    Status:
+                      type: string
+                      enum:
+                      - Active
+                      - Complete
+                      - Archived
+                    CompletedDate:
+                      type: string
+                      format: date
+                - properties:
+                    DueDate:
+                      type: string
+                      format: date
+                    Subject:
+                      type: string
+                    Note:
+                      type: string
+                    Channel:
+                      type: string
+                      enum:
+                      - Email
+                      - MassEmail
+                      - Phone
+                      - TextMessage
+                      - Mail
+                      - InPerson
+                      - SocialMedia
+                      - Website
+                      - Twitter
+                      - Other
+                      - EngagementSurveyEmail
+                      - EngagementSurvey
+                    Purpose:
+                      type: string
+                      enum:
+                      - Acknowledgement
+                      - ImpactCultivation
+                      - Newsletter
+                      - Receipt
+                      - Solicitation
+                      - SpecialEvent
+                      - VolunteerActivity
+                      - PledgeReminder
+                      - Welcome
+                      - BenevonPointOfEntry
+                      - BenevonFollowUp
+                      - BenevonAskEvent
+                      - BenevonOneOnOneAsk
+                      - BenevonOngoingCultivation
+                      - Other
+                    UserId:
+                      type: integer
+                      format: int64
+                      description: The ID of the user assigned to this task
+                - type: object
+                  properties:
+                    InteractionId:
+                      type: integer
+                      format: int64
+                      description: The ID of the interaction created by the completion of this task
+                    AttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The ID of the attachments on this task
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: putTaskByIdComplete
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    OAuth2:
+      type: oauth2
+      description: OAuth 2 with the authorization code flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://crm.bloomerang.com/authorize/
+          tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
+          scopes:
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

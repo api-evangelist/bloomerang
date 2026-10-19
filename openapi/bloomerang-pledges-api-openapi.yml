@@ -1,0 +1,657 @@
+openapi: 3.2.0
+info:
+  title: Bloomerang Pledges API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
+  contact:
+    name: Bloomerang
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
+servers:
+- url: https://api.bloomerang.co/v2
+security:
+- ApiKeyAuth: []
+- OAuth2: []
+tags:
+- name: Pledges
+paths:
+  /pledge/{id}/installments:
+    get:
+      tags:
+      - Pledges
+      summary: Returns a list of pledge installments for a given pledge
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: path
+        name: id
+        required: true
+        description: A valid pledge ID
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Paged list of PledgeInstallments.
+          content:
+            text/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        properties:
+                          Id:
+                            type: integer
+                            format: int64
+                          PledgeId:
+                            type: integer
+                            format: int64
+                            description: The designation ID of this installment's pledge
+                          Date:
+                            type: string
+                            format: date
+                          Amount:
+                            type: number
+                            format: currency
+      operationId: getPledgeByIdInstallments
+      x-operation-id-source: derived
+  /pledge/generateInstallments:
+    get:
+      parameters:
+      - in: query
+        name: pledgeAmount
+        description: Total amount of the pledge
+        schema:
+          type: number
+          format: currency
+        required: true
+      - in: query
+        name: installmentAmount
+        description: Amount of each installment
+        schema:
+          type: number
+          format: currency
+        required: true
+      - in: query
+        name: firstInstallmentDate
+        schema:
+          type: string
+          format: date
+        required: true
+      - in: query
+        name: frequency
+        schema:
+          type: string
+          enum:
+          - Weekly
+          - EveryOtherWeekly
+          - TwiceMonthly
+          - Monthly
+          - EveryOtherMonthly
+          - Quarterly
+          - Yearly
+          - Custom
+        required: true
+      - in: query
+        name: day1
+        schema:
+          type: integer
+          format: int32
+        description: Day1 & Day2 are only used with the TwiceMonthly frequency. If specified, day1 must be equal to the day value in firstInstallmentDate. If not specified, day1 will be set to the day value in firstInstallmentDate.
+      - in: query
+        name: day2
+        schema:
+          type: integer
+          format: int32
+        description: Day1 & Day2 are only used with the TwiceMonthly frequency
+      tags:
+      - Pledges
+      summary: Returns a list of pledge installments for a given set of criteria.
+      responses:
+        '200':
+          description: Array of PledgeInstallments.
+          content:
+            text/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    Date:
+                      type: string
+                      format: date
+                    Amount:
+                      type: number
+                      format: currency
+      operationId: getPledgeGenerateInstallments
+      x-operation-id-source: derived
+  /pledge/{id}/payments:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: The ID of the pledge
+    - in: query
+      name: skip
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: The number of items to skip before starting to collect the result set.
+    - in: query
+      name: take
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 50
+      description: The number of items to include in the result set.
+    get:
+      tags:
+      - Pledges
+      summary: Returns a list of successful payments for the specified pledge
+      responses:
+        '200':
+          description: List of payments for the specified pledge
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Id:
+                      type: integer
+                      format: int64
+                      description: The ID of the designation used in the API (not to be confused with DesignationNumber)
+                    DesignationNumber:
+                      type: integer
+                      format: int64
+                      description: A user-friendly designation number used in the Bloomerang CRM UI (not to be confused with ID).  In Bloomerang CRM Reporting, this is known as the Transaction Number.
+                    TransactionId:
+                      type: integer
+                      format: int64
+                      description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                    Amount:
+                      type: number
+                      format: currency
+                    NonDeductibleAmount:
+                      type: number
+                      format: currency
+                    Note:
+                      type: string
+                    AcknowledgementStatus:
+                      type: string
+                      enum:
+                      - 'Yes'
+                      - 'No'
+                      - DoNotAcknowledge
+                    AcknowledgementInteractionIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The IDs of interactions that acknowledge this designation
+                    Fund:
+                      properties:
+                        Id:
+                          type: integer
+                          format: int64
+                          description: The ID of the object
+                        Name:
+                          type: string
+                    QuickbooksAccount:
+                      properties:
+                        Id:
+                          type: integer
+                          format: int64
+                          description: The ID of the object
+                        Name:
+                          type: string
+                    Campaign:
+                      properties:
+                        Id:
+                          type: integer
+                          format: int64
+                          description: The ID of the object
+                        Name:
+                          type: string
+                    Appeal:
+                      properties:
+                        Id:
+                          type: integer
+                          format: int64
+                          description: The ID of the object
+                        Name:
+                          type: string
+                    Tribute:
+                      properties:
+                        Id:
+                          type: integer
+                          format: int64
+                          description: The ID of the object
+                        Name:
+                          type: string
+                    TributeType:
+                      type: string
+                      enum:
+                      - InHonorOf
+                      - InMemoryOf
+                    SoftCreditIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The IDs of the soft credits on this transaction
+                    Raised:
+                      type: number
+                      format: currency
+                      description: 'The amount this designation counts toward fundraising credit. It is normally equal to Revenue, but it is LOWER than Revenue when a soft credit on this designation was applied to a pledge: the amount is subtracted here so that it is not counted both on this donation and on the pledge it paid. A Raised below Revenue is expected in that case rather than a refund or a data-entry error. Never negative (floored at 0). Null for entry types that do not count toward raised, such as a pledge payment. Read RaisedCalculationMode before comparing or summing this figure across databases -- the two modes are computed on different bases, and it also records the cases where the pledge does not take up what was subtracted here.'
+                    Revenue:
+                      type: number
+                      format: currency
+                      description: The money actually received for this designation. 0 if the transaction was refunded. Null for entry types that are not received money, such as a pledge, which is a promise to give. Soft credits never change this value, so comparing it with Raised tells you whether any of this designation's money was credited to a pledge.
+                    IsPledgePaymentViaSoftCredit:
+                      type: boolean
+                      description: True when a soft credit on this designation was applied to a pledge and has therefore reduced Raised below Revenue. Equivalent to checking Raised != Revenue, precomputed. Always false when RaisedCalculationMode is Legacy, because that mode never reduces Raised. Use it to explain a Raised that looks too low, or to find the donations whose credit has moved to a pledge.
+                    RaisedCalculationMode:
+                      type: string
+                      enum:
+                      - Legacy
+                      - SoftCreditPledgeAdjusted
+                      description: 'Which formula produced the Raised value in this response. This is not a fixed property of the API: the corrected calculation is being rolled out one database at a time, so the same endpoint can return one mode for one organization and the other mode for another at the same moment.
+
+                        SoftCreditPledgeAdjusted means the donation side subtracts any soft credits on the entry that pay down a pledge, floored at zero, so Raised can legitimately be less than Revenue. In the ordinary case the pledge reports that money instead and it stops being counted twice. Do not treat that as a guaranteed conservation, though: the two sides are computed independently rather than handed from one to the other, and a pledge that has been written off or overpaid absorbs less than the donation gave up, leaving the difference reported by neither side.
+
+                        Legacy means the older behaviour: Raised equals Revenue for non-pledge entries, and a soft credit that pays a pledge is counted both on the pledge and again on the donation it came from, so any total that combines the two counts that money twice.
+
+                        Do not compare or add Raised figures that carry different modes, and say which basis you used when reporting a total. If this field is absent the number came from a cached summary written before the mode was recorded, and which formula produced it is unknown.'
+                    AttachmentIds:
+                      type: array
+                      items:
+                        type: integer
+                        format: int64
+                        description: The IDs of the attachments on this interaction
+                    CustomValues:
+                      type: array
+                      items:
+                        oneOf:
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Value:
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                Value:
+                                  type: string
+                        - properties:
+                            FieldId:
+                              type: integer
+                              format: int64
+                            FieldText:
+                              type: string
+                              description: The label/text of the custom field
+                            Values:
+                              type: array
+                              items:
+                                properties:
+                                  Id:
+                                    type: integer
+                                    format: int64
+                                  Value:
+                                    type: string
+                    QuickBooksOnlineStatus:
+                      type: string
+                      description: If the QuickBooks Online integration is enabled, this is the QBO status of the designation
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+                    Fundraiser:
+                      properties:
+                        FundraiserName:
+                          type: string
+                        AccountId:
+                          type: integer
+                          format: int64
+                        UserId:
+                          type: integer
+                          format: int64
+                - type: object
+                  properties:
+                    Type:
+                      type: string
+                      enum:
+                      - PledgePayment
+                - properties:
+                    Type:
+                      type: string
+                      enum:
+                      - PledgePayment
+                    PledgeId:
+                      type: number
+                      format: int64
+                      description: The designation ID of the payment's pledge
+      operationId: getPledgeByIdPayments
+      x-operation-id-source: derived
+  /pledge/{id}/paymentFailures:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: The ID of the pledge
+    - in: query
+      name: skip
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: The number of items to skip before starting to collect the result set.
+    - in: query
+      name: take
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 50
+      description: The number of items to include in the result set.
+    get:
+      tags:
+      - Pledges
+      summary: Returns a list of payment failures for the specified pledge
+      responses:
+        '200':
+          description: List of payments failures for the specified pledge
+          content:
+            application/json:
+              schema:
+                properties:
+                  Id:
+                    type: integer
+                    format: int64
+                    description: The ID of the pledge payment failure
+                  PledgeId:
+                    type: integer
+                    format: int64
+                    description: The ID of the pledge
+                  InstallmentId:
+                    type: integer
+                    format: int64
+                    description: The ID of this payment failure's associated pledge installment
+                  Date:
+                    type: string
+                    format: date
+                  Amount:
+                    type: number
+                    format: currency
+                  Reason:
+                    type: string
+                    description: The reason for the payment failure
+                  IsResolved:
+                    type: boolean
+                    description: Whether or not the payment failure has been resolved
+                  IsSuppressed:
+                    type: boolean
+                    description: Whether or not the payment failure has been suppressed
+      operationId: getPledgeByIdPaymentFailures
+      x-operation-id-source: derived
+  /pledge/{id}/writeOff:
+    post:
+      tags:
+      - Pledges
+      summary: Writes off a pledge
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: The pledge that was written off
+          content:
+            text/json:
+              schema:
+                properties:
+                  Id:
+                    type: integer
+                    format: int64
+                    description: The ID of the designation used in the API (not to be confused with DesignationNumber)
+                  DesignationNumber:
+                    type: integer
+                    format: int64
+                    description: A user-friendly designation number used in the Bloomerang CRM UI (not to be confused with ID).  In Bloomerang CRM Reporting, this is known as the Transaction Number.
+                  TransactionId:
+                    type: integer
+                    format: int64
+                    description: The ID of the transaction used in the API (not to be confused with transactionNumber)
+                  Amount:
+                    type: number
+                    format: currency
+                  NonDeductibleAmount:
+                    type: number
+                    format: currency
+                  Note:
+                    type: string
+                  AcknowledgementStatus:
+                    type: string
+                    enum:
+                    - 'Yes'
+                    - 'No'
+                    - DoNotAcknowledge
+                  AcknowledgementInteractionIds:
+                    type: array
+                    items:
+                      type: integer
+                      format: int64
+                      description: The IDs of interactions that acknowledge this designation
+                  Fund:
+                    properties:
+                      Id:
+                        type: integer
+                        format: int64
+                        description: The ID of the object
+                      Name:
+                        type: string
+                  QuickbooksAccount:
+                    properties:
+                      Id:
+                        type: integer
+                        format: int64
+                        description: The ID of the object
+                      Name:
+                        type: string
+                  Campaign:
+                    properties:
+                      Id:
+                        type: integer
+                        format: int64
+                        description: The ID of the object
+                      Name:
+                        type: string
+                  Appeal:
+                    properties:
+                      Id:
+                        type: integer
+                        format: int64
+                        description: The ID of the object
+                      Name:
+                        type: string
+                  Tribute:
+                    properties:
+                      Id:
+                        type: integer
+                        format: int64
+                        description: The ID of the object
+                      Name:
+                        type: string
+                  TributeType:
+                    type: string
+                    enum:
+                    - InHonorOf
+                    - InMemoryOf
+                  SoftCreditIds:
+                    type: array
+                    items:
+                      type: integer
+                      format: int64
+                      description: The IDs of the soft credits on this transaction
+                  Raised:
+                    type: number
+                    format: currency
+                    description: 'The amount this designation counts toward fundraising credit. It is normally equal to Revenue, but it is LOWER than Revenue when a soft credit on this designation was applied to a pledge: the amount is subtracted here so that it is not counted both on this donation and on the pledge it paid. A Raised below Revenue is expected in that case rather than a refund or a data-entry error. Never negative (floored at 0). Null for entry types that do not count toward raised, such as a pledge payment. Read RaisedCalculationMode before comparing or summing this figure across databases -- the two modes are computed on different bases, and it also records the cases where the pledge does not take up what was subtracted here.'
+                  Revenue:
+                    type: number
+                    format: currency
+                    description: The money actually received for this designation. 0 if the transaction was refunded. Null for entry types that are not received money, such as a pledge, which is a promise to give. Soft credits never change this value, so comparing it with Raised tells you whether any of this designation's money was credited to a pledge.
+                  IsPledgePaymentViaSoftCredit:
+                    type: boolean
+                    description: True when a soft credit on this designation was applied to a pledge and has therefore reduced Raised below Revenue. Equivalent to checking Raised != Revenue, precomputed. Always false when RaisedCalculationMode is Legacy, because that mode never reduces Raised. Use it to explain a Raised that looks too low, or to find the donations whose credit has moved to a pledge.
+                  RaisedCalculationMode:
+                    type: string
+                    enum:
+                    - Legacy
+                    - SoftCreditPledgeAdjusted
+                    description: 'Which formula produced the Raised value in this response. This is not a fixed property of the API: the corrected calculation is being rolled out one database at a time, so the same endpoint can return one mode for one organization and the other mode for another at the same moment.
+
+                      SoftCreditPledgeAdjusted means the donation side subtracts any soft credits on the entry that pay down a pledge, floored at zero, so Raised can legitimately be less than Revenue. In the ordinary case the pledge reports that money instead and it stops being counted twice. Do not treat that as a guaranteed conservation, though: the two sides are computed independently rather than handed from one to the other, and a pledge that has been written off or overpaid absorbs less than the donation gave up, leaving the difference reported by neither side.
+
+                      Legacy means the older behaviour: Raised equals Revenue for non-pledge entries, and a soft credit that pays a pledge is counted both on the pledge and again on the donation it came from, so any total that combines the two counts that money twice.
+
+                      Do not compare or add Raised figures that carry different modes, and say which basis you used when reporting a total. If this field is absent the number came from a cached summary written before the mode was recorded, and which formula produced it is unknown.'
+                  AttachmentIds:
+                    type: array
+                    items:
+                      type: integer
+                      format: int64
+                      description: The IDs of the attachments on this interaction
+                  CustomValues:
+                    type: array
+                    items:
+                      oneOf:
+                      - properties:
+                          FieldId:
+                            type: integer
+                            format: int64
+                          FieldText:
+                            type: string
+                            description: The label/text of the custom field
+                          Value:
+                            properties:
+                              Id:
+                                type: integer
+                                format: int64
+                              Value:
+                                type: string
+                      - properties:
+                          FieldId:
+                            type: integer
+                            format: int64
+                          FieldText:
+                            type: string
+                            description: The label/text of the custom field
+                          Values:
+                            type: array
+                            items:
+                              properties:
+                                Id:
+                                  type: integer
+                                  format: int64
+                                Value:
+                                  type: string
+                  QuickBooksOnlineStatus:
+                    type: string
+                    description: If the QuickBooks Online integration is enabled, this is the QBO status of the designation
+                  AuditTrail:
+                    properties:
+                      CreatedDate:
+                        type: string
+                        format: date-time
+                      CreatedName:
+                        type: string
+                      LastModifiedDate:
+                        type: string
+                        format: date-time
+                      LastModifiedName:
+                        type: string
+                  Fundraiser:
+                    properties:
+                      FundraiserName:
+                        type: string
+                      AccountId:
+                        type: integer
+                        format: int64
+                      UserId:
+                        type: integer
+                        format: int64
+      operationId: postPledgeByIdWriteOff
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    OAuth2:
+      type: oauth2
+      description: OAuth 2 with the authorization code flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://crm.bloomerang.com/authorize/
+          tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
+          scopes:
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

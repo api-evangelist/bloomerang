@@ -1,0 +1,200 @@
+openapi: 3.2.0
+info:
+  title: Bloomerang Relationship Roles API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
+  contact:
+    name: Bloomerang
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
+servers:
+- url: https://api.bloomerang.co/v2
+security:
+- ApiKeyAuth: []
+- OAuth2: []
+tags:
+- name: Relationship Roles
+paths:
+  /relationshiproles:
+    get:
+      tags:
+      - Relationship Roles
+      summary: Gets a list of relationship roles
+      parameters:
+      - in: query
+        name: skip
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: The number of items to skip before starting to collect the result set.
+      - in: query
+        name: take
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 50
+        description: The number of items to include in the result set.
+      - in: query
+        name: lastModified
+        schema:
+          type: string
+          format: date-time
+        description: Filters to relationshipRoles last modified after the specified date
+      - in: query
+        name: id
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+        description: Filters to relationship roles with the IDs in the list (pipe-separated)
+      - in: query
+        name: name
+        schema:
+          type: array
+          items:
+            type: string
+        description: Filters to relationship roles with the names in the list (pipe-separated)
+      - in: query
+        name: isActive
+        schema:
+          type: boolean
+        description: Filters to either active or inactive relationship roles
+      responses:
+        '200':
+          description: The list of relationship roles that met the search criteria.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - properties:
+                    Total:
+                      type: integer
+                      description: The total number of records in Bloomerang.
+                    TotalFiltered:
+                      type: integer
+                      description: The total number of records that match the filters.
+                    Start:
+                      type: integer
+                      description: The 0-based index of the first record.
+                    ResultCount:
+                      type: integer
+                      description: The number of records included in the result set.
+                - type: object
+                  properties:
+                    Results:
+                      type: array
+                      items:
+                        allOf:
+                        - type: object
+                          properties:
+                            Id:
+                              type: integer
+                              format: int64
+                            AuditTrail:
+                              properties:
+                                CreatedDate:
+                                  type: string
+                                  format: date-time
+                                CreatedName:
+                                  type: string
+                                LastModifiedDate:
+                                  type: string
+                                  format: date-time
+                                LastModifiedName:
+                                  type: string
+                        - allOf:
+                          - type: object
+                            properties:
+                              SortIndex:
+                                type: integer
+                                format: int32
+                          - properties:
+                              Name:
+                                type: string
+                              IsDefault:
+                                type: boolean
+                                description: Is this the default?
+                              IsActive:
+                                type: boolean
+                                description: Is this active?
+      operationId: getRelationshiproles
+      x-operation-id-source: derived
+  /relationshiprole/{id}:
+    parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: The ID of the relationship role to return.
+    get:
+      tags:
+      - Relationship Roles
+      summary: Gets a relationship role by ID
+      responses:
+        '200':
+          description: The relationship role with the given ID.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - type: object
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+                - allOf:
+                  - type: object
+                    properties:
+                      SortIndex:
+                        type: integer
+                        format: int32
+                  - properties:
+                      Name:
+                        type: string
+                      IsDefault:
+                        type: boolean
+                        description: Is this the default?
+                      IsActive:
+                        type: boolean
+                        description: Is this active?
+      operationId: getRelationshiproleById
+      x-operation-id-source: derived
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+    OAuth2:
+      type: oauth2
+      description: OAuth 2 with the authorization code flow.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://crm.bloomerang.com/authorize/
+          tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
+          scopes:
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes

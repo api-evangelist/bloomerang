@@ -1,100 +1,291 @@
 openapi: 3.2.0
 info:
-  title: Bloomerang REST API v2 Custom Fields API
-  description: The Bloomerang REST API v2 is a private-key, server-to-server API for reading and writing data in a Bloomerang donor management CRM account - constituents, transactions (donations, pledges, recurring donations), interactions, notes, relationships, and webhook subscriptions.
-  version: '2.0'
+  title: Bloomerang Custom Fields API
+  description: Private-key API for Bloomerang CRM
+  version: 2.0.0
   contact:
     name: Bloomerang
-    url: https://bloomerang.com/api/rest-api
+    url: https://www.bloomerang.com/
+    email: support@bloomerang.com
 servers:
 - url: https://api.bloomerang.co/v2
-  description: Bloomerang REST API v2 (production - no sandbox is offered)
 security:
-- apiKeyAuth: []
-- oauth2Bearer: []
+- ApiKeyAuth: []
+- OAuth2: []
 tags:
 - name: Custom Fields
-  description: Account-specific custom field definitions by object type.
 paths:
-  /customFields/{type}:
-    parameters:
-    - name: type
-      in: path
-      required: true
-      description: The object type to fetch custom field definitions for, e.g. Constituent, Transaction, Interaction, or Note.
-      schema:
-        type: string
-        enum:
-        - Constituent
-        - Transaction
-        - Interaction
-        - Note
+  /customFieldCategories/{type}/:
     get:
-      operationId: listCustomFields
       tags:
       - Custom Fields
-      summary: List custom field definitions
-      description: Lists the custom field definitions configured for a given object type.
+      summary: Gets a list of custom field categories
+      parameters:
+      - in: path
+        name: type
+        required: true
+        schema:
+          type: string
+          enum:
+          - Constituent
+          - Transaction
+          - Interaction
+          - Note
+          - Benevon
+        description: Filters categories for the given object type.
       responses:
         '200':
-          description: A list of custom field definitions.
+          description: The list of custom field categories that met the specified filters.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CustomFieldDefinition'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-components:
-  schemas:
-    CustomFieldDefinition:
-      type: object
-      properties:
-        Id:
-          type: integer
-        Name:
-          type: string
-        FieldType:
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    Name:
+                      type: string
+                    SortIndex:
+                      type: integer
+                      format: int32
+      operationId: getCustomFieldCategoriesByType
+      x-operation-id-source: derived
+  /customFields/{type}/:
+    get:
+      tags:
+      - Custom Fields
+      summary: Gets a list of custom fields
+      parameters:
+      - in: path
+        name: type
+        required: true
+        schema:
           type: string
           enum:
-          - Text
-          - Number
-          - Date
-          - PickList
-          - MultiSelectPickList
-        PossibleValues:
-          type: array
-          items:
-            type: string
-    Error:
-      type: object
-      properties:
-        Message:
+          - Constituent
+          - Transaction
+          - Interaction
+          - Note
+          - Benevon
+        description: Filters fields for the given object type.
+      - in: query
+        name: isActive
+        schema:
+          type: boolean
+          default: true
+        description: Filters to only fields that are active (or inactive)
+      - in: query
+        name: lastModified
+        schema:
           type: string
-        Errors:
-          type: array
-          items:
-            type: string
-  responses:
-    Unauthorized:
-      description: Missing or invalid API key / access token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+          format: date-time
+        description: Filters to custom fields last modified after the specified date
+      responses:
+        '200':
+          description: The list of custom fields that met the specified filters.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    CategoryId:
+                      type: integer
+                      format: int64
+                    Name:
+                      type: string
+                    IsRequired:
+                      type: boolean
+                    IsActive:
+                      type: boolean
+                    DataType:
+                      type: string
+                      enum:
+                      - Currency
+                      - Date
+                      - Decimal
+                      - Text
+                      - Year
+                    PickType:
+                      type: string
+                      enum:
+                      - Freeform
+                      - PickMultiple
+                      - PickOne
+                    SortIndex:
+                      type: integer
+                      format: int32
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: getCustomFieldsByType
+      x-operation-id-source: derived
+  /customValues/{type}:
+    get:
+      tags:
+      - Custom Fields
+      summary: Gets a list of custom values for all pick fields of the given object type
+      parameters:
+      - in: path
+        name: type
+        required: true
+        schema:
+          type: string
+          enum:
+          - Constituent
+          - Transaction
+          - Interaction
+          - Note
+          - Benevon
+        description: Filters fields for the given object type.
+      - in: query
+        name: isActive
+        schema:
+          type: boolean
+          default: true
+        description: Filters to only values that are active (or inactive)
+      - in: query
+        name: lastModified
+        schema:
+          type: string
+          format: date-time
+        description: Filters to custom field values last modified after the specified date
+      responses:
+        '200':
+          description: The list of custom values that met the specified filters.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    FieldId:
+                      type: integer
+                      format: int64
+                    Value:
+                      type: string
+                    IsActive:
+                      type: boolean
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: getCustomValuesByType
+      x-operation-id-source: derived
+  /customValues/{type}/{fieldId}:
+    get:
+      tags:
+      - Custom Fields
+      summary: Gets a list of custom values for the given field
+      parameters:
+      - in: path
+        name: type
+        required: true
+        schema:
+          type: string
+          enum:
+          - Constituent
+          - Transaction
+          - Interaction
+          - Note
+          - Benevon
+        description: Filters fields for the given object type.
+      - in: path
+        name: fieldId
+        required: true
+        schema:
+          type: integer
+          format: int64
+          description: The custom field ID the values belong to
+      - in: query
+        name: isActive
+        schema:
+          type: boolean
+          default: true
+        description: Filters to only values that are active (or inactive)
+      - in: query
+        name: lastModified
+        schema:
+          type: string
+          format: date-time
+        description: Filters to custom field values last modified after the specified date
+      responses:
+        '200':
+          description: The list of custom values that met the specified filters.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    Id:
+                      type: integer
+                      format: int64
+                    FieldId:
+                      type: integer
+                      format: int64
+                    Value:
+                      type: string
+                    IsActive:
+                      type: boolean
+                    AuditTrail:
+                      properties:
+                        CreatedDate:
+                          type: string
+                          format: date-time
+                        CreatedName:
+                          type: string
+                        LastModifiedDate:
+                          type: string
+                          format: date-time
+                        LastModifiedName:
+                          type: string
+      operationId: getCustomValuesByTypeByFieldId
+      x-operation-id-source: derived
+components:
   securitySchemes:
-    apiKeyAuth:
+    ApiKeyAuth:
       type: apiKey
       in: header
-      name: X-Api-Key
-      description: Private API key generated by an Administrator user in Bloomerang under User Settings > Edit My User. Grants full read/write access - keep it secret.
-    oauth2Bearer:
+      name: X-API-KEY
+    OAuth2:
       type: oauth2
-      description: 'OAuth 2.0 access token for third-party applications, presented as `Authorization: Bearer {access_token}`.'
+      description: OAuth 2 with the authorization code flow.
       flows:
         authorizationCode:
-          authorizationUrl: https://crm.bloomerang.co/oauth/authorize
+          authorizationUrl: https://crm.bloomerang.com/authorize/
           tokenUrl: https://api.bloomerang.co/v2/oauth/token
+          refreshUrl: https://api.bloomerang.co/v2/oauth/token
           scopes:
-            api: Full read/write access to account data.
+            ViewOnly: Base level view-only privileges
+            StandardEditFinancialData: Base level privileges and ability to edit financial data
+            Standard: Same privileges as a standard user (includes transaction edit)
+            OrgAdmin: Privileges of an Organization Administrator
+externalDocs:
+  url: https://www.bloomerang.com/openapi_errorcodes.html
+  description: Error Codes
