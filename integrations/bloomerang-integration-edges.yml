@@ -7,7 +7,9 @@ source:
 - https://monid.ai/tools/bloomerang
 checked:
 - https://bloomerang.com/integrations/
+- https://cloudsecurityalliance.org/star/registry
 - https://composio.dev/toolkits/bloomerang
+- https://eucoc.cloud/en/public-register/list-of-adherent-services
 - https://monid.ai/tools/bloomerang
 - https://n8n.io/integrations/bloomerang/
 - https://zapier.com/apps/bloomerang/integrations
@@ -98,4 +100,34 @@ edges:
   partner_domain: null
   detected_by: sweep-nonprofit.py
   detected: '2026-10-14'
+- partner_name: Cloud Security Alliance STAR Registry
+  partner: null
+  partner_match: register
+  type: register
+  channel: standard-directory
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://cloudsecurityalliance.org/star/registry/bloomerang-llc/services/bloomerang-crm
+  category: Cloud security assurance
+  contract_reference:
+    register: CSA STAR Registry (cloudsecurityalliance.org/star/registry)
+    spec_file: null
+    standard: CSA STAR
+    role: star-level-1
+    registered_name: Bloomerang, LLC
+    registry_id: bloomerang-llc
+    service_url: https://bloomerang.com
+    matched_domain: bloomerang.com
+    matched_by: domain
+    identity_source: the service URL the organisation filed on its STAR listing (no lookup)
+    levels:
+    - STAR Level 1
+    certified_products: []
+    signal_note: STAR Level 1 (CAIQ self-assessment) = participation; certified_products = one entry per STAR Level
+      2 / STAR for AI Level 2 assessment TYPE (third-party certification, attestation, C-STAR, ValidAIted); lapsed
+      = every instance marked (Deprecated) by the registry; service counts never recorded
+    detected_by: sweep-compliance-assurance.py
+    detected: '2026-10-20'
+  detected_by: sweep-compliance-assurance.py
+  first_seen: '2026-10-20'
 templates: []
