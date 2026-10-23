@@ -5646,3 +5646,9 @@ components:
 externalDocs:
   url: https://www.bloomerang.com/openapi_errorcodes.html
   description: Error Codes
+x-provenance:
+  method: harvested
+  publisher: Bloomerang
+  source: https://bloomerang-api-documentation.s3.us-west-2.amazonaws.com/public_crm_generated.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
