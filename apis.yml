@@ -203,6 +203,8 @@ apis:
   humanURL: https://bloomerang.com/api/rest-api
   baseURL: https://api.bloomerang.co/v2
   tags:
+  - Fund
+  tags_raw:
   - Funds
   properties:
   - type: OpenAPI
@@ -215,6 +217,8 @@ apis:
   humanURL: https://bloomerang.com/api/rest-api
   baseURL: https://api.bloomerang.co/v2
   tags:
+  - Group
+  tags_raw:
   - Groups
   properties:
   - type: OpenAPI
@@ -227,6 +231,8 @@ apis:
   humanURL: https://bloomerang.com/api/rest-api
   baseURL: https://api.bloomerang.co/v2
   tags:
+  - Phone
+  tags_raw:
   - Phones
   properties:
   - type: OpenAPI
@@ -299,6 +305,8 @@ apis:
   humanURL: https://bloomerang.com/api/rest-api
   baseURL: https://api.bloomerang.co/v2
   tags:
+  - Task
+  tags_raw:
   - Tasks
   properties:
   - type: OpenAPI
@@ -323,6 +331,8 @@ apis:
   humanURL: https://bloomerang.com/api/rest-api
   baseURL: https://api.bloomerang.co/v2
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
