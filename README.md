@@ -1,4 +1,4 @@
-# Bloomerang (bloomerang)
+# Bloomerang
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,232 +64,141 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Bloomerang is a cloud-based donor management and fundraising CRM built for small and mid-size nonprofits, covering constituent records, donations and pledges, communications, and reporting. Bloomerang acquired fellow nonprofit platform Kindful in January 2021, but Kindful continues to run its own separate API and product line; this entry documents Bloomerang's own REST API v2 (base `https://api.bloomerang.co/v2`), authenticated with a private API key or OAuth 2.0, for managing constituents, transactions, interactions, and related donor data.
+Bloomerang is a cloud-based donor management and fundraising CRM built for small and mid-size nonprofits, covering constituent records, donations and pledges, communications, and reporting. Bloomerang acquired fellow nonprofit platform Kindful in January 2021, but Kindful continues to run its own separate API and product line; this entry documents Bloomerang's own REST API v2 (base https://api.bloomerang.co/v2), authenticated with a private API key or OAuth 2.0, for managing constituents, transactions, interactions, and related donor data.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/bloomerang/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/bloomerang/refs/heads/main/apis.yml)
+**Areas:** Non-Profit · Donor Management · CRM · Fundraising · Fundraising Software
 
-## Tags
+## Bloomerang on APIs.io
 
-- Nonprofit
-- Donor Management
-- CRM
-- Fundraising
-- Fundraising Software
+Everything profiled for Bloomerang is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/bloomerang/](https://apis.io/providers/bloomerang/)** — or go straight to one of the APIs or properties below.
 
-## Timestamps
+### APIs (9)
 
-- **Created:** 2026-07-03
-- **Modified:** 2026-07-03
+- [Bloomerang Constituents API](https://apis.io/apis/bloomerang/bloomerang-constituents-api/) — Individuals, households, and organizations tracked as donors and contacts.
+- [Bloomerang Custom Fields API](https://apis.io/apis/bloomerang/bloomerang-custom-fields-api/) — Account-specific custom field definitions by object type.
+- [Bloomerang Households API](https://apis.io/apis/bloomerang/bloomerang-households-api/) — Family-unit grouping of individual constituents.
+- [Bloomerang Interactions API](https://apis.io/apis/bloomerang/bloomerang-interactions-api/) — Logged touches between the organization and a constituent.
+- [Bloomerang Notes API](https://apis.io/apis/bloomerang/bloomerang-notes-api/) — Freeform notes attached to a constituent record.
+- [Bloomerang Reference Data API](https://apis.io/apis/bloomerang/bloomerang-reference-data-api/) — Users, funds, campaigns, and appeals used as designations and attribution.
+- [Bloomerang Relationships API](https://apis.io/apis/bloomerang/bloomerang-relationships-api/) — Relationships between two constituents.
+- [Bloomerang Transactions API](https://apis.io/apis/bloomerang/bloomerang-transactions-api/) — Donations, pledges, pledge payments, and recurring donation designations.
+- [Bloomerang Webhooks API](https://apis.io/apis/bloomerang/bloomerang-webhooks-api/) — Webhook subscriptions for event notifications.
 
-## APIs
+### Published properties
 
-### Bloomerang Constituents API
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-Create, retrieve, search, and update constituent records - the individuals, households, and organizations tracked in a Bloomerang donor database - including addresses, emails, phone numbers, and communication preferences.
+#### Agentic access (1)
 
-- **Human URL:** [https://bloomerang.com/api/rest-api](https://bloomerang.com/api/rest-api)
-- **Base URL:** `https://api.bloomerang.co/v2`
+Which operations an agent can call, which act, and which need a human in the loop.
 
-#### Tags
+- [Bloomerang Agentic Access](https://apis.io/agentic-access/bloomerang/bloomerang-agentic-access/)
 
-- Constituents
-- Donors
-- Contacts
+#### Collections (10)
 
-#### Properties
+Postman and Open Collection request collections.
 
-- [Documentation](https://bloomerang.com/api/rest-api)
-- [OpenAPI](openapi/bloomerang-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bloomerang.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bloomerang.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Bloomerang REST API v2](https://apis.io/collections/bloomerang/open-bloomerang/)
+- [Bloomerang REST API v2 Constituents API](https://apis.io/collections/bloomerang/open-bloomerang-constituents-api/)
+- [Bloomerang REST API v2 Constituents Custom Fields API](https://apis.io/collections/bloomerang/open-bloomerang-custom-fields-api/)
+- [Bloomerang REST API v2 Constituents Households API](https://apis.io/collections/bloomerang/open-bloomerang-households-api/)
+- [Bloomerang REST API v2 Constituents Interactions API](https://apis.io/collections/bloomerang/open-bloomerang-interactions-api/)
+- [Bloomerang REST API v2 Constituents Notes API](https://apis.io/collections/bloomerang/open-bloomerang-notes-api/)
+- [Bloomerang REST API v2 Constituents Reference Data API](https://apis.io/collections/bloomerang/open-bloomerang-reference-data-api/)
+- [Bloomerang REST API v2 Constituents Relationships API](https://apis.io/collections/bloomerang/open-bloomerang-relationships-api/)
+- [Bloomerang REST API v2 Constituents Transactions API](https://apis.io/collections/bloomerang/open-bloomerang-transactions-api/)
+- [Bloomerang REST API v2 Constituents Webhooks API](https://apis.io/collections/bloomerang/open-bloomerang-webhooks-api/)
 
-### Bloomerang Households API
+#### Security (3)
 
-Manage households - the family-unit grouping of individual constituents used throughout Bloomerang for giving history rollups and household-level mailings and reporting.
+Authentication, trust centre, and vulnerability disclosure.
 
-- **Human URL:** [https://bloomerang.com/api/rest-api](https://bloomerang.com/api/rest-api)
-- **Base URL:** `https://api.bloomerang.co/v2`
+- [Bloomerang Authentication](https://apis.io/security/bloomerang/bloomerang-authentication/)
+- [Bloomerang Domain Security](https://apis.io/security/bloomerang/bloomerang-domain-security/)
+- [Bloomerang Trust Center](https://apis.io/security/bloomerang/bloomerang-trust-center/)
 
-#### Tags
+#### OAuth scopes (1)
 
-- Households
-- Constituents
+The permissions the API asks for.
 
-#### Properties
+- [Bloomerang Scopes](https://apis.io/scopes/bloomerang/bloomerang-scopes/)
 
-- [Documentation](https://bloomerang.com/api/rest-api)
-- [OpenAPI](openapi/bloomerang-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bloomerang.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bloomerang.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+#### Plans and pricing (1)
 
-### Bloomerang Transactions API
+Published plans, tiers and prices.
 
-Record and retrieve transactions - the total amount of a payment, split into one or more designations such as donations, pledges, pledge payments, recurring donations, or recurring donation payments - against a fund and constituent.
+- [Bloomerang Plans Pricing](https://apis.io/plans/bloomerang/bloomerang-plans-pricing/)
 
-- **Human URL:** [https://bloomerang.com/api/rest-api](https://bloomerang.com/api/rest-api)
-- **Base URL:** `https://api.bloomerang.co/v2`
+#### Rate limits (1)
 
-#### Tags
+Published request limits.
 
-- Transactions
-- Donations
-- Pledges
+- [Bloomerang Rate Limits](https://apis.io/rate-limits/bloomerang/bloomerang-rate-limits/)
 
-#### Properties
+#### FinOps (1)
 
-- [Documentation](https://bloomerang.com/api/rest-api)
-- [OpenAPI](openapi/bloomerang-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bloomerang.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bloomerang.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+What the API costs to run, by operation.
 
-### Bloomerang Interactions API
+- [Bloomerang Finops](https://apis.io/finops/bloomerang/bloomerang-finops/)
 
-Log and retrieve interactions - a "touch" between the organization and a constituent such as a call, meeting, letter, or email - used to build the constituent engagement timeline.
+## Where to find this API
 
-- **Human URL:** [https://bloomerang.com/api/rest-api](https://bloomerang.com/api/rest-api)
-- **Base URL:** `https://api.bloomerang.co/v2`
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-#### Tags
-
-- Interactions
-- Engagement
-- Communications
-
-#### Properties
-
-- [Documentation](https://bloomerang.com/api/rest-api)
-- [OpenAPI](openapi/bloomerang-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bloomerang.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bloomerang.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Bloomerang Notes API
-
-Create and retrieve freeform notes attached to a constituent record, including optional file attachments, surfaced on the constituent timeline alongside interactions and transactions.
-
-- **Human URL:** [https://bloomerang.com/api/rest-api](https://bloomerang.com/api/rest-api)
-- **Base URL:** `https://api.bloomerang.co/v2`
-
-#### Tags
-
-- Notes
-- Constituents
-
-#### Properties
-
-- [Documentation](https://bloomerang.com/api/rest-api)
-- [OpenAPI](openapi/bloomerang-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bloomerang.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bloomerang.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Bloomerang Relationships API
-
-Manage relationships between two constituents - such as spouse, employer, or board member - each carrying a role on both sides of the relationship and an optional note.
-
-- **Human URL:** [https://bloomerang.com/api/rest-api](https://bloomerang.com/api/rest-api)
-- **Base URL:** `https://api.bloomerang.co/v2`
-
-#### Tags
-
-- Relationships
-- Constituents
-
-#### Properties
-
-- [Documentation](https://bloomerang.com/api/rest-api)
-- [OpenAPI](openapi/bloomerang-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bloomerang.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bloomerang.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Bloomerang Custom Fields API
-
-Retrieve the custom field definitions configured for a given object type (Constituent, Transaction, Interaction, Note) so integrations can read and write an organization's account-specific custom data.
-
-- **Human URL:** [https://bloomerang.com/api/rest-api](https://bloomerang.com/api/rest-api)
-- **Base URL:** `https://api.bloomerang.co/v2`
-
-#### Tags
-
-- Custom Fields
-- Configuration
-
-#### Properties
-
-- [Documentation](https://bloomerang.com/api/rest-api)
-- [OpenAPI](openapi/bloomerang-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bloomerang.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bloomerang.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Bloomerang Lists API
-
-Read saved constituent lists (segments) built in the Bloomerang CRM UI, and page through the constituents they contain, for use in exports, mailings, and downstream reporting. Modeled from Bloomerang's list/segment feature set; a public REST path for this feature was not independently confirmed during review - see `review.yml`.
-
-- **Human URL:** [https://bloomerang.com/api/rest-api](https://bloomerang.com/api/rest-api)
-- **Base URL:** `https://api.bloomerang.co/v2`
-
-#### Tags
-
-- Lists
-- Segmentation
-
-#### Properties
-
-- [Documentation](https://bloomerang.com/api/rest-api)
-- [OpenAPI](openapi/bloomerang-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bloomerang.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bloomerang.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Bloomerang Webhooks API
-
-Register, list, and remove webhook subscriptions so a third-party system receives an HTTP callback when events occur in Bloomerang, such as a new constituent or transaction being created.
-
-- **Human URL:** [https://bloomerang.com/api/rest-api](https://bloomerang.com/api/rest-api)
-- **Base URL:** `https://api.bloomerang.co/v2`
-
-#### Tags
-
-- Webhooks
-- Events
-- Notifications
-
-#### Properties
-
-- [Documentation](https://bloomerang.com/api/rest-api)
-- [OpenAPI](openapi/bloomerang-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bloomerang.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bloomerang.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### Bloomerang Accounts and Users API
-
-Read account-level reference data - CRM users, funds, campaigns, and appeals - used to populate designations on transactions and to attribute activity to a specific staff user.
-
-- **Human URL:** [https://bloomerang.com/api/rest-api](https://bloomerang.com/api/rest-api)
-- **Base URL:** `https://api.bloomerang.co/v2`
-
-#### Tags
-
-- Accounts
-- Users
-- Funds
-- Campaigns
-
-#### Properties
-
-- [Documentation](https://bloomerang.com/api/rest-api)
-- [OpenAPI](openapi/bloomerang-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/bloomerang.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/bloomerang.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-## Common Properties
-
-- [GitHub Organization](https://github.com/Bloomerang)
-- [LinkedIn](https://www.linkedin.com/company/bloomerang-donor-management-software)
 - [Website](https://bloomerang.com)
 - [Documentation](https://bloomerang.com/api)
-- [Plans](plans/bloomerang-plans-pricing.yml)
-- [Rate Limits](rate-limits/bloomerang-rate-limits.yml)
-- [Fin Ops](finops/bloomerang-finops.yml)
+- [Blog](https://bloomerang.com/blog)
+- [GitHub](https://github.com/Bloomerang)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 29.5** — thin · rubric 0.24.0 · scored 2026-10-17
+
+| Facet | Score |
+|---|---|
+| Discoverability | 66.1 |
+| Contract quality | 50.6 |
+| Contract governance | 0.0 |
+| Operational transparency | 10.5 |
+| Developer ergonomics | 23.8 |
+| Access clarity | 15.8 |
+
+**Agent readiness 20.1** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | — |
+| Rate Limit Signal | derived (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | documented (partial credit) |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+
+**Regulatory alignment 26.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/bloomerang/](https://apis.io/providers/bloomerang/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Bloomerang: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/bloomerang/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
